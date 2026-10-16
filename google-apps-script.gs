@@ -25,6 +25,22 @@ function doPost(e) {
   try {
     const p = (e && e.parameter) || {};
     if (p.website) return json_({ ok: true });                       // anti-spam (honeypot)
+
+    // تحديث حالة الطلب من لوحة التحكم / Mise à jour statut depuis le dashboard
+    if (p.action === 'update_status' && p.phone) {
+      const sh = getSheet_();
+      const data = sh.getDataRange().getValues();
+      const targetPhone = String(p.phone).replace(/\D/g, '');
+      for (let i = 1; i < data.length; i++) {
+        const rowPhone = String(data[i][4] || '').replace(/\D/g, '');
+        if (rowPhone && targetPhone && (rowPhone === targetPhone || rowPhone.endsWith(targetPhone.slice(-8)))) {
+          if (p.status) sh.getRange(i + 1, 11).setValue(p.status);
+          return json_({ ok: true, updated: true });
+        }
+      }
+      return json_({ ok: true, not_found: true });
+    }
+
     if (!p.full_name || !p.phone) return json_({ ok: false, error: 'missing fields' });
 
     const sh = getSheet_();
@@ -51,7 +67,38 @@ function doPost(e) {
   }
 }
 
-function doGet() { return json_({ ok: true, service: 'IDARATI leads' }); }
+function doGet(e) {
+  const p = (e && e.parameter) || {};
+
+  // جلب الطلبات إلى لوحة التحكم / Récupération des demandes pour le dashboard
+  if (p.action === 'get_leads') {
+    const sh = getSheet_();
+    const data = sh.getDataRange().getValues();
+    if (data.length <= 1) return json_({ ok: true, leads: [] });
+    const leads = [];
+    for (let i = 1; i < data.length; i++) {
+      const r = data[i];
+      if (!r[0] && !r[1]) continue;
+      leads.push({
+        id: 'lead-row-' + i,
+        date: r[0] ? new Date(r[0]).toISOString() : new Date().toISOString(),
+        full_name: String(r[1] || ''),
+        company_name: String(r[2] || ''),
+        activity: String(r[3] || ''),
+        phone: String(r[4] || ''),
+        email: String(r[5] || ''),
+        wilaya: String(r[6] || 'Alger'),
+        lang: String(r[7] || 'ar'),
+        source: String(r[8] || 'web'),
+        page: String(r[9] || ''),
+        status: String(r[10] || 'Nouveau')
+      });
+    }
+    return json_({ ok: true, leads: leads.reverse() });
+  }
+
+  return json_({ ok: true, service: 'IDARATI leads API' });
+}
 
 function getSheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();

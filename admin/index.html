@@ -1,0 +1,2094 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة إدارة الطلبات والمبيعات | IDARATI CRM</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B1638">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --navy: #0B1638;
+  --navy-2: #16378D;
+  --navy-dark: #070E24;
+  --ink: #0F172A;
+  --muted: #64748B;
+  --teal: #1F5FBF;
+  --teal-2: #4FB0F0;
+  --teal-soft: #EAF2FD;
+  --bg: #F8FAFC;
+  --card: #FFFFFF;
+  --card-hover: #F1F5F9;
+  --line: #E2E8F0;
+  --gold: #F2B33D;
+  --gold-soft: #FEF3C7;
+  --wa: #167A43;
+  --wa-soft: #DCFCE7;
+  --err: #DC2626;
+  --err-soft: #FEE2E2;
+  --info: #0284C7;
+  --info-soft: #E0F2FE;
+  --purple: #7C3AED;
+  --purple-soft: #EDE9FE;
+  --r: 12px;
+  --r-sm: 8px;
+  --shadow-sm: 0 1px 3px rgba(15,23,42,0.08);
+  --shadow: 0 4px 16px rgba(15,23,42,0.06), 0 1px 3px rgba(15,23,42,0.05);
+  --shadow-lg: 0 12px 32px rgba(15,23,42,0.12);
+  --font: "IBM Plex Sans Arabic", system-ui, -apple-system, sans-serif;
+  --header-h: 70px;
+}
+
+[data-theme="dark"] {
+  --bg: #070E24;
+  --card: #0F1B3E;
+  --card-hover: #16244E;
+  --ink: #F1F5F9;
+  --muted: #94A3B8;
+  --line: #1E2E5C;
+  --teal-soft: rgba(31,95,191,0.2);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow: 0 6px 20px rgba(0,0,0,0.35);
+  --shadow-lg: 0 14px 40px rgba(0,0,0,0.5);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #334155; }
+
+/* Header */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--header-h);
+  background: rgba(11, 22, 56, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #1F5FBF, #4FB0F0);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 20px;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(31,95,191,0.4);
+}
+.brand-title {
+  display: flex;
+  flex-direction: column;
+}
+.brand-name {
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.brand-name span.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  background: rgba(242, 179, 61, 0.2);
+  color: var(--gold);
+  border-radius: 20px;
+  border: 1px solid rgba(242, 179, 61, 0.4);
+}
+.brand-sub {
+  font-size: 12px;
+  color: #94A3B8;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--r-sm);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--teal), #16378D);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(31,95,191,0.3);
+}
+.btn-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+.btn-outline {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.18);
+  color: #fff;
+}
+.btn-outline:hover {
+  background: rgba(255,255,255,0.12);
+}
+.btn-secondary {
+  background: var(--card);
+  border-color: var(--line);
+  color: var(--ink);
+}
+.btn-secondary:hover {
+  background: var(--card-hover);
+}
+.btn-icon {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: var(--r-sm);
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+}
+.status-dot.offline {
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
+}
+
+/* Layout */
+.main-wrapper {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* KPI Banner */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.kpi-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: var(--kpi-accent, var(--teal));
+}
+.kpi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.kpi-title {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.kpi-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--kpi-bg, var(--teal-soft));
+  color: var(--kpi-accent, var(--teal));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.kpi-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Toolbar & Tabs */
+.view-toolbar {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.tabs-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  padding: 4px;
+  border-radius: var(--r-sm);
+}
+.tab-btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: inherit;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tab-btn.active {
+  background: var(--card);
+  color: var(--teal);
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.search-input-wrap {
+  position: relative;
+  min-width: 240px;
+}
+.search-input-wrap input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border 0.15s;
+}
+[dir="rtl"] .search-input-wrap input {
+  padding: 8px 36px 8px 12px;
+}
+.search-input-wrap input:focus {
+  border-color: var(--teal);
+}
+.search-input-wrap .search-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 14px;
+  pointer-events: none;
+  left: 12px;
+}
+[dir="rtl"] .search-input-wrap .search-icon {
+  left: auto;
+  right: 12px;
+}
+.select-filter {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13px;
+  border-radius: var(--r-sm);
+  outline: none;
+  cursor: pointer;
+}
+
+/* Kanban Board */
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(280px, 1fr));
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 20px;
+}
+.kanban-col {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 280px);
+  min-height: 480px;
+}
+.kanban-col-head {
+  padding: 14px 16px;
+  border-bottom: 2px solid var(--col-color, var(--teal));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.col-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.col-badge {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--col-color, var(--teal));
+}
+.col-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.col-count {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--muted);
+}
+.kanban-cards {
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+.kanban-cards.drag-over {
+  background: rgba(31,95,191,0.05);
+}
+
+/* Card */
+.lead-card {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 14px;
+  cursor: grab;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.lead-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  border-color: var(--teal);
+}
+.lead-card.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.card-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.card-date {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.card-company {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy-2);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+[data-theme="dark"] .card-company {
+  color: var(--teal-2);
+}
+.card-activity {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.pill-wilaya {
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+.pill-source {
+  background: var(--gold-soft);
+  color: #92400E;
+}
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.action-btn {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.action-btn:hover {
+  background: var(--card-hover);
+}
+.action-btn.call-btn:hover {
+  background: #EFF6FF;
+  border-color: #3B82F6;
+  color: #1D4ED8;
+}
+.action-btn.wa-btn {
+  background: var(--wa-soft);
+  border-color: rgba(22,122,67,0.3);
+  color: var(--wa);
+}
+.action-btn.wa-btn:hover {
+  background: #BBF7D0;
+}
+
+/* Table View */
+.table-container {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow-x: auto;
+  box-shadow: var(--shadow-sm);
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: right;
+  font-size: 13px;
+}
+[dir="ltr"] .data-table {
+  text-align: left;
+}
+.data-table th {
+  background: var(--bg);
+  padding: 12px 16px;
+  font-weight: 700;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  vertical-align: middle;
+}
+.data-table tr:hover td {
+  background: var(--card-hover);
+}
+.status-select {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+/* Analytics View */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 20px;
+}
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.chart-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+.bar-label {
+  width: 120px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bar-track {
+  flex: 1;
+  height: 10px;
+  background: var(--bg);
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--teal), var(--teal-2));
+  transition: width 0.6s ease;
+}
+.bar-val {
+  width: 40px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--muted);
+}
+[dir="ltr"] .bar-val { text-align: right; }
+
+/* Modals */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11,22,56,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-backdrop.active {
+  display: flex;
+}
+.modal-box {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 0.2s ease-out;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px;
+}
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.form-input, .form-textarea, .form-select {
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+  border-color: var(--teal);
+}
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Toast */
+.toast-wrap {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+[dir="rtl"] .toast-wrap { right: auto; left: 24px; }
+.toast {
+  padding: 12px 18px;
+  border-radius: var(--r-sm);
+  background: #0F172A;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: toastIn 0.25s ease;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Login Card (Gatekeeper) */
+.auth-gate {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, #16378D, #0B1638 70%);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.auth-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 36px;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 400px;
+  color: #fff;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  text-align: center;
+}
+.auth-logo {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--teal), #4FB0F0);
+  border-radius: 14px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(31,95,191,0.5);
+}
+.auth-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.auth-sub {
+  font-size: 13px;
+  color: #94A3B8;
+  margin-bottom: 24px;
+}
+.auth-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--r-sm);
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  text-align: center;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  outline: none;
+}
+.auth-input:focus {
+  border-color: var(--teal-2);
+}
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+}
+</style>
+</head>
+<body>
+
+<!-- Login Gatekeeper -->
+<div id="authGate" class="auth-gate">
+  <div class="auth-card">
+    <div class="auth-logo">I</div>
+    <h2 class="auth-title">IDARATI Company</h2>
+    <p class="auth-sub" id="authSub">تسجيل الدخول إلى لوحة إدارة الطلبات والمبيعات</p>
+    <form id="authForm" onsubmit="handleLogin(event)">
+      <input type="password" id="authPin" class="auth-input" placeholder="••••••••" autofocus autocomplete="current-password">
+      <button type="submit" class="btn btn-primary auth-btn" id="loginBtn">دخول اللوحة</button>
+      <p style="font-size:11px; color:#64748B; margin-top:14px;" id="authHint">كلمة المرور الافتراضية: admin2026</p>
+    </form>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="top-nav">
+  <div class="brand-group">
+    <div class="brand-logo">I</div>
+    <div class="brand-title">
+      <div class="brand-name">
+        IDARATI CRM
+        <span class="badge" id="badgeText">إدارة المبيعات</span>
+      </div>
+      <div class="brand-sub" id="headerSub">متابعة ملفات تأسيس الشركات بالجزائر</div>
+    </div>
+  </div>
+
+  <div class="nav-actions">
+    <div class="status-indicator" id="syncStatus">
+      <span class="status-dot" id="syncDot"></span>
+      <span id="syncText">وضع التخزين المحلي</span>
+    </div>
+
+    <button class="btn btn-primary" onclick="openNewLeadModal()">
+      <span>+</span>
+      <span id="btnNewLead">طلب جديد</span>
+    </button>
+
+    <button class="btn btn-outline" onclick="syncWithGoogleSheet()" title="تحديث ومزامنة">
+      <span id="syncIcon">🔄</span>
+      <span id="btnSync">مزامنة</span>
+    </button>
+
+    <button class="btn btn-outline" onclick="exportToCSV()" title="تصدير إكسل">
+      <span>📥</span>
+      <span id="btnExport">تصدير</span>
+    </button>
+
+    <button class="btn btn-outline btn-icon" onclick="toggleLang()" title="Changer la langue / تغيير اللغة">
+      <span id="langIcon">🌐</span>
+    </button>
+
+    <button class="btn btn-outline btn-icon" onclick="toggleTheme()" title="الوضع الليلي / النهاري">
+      <span id="themeIcon">🌙</span>
+    </button>
+
+    <button class="btn btn-outline btn-icon" onclick="openSettingsModal()" title="الإعدادات">
+      <span>⚙️</span>
+    </button>
+
+    <button class="btn btn-outline btn-icon" onclick="logout()" title="تسجيل الخروج">
+      <span>🚪</span>
+    </button>
+  </div>
+</header>
+
+<!-- Main Container -->
+<main class="main-wrapper">
+
+  <!-- KPI Metrics Banner -->
+  <section class="kpi-grid">
+    <div class="kpi-card" style="--kpi-accent:#1F5FBF; --kpi-bg:#EAF2FD;">
+      <div class="kpi-header">
+        <span class="kpi-title" id="kpiTotalTitle">إجمالي الطلبات المستلمة</span>
+        <div class="kpi-icon">📥</div>
+      </div>
+      <div class="kpi-value" id="kpiTotal">0</div>
+      <div class="kpi-sub"><span id="kpiTotalSub">جميع الطلبات عبر صفحة الهبوط</span></div>
+    </div>
+
+    <div class="kpi-card" style="--kpi-accent:#F2B33D; --kpi-bg:#FEF3C7;">
+      <div class="kpi-header">
+        <span class="kpi-title" id="kpiNewTitle">طلبات جديدة (تحتاج اتصال)</span>
+        <div class="kpi-icon">⚡</div>
+      </div>
+      <div class="kpi-value" id="kpiNew">0</div>
+      <div class="kpi-sub"><span id="kpiNewSub">لم يتم الاتصال بهم بعد</span></div>
+    </div>
+
+    <div class="kpi-card" style="--kpi-accent:#0284C7; --kpi-bg:#E0F2FE;">
+      <div class="kpi-header">
+        <span class="kpi-title" id="kpiProgressTitle">قيد المتابعة والتفاوض</span>
+        <div class="kpi-icon">📞</div>
+      </div>
+      <div class="kpi-value" id="kpiProgress">0</div>
+      <div class="kpi-sub"><span id="kpiProgressSub">تم الاتصال أو إعادة الاتصال</span></div>
+    </div>
+
+    <div class="kpi-card" style="--kpi-accent:#167A43; --kpi-bg:#DCFCE7;">
+      <div class="kpi-header">
+        <span class="kpi-title" id="kpiClientsTitle">عملاء مؤكدين (تم التوقيع)</span>
+        <div class="kpi-icon">🤝</div>
+      </div>
+      <div class="kpi-value" id="kpiClients">0</div>
+      <div class="kpi-sub">
+        <span id="kpiConversion">نسبة التحويل: 0%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navigation & Filters Toolbar -->
+  <section class="view-toolbar">
+    <div class="tabs-group">
+      <button class="tab-btn active" id="tabKanban" onclick="switchView('kanban')">
+        <span>🗂️</span>
+        <span id="tabKanbanText">لوحة كانبان</span>
+      </button>
+      <button class="tab-btn" id="tabTable" onclick="switchView('table')">
+        <span>📋</span>
+        <span id="tabTableText">جدول البيانات</span>
+      </button>
+      <button class="tab-btn" id="tabAnalytics" onclick="switchView('analytics')">
+        <span>📊</span>
+        <span id="tabAnalyticsText">التحليلات والمصادر</span>
+      </button>
+    </div>
+
+    <div class="filter-group">
+      <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="بحث بالاسم، الهاتف، الشركة..." oninput="handleSearch()">
+      </div>
+
+      <select id="wilayaFilter" class="select-filter" onchange="handleFilter()">
+        <option value="">جميع الولايات</option>
+        <option value="Alger">الجزائر العاصمة (Alger)</option>
+        <option value="Blida">البليدة (Blida)</option>
+        <option value="Autre">ولايات أخرى</option>
+      </select>
+
+      <select id="sourceFilter" class="select-filter" onchange="handleFilter()">
+        <option value="">جميع مصادر الزيارات</option>
+        <option value="facebook">Facebook Ads</option>
+        <option value="tiktok">TikTok Ads</option>
+        <option value="instagram">Instagram</option>
+        <option value="direct">Direct / المباشر</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- 1. Kanban Board View -->
+  <section id="viewKanban" class="kanban-board">
+    <!-- Nouveau -->
+    <div class="kanban-col" style="--col-color:#1F5FBF;" data-status="Nouveau" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'Nouveau')">
+      <div class="kanban-col-head">
+        <div class="col-title-wrap">
+          <span class="col-badge"></span>
+          <span class="col-title" id="colNouveau">جديد لم يُعالج</span>
+        </div>
+        <span class="col-count" id="count-Nouveau">0</span>
+      </div>
+      <div class="kanban-cards" id="cards-Nouveau"></div>
+    </div>
+
+    <!-- Appelé -->
+    <div class="kanban-col" style="--col-color:#16378D;" data-status="Appelé" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'Appelé')">
+      <div class="kanban-col-head">
+        <div class="col-title-wrap">
+          <span class="col-badge"></span>
+          <span class="col-title" id="colAppele">تم الاتصال به</span>
+        </div>
+        <span class="col-count" id="count-Appelé">0</span>
+      </div>
+      <div class="kanban-cards" id="cards-Appelé"></div>
+    </div>
+
+    <!-- Rappeler -->
+    <div class="kanban-col" style="--col-color:#F59E0B;" data-status="Rappeler" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'Rappeler')">
+      <div class="kanban-col-head">
+        <div class="col-title-wrap">
+          <span class="col-badge"></span>
+          <span class="col-title" id="colRappeler">إعادة الاتصال لاحقاً</span>
+        </div>
+        <span class="col-count" id="count-Rappeler">0</span>
+      </div>
+      <div class="kanban-cards" id="cards-Rappeler"></div>
+    </div>
+
+    <!-- RDV / Devis -->
+    <div class="kanban-col" style="--col-color:#7C3AED;" data-status="RDV" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'RDV')">
+      <div class="kanban-col-head">
+        <div class="col-title-wrap">
+          <span class="col-badge"></span>
+          <span class="col-title" id="colRDV">موعد / دراسة ملف</span>
+        </div>
+        <span class="col-count" id="count-RDV">0</span>
+      </div>
+      <div class="kanban-cards" id="cards-RDV"></div>
+    </div>
+
+    <!-- Client -->
+    <div class="kanban-col" style="--col-color:#167A43;" data-status="Client" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'Client')">
+      <div class="kanban-col-head">
+        <div class="col-title-wrap">
+          <span class="col-badge"></span>
+          <span class="col-title" id="colClient">عميل مؤكد (تم التوقيع)</span>
+        </div>
+        <span class="col-count" id="count-Client">0</span>
+      </div>
+      <div class="kanban-cards" id="cards-Client"></div>
+    </div>
+
+    <!-- Non intéressé -->
+    <div class="kanban-col" style="--col-color:#64748B;" data-status="Non intéressé" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'Non intéressé')">
+      <div class="kanban-col-head">
+        <div class="col-title-wrap">
+          <span class="col-badge"></span>
+          <span class="col-title" id="colRefuse">غير مهتم / ملغى</span>
+        </div>
+        <span class="col-count" id="count-Non intéressé">0</span>
+      </div>
+      <div class="kanban-cards" id="cards-Non intéressé"></div>
+    </div>
+  </section>
+
+  <!-- 2. Table View -->
+  <section id="viewTable" class="table-container" style="display:none;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th id="thDate">التاريخ</th>
+          <th id="thName">الاسم الكامل</th>
+          <th id="thCompany">اسم الشركة</th>
+          <th id="thActivity">النشاط</th>
+          <th id="thPhone">رقم الهاتف</th>
+          <th id="thWilaya">الولاية</th>
+          <th id="thSource">المصدر</th>
+          <th id="thStatus">الحالة</th>
+          <th id="thActions">إجراءات سريعة</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </section>
+
+  <!-- 3. Analytics View -->
+  <section id="viewAnalytics" class="analytics-grid" style="display:none;">
+    <div class="chart-card">
+      <div class="chart-title">
+        <span id="chartWilayaTitle">توزيع الطلبات حسب الولاية</span>
+        <span>📍</span>
+      </div>
+      <div id="chartWilayaBody"></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">
+        <span id="chartStatusTitle">مسار مبيعات الطلبات (Funnel)</span>
+        <span>📈</span>
+      </div>
+      <div id="chartStatusBody"></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">
+        <span id="chartSourcesTitle">مصادر الحملات الإعلانية (UTM)</span>
+        <span>🎯</span>
+      </div>
+      <div id="chartSourcesBody"></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">
+        <span id="chartActivityTitle">الأنشطة الأكثر طلباً</span>
+        <span>🏢</span>
+      </div>
+      <div id="chartActivityBody"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Lead Details & Notes Modal -->
+<div id="leadModal" class="modal-backdrop">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="modalLeadTitle">تفاصيل طلب العميل</div>
+      <button class="modal-close" onclick="closeLeadModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editLeadId">
+      
+      <div class="form-group">
+        <label id="lblLeadName">اسم العميل</label>
+        <input type="text" id="editName" class="form-input">
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="form-group">
+          <label id="lblLeadPhone">رقم الهاتف</label>
+          <input type="text" id="editPhone" class="form-input">
+        </div>
+        <div class="form-group">
+          <label id="lblLeadEmail">البريد الإلكتروني</label>
+          <input type="email" id="editEmail" class="form-input">
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="form-group">
+          <label id="lblLeadCompany">اسم الشركة المرغوب</label>
+          <input type="text" id="editCompany" class="form-input">
+        </div>
+        <div class="form-group">
+          <label id="lblLeadWilaya">الولاية</label>
+          <select id="editWilaya" class="form-select">
+            <option value="Alger">الجزائر العاصمة (Alger)</option>
+            <option value="Blida">البليدة (Blida)</option>
+            <option value="Autre">ولاية أخرى</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label id="lblLeadActivity">طبيعة النشاط التجاري</label>
+        <input type="text" id="editActivity" class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label id="lblLeadStatus">حالة الطلب</label>
+        <select id="editStatus" class="form-select">
+          <option value="Nouveau">جديد لم يُعالج (Nouveau)</option>
+          <option value="Appelé">تم الاتصال (Appelé)</option>
+          <option value="Rappeler">إعادة الاتصال لاحقاً (Rappeler)</option>
+          <option value="RDV">موعد / دراسة ملف (RDV)</option>
+          <option value="Client">عميل مؤكد تم التوقيع (Client)</option>
+          <option value="Non intéressé">غير مهتم / ملغى (Non intéressé)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label id="lblLeadNotes">ملاحظات المستشار وسجل المتابعة</label>
+        <textarea id="editNotes" class="form-textarea" placeholder="اكتب هنا أي تفاصيل عن مكالمتك مع العميل، شروط التأسيس، الموعد المتفق عليه..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="deleteCurrentLead()" style="color:var(--err); margin-inline-end:auto;">حذف الطلب</button>
+      <button class="btn btn-secondary" onclick="closeLeadModal()">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveLeadDetails()">حفظ التعديلات</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Lead Modal -->
+<div id="newLeadModal" class="modal-backdrop">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="modalNewTitle">إضافة طلب يدوي جديد</div>
+      <button class="modal-close" onclick="closeNewLeadModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>اسم العميل *</label>
+        <input type="text" id="newName" class="form-input" required placeholder="مثال: يوسف بلقاسم">
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="form-group">
+          <label>رقم الهاتف *</label>
+          <input type="tel" id="newPhone" class="form-input" required placeholder="0770123456">
+        </div>
+        <div class="form-group">
+          <label>الولاية</label>
+          <select id="newWilaya" class="form-select">
+            <option value="Alger">الجزائر العاصمة</option>
+            <option value="Blida">البليدة</option>
+            <option value="Autre">أخرى</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="form-group">
+          <label>اسم الشركة المقترح</label>
+          <input type="text" id="newCompany" class="form-input" placeholder="مثال: SARL Atlas Import">
+        </div>
+        <div class="form-group">
+          <label>طبيعة النشاط</label>
+          <input type="text" id="newActivity" class="form-input" placeholder="مثال: استيراد وتصدير">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>المصدر</label>
+        <select id="newSource" class="form-select">
+          <option value="direct">مباشر / عبر الهاتف</option>
+          <option value="facebook">إعلان فيسبوك</option>
+          <option value="tiktok">تيك توك</option>
+          <option value="referral">توصية من عميل</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>ملاحظات أولية</label>
+        <textarea id="newNotes" class="form-textarea" placeholder="ملاحظات العميل الأولية..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeNewLeadModal()">إلغاء</button>
+      <button class="btn btn-primary" onclick="submitNewLead()">إضافة الطلب</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal-backdrop">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="modalSettingsTitle">إعدادات لوحة التحكم</div>
+      <button class="modal-close" onclick="closeSettingsModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label id="lblSheetUrl">رابط Google Apps Script (Web App URL)</label>
+        <input type="url" id="settingSheetUrl" class="form-input" placeholder="https://script.google.com/macros/s/.../exec">
+        <small style="color:var(--muted); font-size:11px;">الرابط الذي تم نشره من Google Sheets لاستقبال وتحديث الطلبات مباشرة.</small>
+      </div>
+
+      <div class="form-group">
+        <label id="lblPin">كلمة مرور لوحة التحكم (Admin PIN)</label>
+        <input type="password" id="settingPin" class="form-input" placeholder="admin2026">
+      </div>
+
+      <div class="form-group">
+        <label id="lblWaTpl">قالب رسالة الواتساب التلقائية (بالعربية)</label>
+        <textarea id="settingWaAr" class="form-textarea" style="min-height:70px;"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label id="lblWaTplFr">قالب رسالة الواتساب التلقائية (بالفرنسية)</label>
+        <textarea id="settingWaFr" class="form-textarea" style="min-height:70px;"></textarea>
+      </div>
+
+      <div class="form-group" style="padding-top:10px; border-top:1px solid var(--line);">
+        <label>النسخ الاحتياطي للبيانات</label>
+        <div style="display:flex; gap:10px; margin-top:6px;">
+          <button class="btn btn-secondary" onclick="exportDataJSON()" style="flex:1;">تصدير نسخة JSON</button>
+          <label class="btn btn-secondary" style="flex:1; cursor:pointer;">
+            استيراد نسخة
+            <input type="file" accept=".json" onchange="importDataJSON(event)" style="display:none;">
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeSettingsModal()">إغلاق</button>
+      <button class="btn btn-primary" onclick="saveSettings()">حفظ الإعدادات</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notifications -->
+<div id="toastWrap" class="toast-wrap"></div>
+
+<script>
+// Default State & Configuration
+const CONFIG_KEY = 'idarati_admin_cfg';
+const LEADS_KEY = 'idarati_leads_db';
+const AUTH_KEY = 'idarati_auth_token';
+
+let appConfig = {
+  sheetUrl: '',
+  pin: 'admin2026',
+  waTemplateAr: 'السلام عليكم ورحمة الله، الأستاذ(ة) {NAME}، معكم مستشاركم القانوني من مؤسسة IDARATI بخصوص طلبكم لإنشاء شركة {COMPANY} في {WILAYA}. هل الوقت مناسب لإفادتكم بالتفاصيل وتحديد موعد؟',
+  waTemplateFr: 'Bonjour M./Mme {NAME}, je suis votre conseiller de IDARATI Company concernant votre demande de création d\'entreprise {COMPANY} à {WILAYA}. Quand seriez-vous disponible pour un échange ?',
+  lang: 'ar',
+  theme: 'dark'
+};
+
+// Initial Mock Leads (Demonstrating Algerian Business Creation use-cases)
+const DEFAULT_LEADS = [
+  {
+    id: 'lead-1',
+    date: new Date(Date.now() - 3600000 * 2).toISOString(),
+    full_name: 'أمين بن علي',
+    company_name: 'SARL Atlas Logistics',
+    activity: 'نقل البضائع واللوجستيك',
+    phone: '0770345816',
+    email: 'amine.benali@gmail.com',
+    wilaya: 'Alger',
+    lang: 'ar',
+    source: 'facebook',
+    page: 'landing',
+    status: 'Nouveau',
+    notes: 'مهتم بتأسيس شركة ذات مسؤولية محدودة SARL برأسمال 100 ألف دج.'
+  },
+  {
+    id: 'lead-2',
+    date: new Date(Date.now() - 3600000 * 5).toISOString(),
+    full_name: 'Sofiane Merad',
+    company_name: 'EURL Mediconseil',
+    activity: 'استشارات صيدلانية وشبه طبية',
+    phone: '0555123456',
+    email: 'sofiane.merad@yahoo.fr',
+    wilaya: 'Blida',
+    lang: 'fr',
+    source: 'tiktok',
+    page: 'landing',
+    status: 'Appelé',
+    notes: 'تحدثنا معه هاتفياً، أرسلنا له قائمة الوثائق المطلوبة لحجز التسمية.'
+  },
+  {
+    id: 'lead-3',
+    date: new Date(Date.now() - 3600000 * 24).toISOString(),
+    full_name: 'كريم زروقي',
+    company_name: 'SARL Maghreb Import',
+    activity: 'استيراد وتوزيع المواد الغذائية',
+    phone: '0661789012',
+    email: 'karim.z@outlook.com',
+    wilaya: 'Alger',
+    lang: 'ar',
+    source: 'facebook',
+    page: 'landing',
+    status: 'Rappeler',
+    notes: 'طلب إعادة الاتصال به يوم الأحد صباحاً بعد اجتماع الشركاء.'
+  },
+  {
+    id: 'lead-4',
+    date: new Date(Date.now() - 3600000 * 48).toISOString(),
+    full_name: 'فاطمة الزهراء قاسمي',
+    company_name: 'SPA Numidia Tech',
+    activity: 'تطوير البرمجيات وحلول الذكاء الاصطناعي',
+    phone: '0773998877',
+    email: 'f.kacemi@numidiatech.dz',
+    wilaya: 'Alger',
+    lang: 'fr',
+    source: 'direct',
+    page: 'landing',
+    status: 'RDV',
+    notes: 'موعد في مكتب الجزائر العاصمة يوم الإثنين الساعة 11:00 لإيداع الملف القانوني.'
+  },
+  {
+    id: 'lead-5',
+    date: new Date(Date.now() - 3600000 * 72).toISOString(),
+    full_name: 'رياض بلحاج',
+    company_name: 'EURL Mitidja Froid',
+    activity: 'تبريد صناعي وتكييف',
+    phone: '0560112233',
+    email: 'riad.froid09@gmail.com',
+    wilaya: 'Blida',
+    lang: 'ar',
+    source: 'facebook',
+    page: 'landing',
+    status: 'Client',
+    notes: 'تم توقيع العقد رسمياً واستلام الملف، قيد استخراج السجل التجاري و NIF/NIS.'
+  }
+];
+
+let leads = [];
+let currentFilter = { query: '', wilaya: '', source: '' };
+let currentView = 'kanban';
+let draggedLeadId = null;
+
+// Initialize
+function init() {
+  loadConfig();
+  checkAuth();
+  loadLeads();
+  applyTheme(appConfig.theme);
+  applyLang(appConfig.lang);
+  renderAll();
+  
+  // Try background sync with Google Sheets if URL is set
+  if (appConfig.sheetUrl) {
+    syncWithGoogleSheet(true);
+  }
+}
+
+function loadConfig() {
+  const saved = localStorage.getItem(CONFIG_KEY);
+  if (saved) {
+    try { appConfig = { ...appConfig, ...JSON.parse(saved) }; } catch (e) {}
+  }
+  // Try reading parent landing page SHEET_URL if available
+  if (!appConfig.sheetUrl && window.parent && window.parent.CONFIG && window.parent.CONFIG.SHEET_URL) {
+    appConfig.sheetUrl = window.parent.CONFIG.SHEET_URL;
+  }
+}
+
+function saveConfig() {
+  localStorage.setItem(CONFIG_KEY, JSON.stringify(appConfig));
+}
+
+function checkAuth() {
+  const token = sessionStorage.getItem(AUTH_KEY);
+  const gate = document.getElementById('authGate');
+  if (token === 'authenticated') {
+    gate.style.display = 'none';
+  } else {
+    gate.style.display = 'flex';
+  }
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  const pin = document.getElementById('authPin').value.trim();
+  if (pin === appConfig.pin) {
+    sessionStorage.setItem(AUTH_KEY, 'authenticated');
+    document.getElementById('authGate').style.display = 'none';
+    showToast('تم تسجيل الدخول بنجاح! مرحباً بك.');
+  } else {
+    showToast('كلمة المرور غير صحيحة، حاول مجدداً', 'err');
+    document.getElementById('authPin').value = '';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem(AUTH_KEY);
+  document.getElementById('authGate').style.display = 'flex';
+  document.getElementById('authPin').value = '';
+}
+
+function loadLeads() {
+  const saved = localStorage.getItem(LEADS_KEY);
+  if (saved) {
+    try { leads = JSON.parse(saved); } catch (e) { leads = DEFAULT_LEADS; }
+  } else {
+    leads = DEFAULT_LEADS;
+    saveLeads();
+  }
+}
+
+function saveLeads() {
+  localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
+}
+
+// Rendering
+function renderAll() {
+  updateKPIs();
+  if (currentView === 'kanban') renderKanban();
+  else if (currentView === 'table') renderTable();
+  else if (currentView === 'analytics') renderAnalytics();
+}
+
+function getFilteredLeads() {
+  return leads.filter(l => {
+    const q = currentFilter.query.toLowerCase();
+    const matchQ = !q ||
+      (l.full_name && l.full_name.toLowerCase().includes(q)) ||
+      (l.company_name && l.company_name.toLowerCase().includes(q)) ||
+      (l.phone && l.phone.includes(q)) ||
+      (l.activity && l.activity.toLowerCase().includes(q)) ||
+      (l.notes && l.notes.toLowerCase().includes(q));
+    const matchW = !currentFilter.wilaya || l.wilaya === currentFilter.wilaya;
+    const matchS = !currentFilter.source || (l.source && l.source.toLowerCase().includes(currentFilter.source.toLowerCase()));
+    return matchQ && matchW && matchS;
+  });
+}
+
+function updateKPIs() {
+  const total = leads.length;
+  const newCount = leads.filter(l => l.status === 'Nouveau').length;
+  const inProgress = leads.filter(l => ['Appelé', 'Rappeler', 'RDV'].includes(l.status)).length;
+  const clients = leads.filter(l => l.status === 'Client').length;
+  const convRate = total > 0 ? Math.round((clients / total) * 100) : 0;
+
+  document.getElementById('kpiTotal').textContent = total;
+  document.getElementById('kpiNew').textContent = newCount;
+  document.getElementById('kpiProgress').textContent = inProgress;
+  document.getElementById('kpiClients').textContent = clients;
+  document.getElementById('kpiConversion').textContent = (appConfig.lang === 'fr' ? 'Taux de conversion : ' : 'نسبة التحويل: ') + convRate + '%';
+}
+
+// Kanban Renderer
+const COLUMNS = ['Nouveau', 'Appelé', 'Rappeler', 'RDV', 'Client', 'Non intéressé'];
+
+function renderKanban() {
+  const filtered = getFilteredLeads();
+  COLUMNS.forEach(status => {
+    const colCards = filtered.filter(l => (l.status || 'Nouveau') === status);
+    const countEl = document.getElementById(`count-${status}`);
+    const container = document.getElementById(`cards-${status}`);
+    if (countEl) countEl.textContent = colCards.length;
+    if (container) {
+      container.innerHTML = colCards.map(lead => renderLeadCard(lead)).join('');
+    }
+  });
+}
+
+function renderLeadCard(lead) {
+  const timeStr = formatRelativeTime(lead.date);
+  const cleanPhone = (lead.phone || '').replace(/\s+/g, '');
+  const intlPhone = cleanPhone.startsWith('0') ? '213' + cleanPhone.slice(1) : cleanPhone;
+  const isArabic = (lead.lang || 'ar') === 'ar';
+  
+  // Format WhatsApp Message
+  const tpl = isArabic ? appConfig.waTemplateAr : appConfig.waTemplateFr;
+  const msg = tpl
+    .replace('{NAME}', lead.full_name || '')
+    .replace('{COMPANY}', lead.company_name || 'الشركة')
+    .replace('{WILAYA}', lead.wilaya || 'الجزائر');
+  const waUrl = `https://wa.me/${intlPhone}?text=${encodeURIComponent(msg)}`;
+
+  return `
+    <div class="lead-card" draggable="true" ondragstart="handleDragStart(event, '${lead.id}')" onclick="openLeadModal('${lead.id}')">
+      <div class="card-top">
+        <span class="card-name">${escapeHTML(lead.full_name || 'بدون اسم')}</span>
+        <span class="card-date">${timeStr}</span>
+      </div>
+      <div class="card-company">🏢 ${escapeHTML(lead.company_name || 'شركة قيد التسمية')}</div>
+      <div class="card-activity">${escapeHTML(lead.activity || 'نشاط تجاري / خدمات')}</div>
+      <div class="card-badges">
+        <span class="pill pill-wilaya">📍 ${escapeHTML(lead.wilaya || 'الجزائر')}</span>
+        <span class="pill pill-source">📣 ${escapeHTML(lead.source || 'مباشر')}</span>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <a href="tel:${cleanPhone}" class="action-btn call-btn" title="اتصال هاتفي">
+          📞 ${appConfig.lang === 'fr' ? 'Appeler' : 'اتصال'}
+        </a>
+        <a href="${waUrl}" target="_blank" rel="noopener" class="action-btn wa-btn" title="محادثة واتساب">
+          💬 WhatsApp
+        </a>
+      </div>
+    </div>
+  `;
+}
+
+// Drag & Drop
+function handleDragStart(e, id) {
+  draggedLeadId = id;
+  e.target.classList.add('dragging');
+}
+function handleDragOver(e) {
+  e.preventDefault();
+  const col = e.currentTarget;
+  col.querySelector('.kanban-cards').classList.add('drag-over');
+}
+function handleDragLeave(e) {
+  const col = e.currentTarget;
+  col.querySelector('.kanban-cards').classList.remove('drag-over');
+}
+function handleDrop(e, targetStatus) {
+  e.preventDefault();
+  const col = e.currentTarget;
+  col.querySelector('.kanban-cards').classList.remove('drag-over');
+  if (!draggedLeadId) return;
+
+  const lead = leads.find(l => l.id === draggedLeadId);
+  if (lead && lead.status !== targetStatus) {
+    lead.status = targetStatus;
+    saveLeads();
+    renderAll();
+    showToast(`تم تغيير حالة ${lead.full_name} إلى: ${targetStatus}`);
+    syncLeadUpdate(lead);
+  }
+  draggedLeadId = null;
+}
+
+// Table Renderer
+function renderTable() {
+  const filtered = getFilteredLeads();
+  const tbody = document.getElementById('tableBody');
+  if (!tbody) return;
+
+  tbody.innerHTML = filtered.map((l, idx) => {
+    const cleanPhone = (l.phone || '').replace(/\s+/g, '');
+    const intlPhone = cleanPhone.startsWith('0') ? '213' + cleanPhone.slice(1) : cleanPhone;
+    const isArabic = (l.lang || 'ar') === 'ar';
+    const tpl = isArabic ? appConfig.waTemplateAr : appConfig.waTemplateFr;
+    const msg = tpl
+      .replace('{NAME}', l.full_name || '')
+      .replace('{COMPANY}', l.company_name || 'الشركة')
+      .replace('{WILAYA}', l.wilaya || 'الجزائر');
+    const waUrl = `https://wa.me/${intlPhone}?text=${encodeURIComponent(msg)}`;
+
+    return `
+      <tr>
+        <td style="color:var(--muted);">${idx + 1}</td>
+        <td>${formatDate(l.date)}</td>
+        <td style="font-weight:700;">
+          <a href="javascript:void(0)" onclick="openLeadModal('${l.id}')" style="color:inherit; text-decoration:none;">
+            ${escapeHTML(l.full_name)}
+          </a>
+        </td>
+        <td>${escapeHTML(l.company_name || '—')}</td>
+        <td>${escapeHTML(l.activity || '—')}</td>
+        <td><a href="tel:${cleanPhone}" style="color:var(--teal); font-weight:600;">${escapeHTML(l.phone)}</a></td>
+        <td><span class="pill pill-wilaya">${escapeHTML(l.wilaya || 'الجزائر')}</span></td>
+        <td><span class="pill pill-source">${escapeHTML(l.source || 'direct')}</span></td>
+        <td>
+          <select class="status-select" onchange="changeLeadStatus('${l.id}', this.value)">
+            ${COLUMNS.map(s => `<option value="${s}" ${l.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+          </select>
+        </td>
+        <td>
+          <div style="display:flex; gap:6px;">
+            <a href="tel:${cleanPhone}" class="action-btn call-btn" style="padding:4px 8px;" title="اتصال">📞</a>
+            <a href="${waUrl}" target="_blank" rel="noopener" class="action-btn wa-btn" style="padding:4px 8px;" title="واتساب">💬</a>
+            <button class="action-btn" onclick="openLeadModal('${l.id}')" style="padding:4px 8px;" title="تفاصيل">✏️</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Analytics Renderer
+function renderAnalytics() {
+  const total = leads.length || 1;
+
+  // 1. Wilayas
+  const wilayaCounts = {};
+  leads.forEach(l => {
+    const w = l.wilaya || 'Alger';
+    wilayaCounts[w] = (wilayaCounts[w] || 0) + 1;
+  });
+  renderBars('chartWilayaBody', wilayaCounts, total);
+
+  // 2. Funnel Statuses
+  const statusCounts = {};
+  COLUMNS.forEach(c => { statusCounts[c] = 0; });
+  leads.forEach(l => {
+    const s = l.status || 'Nouveau';
+    statusCounts[s] = (statusCounts[s] || 0) + 1;
+  });
+  renderBars('chartStatusBody', statusCounts, total);
+
+  // 3. Sources
+  const sourceCounts = {};
+  leads.forEach(l => {
+    const s = l.source || 'direct';
+    sourceCounts[s] = (sourceCounts[s] || 0) + 1;
+  });
+  renderBars('chartSourcesBody', sourceCounts, total);
+
+  // 4. Activities
+  const activityCounts = {};
+  leads.forEach(l => {
+    const a = l.activity ? l.activity.slice(0, 20) : 'غير محدد';
+    activityCounts[a] = (activityCounts[a] || 0) + 1;
+  });
+  renderBars('chartActivityBody', activityCounts, total);
+}
+
+function renderBars(containerId, dataObj, total) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const entries = Object.entries(dataObj).sort((a,b) => b[1] - a[1]);
+  container.innerHTML = entries.map(([label, val]) => {
+    const pct = Math.round((val / total) * 100);
+    return `
+      <div class="bar-row">
+        <span class="bar-label" title="${escapeHTML(label)}">${escapeHTML(label)}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${pct}%;"></div>
+        </div>
+        <span class="bar-val">${val} (${pct}%)</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// View Switching
+function switchView(view) {
+  currentView = view;
+  ['kanban', 'table', 'analytics'].forEach(v => {
+    const el = document.getElementById(`view${v.charAt(0).toUpperCase() + v.slice(1)}`);
+    const btn = document.getElementById(`tab${v.charAt(0).toUpperCase() + v.slice(1)}`);
+    if (el) el.style.display = (v === view) ? (v === 'kanban' ? 'grid' : (v === 'analytics' ? 'grid' : 'block')) : 'none';
+    if (btn) btn.classList.toggle('active', v === view);
+  });
+  renderAll();
+}
+
+// Search & Filter Handlers
+function handleSearch() {
+  currentFilter.query = document.getElementById('searchInput').value;
+  renderAll();
+}
+function handleFilter() {
+  currentFilter.wilaya = document.getElementById('wilayaFilter').value;
+  currentFilter.source = document.getElementById('sourceFilter').value;
+  renderAll();
+}
+
+// Lead Details Modal
+function openLeadModal(id) {
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return;
+  document.getElementById('editLeadId').value = lead.id;
+  document.getElementById('editName').value = lead.full_name || '';
+  document.getElementById('editPhone').value = lead.phone || '';
+  document.getElementById('editEmail').value = lead.email || '';
+  document.getElementById('editCompany').value = lead.company_name || '';
+  document.getElementById('editWilaya').value = lead.wilaya || 'Alger';
+  document.getElementById('editActivity').value = lead.activity || '';
+  document.getElementById('editStatus').value = lead.status || 'Nouveau';
+  document.getElementById('editNotes').value = lead.notes || '';
+  document.getElementById('leadModal').classList.add('active');
+}
+function closeLeadModal() {
+  document.getElementById('leadModal').classList.remove('active');
+}
+function saveLeadDetails() {
+  const id = document.getElementById('editLeadId').value;
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return;
+  lead.full_name = document.getElementById('editName').value.trim();
+  lead.phone = document.getElementById('editPhone').value.trim();
+  lead.email = document.getElementById('editEmail').value.trim();
+  lead.company_name = document.getElementById('editCompany').value.trim();
+  lead.wilaya = document.getElementById('editWilaya').value;
+  lead.activity = document.getElementById('editActivity').value.trim();
+  lead.status = document.getElementById('editStatus').value;
+  lead.notes = document.getElementById('editNotes').value.trim();
+  saveLeads();
+  renderAll();
+  closeLeadModal();
+  showToast('تم حفظ تعديلات الطلب بنجاح');
+  syncLeadUpdate(lead);
+}
+function deleteCurrentLead() {
+  const id = document.getElementById('editLeadId').value;
+  if (!confirm('هل أنت متأكد من حذف هذا الطلب نهائياً؟')) return;
+  leads = leads.filter(l => l.id !== id);
+  saveLeads();
+  renderAll();
+  closeLeadModal();
+  showToast('تم حذف الطلب');
+}
+function changeLeadStatus(id, newStatus) {
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return;
+  lead.status = newStatus;
+  saveLeads();
+  renderAll();
+  showToast(`تم تحديث الحالة إلى: ${newStatus}`);
+  syncLeadUpdate(lead);
+}
+
+// Add New Lead Modal
+function openNewLeadModal() {
+  document.getElementById('newLeadModal').classList.add('active');
+  document.getElementById('newName').focus();
+}
+function closeNewLeadModal() {
+  document.getElementById('newLeadModal').classList.remove('active');
+}
+function submitNewLead() {
+  const name = document.getElementById('newName').value.trim();
+  const phone = document.getElementById('newPhone').value.trim();
+  if (!name || !phone) {
+    showToast('يرجى إدخال الاسم ورقم الهاتف على الأقل', 'err');
+    return;
+  }
+  const newLead = {
+    id: 'lead-' + Date.now(),
+    date: new Date().toISOString(),
+    full_name: name,
+    phone: phone,
+    wilaya: document.getElementById('newWilaya').value,
+    company_name: document.getElementById('newCompany').value.trim(),
+    activity: document.getElementById('newActivity').value.trim(),
+    source: document.getElementById('newSource').value,
+    notes: document.getElementById('newNotes').value.trim(),
+    status: 'Nouveau',
+    lang: appConfig.lang
+  };
+  leads.unshift(newLead);
+  saveLeads();
+  renderAll();
+  closeNewLeadModal();
+  showToast('تمت إضافة الطلب الجديد بنجاح');
+  
+  // Reset form
+  document.getElementById('newName').value = '';
+  document.getElementById('newPhone').value = '';
+  document.getElementById('newCompany').value = '';
+  document.getElementById('newActivity').value = '';
+  document.getElementById('newNotes').value = '';
+}
+
+// Settings Modal
+function openSettingsModal() {
+  document.getElementById('settingSheetUrl').value = appConfig.sheetUrl || '';
+  document.getElementById('settingPin').value = appConfig.pin || 'admin2026';
+  document.getElementById('settingWaAr').value = appConfig.waTemplateAr || '';
+  document.getElementById('settingWaFr').value = appConfig.waTemplateFr || '';
+  document.getElementById('settingsModal').classList.add('active');
+}
+function closeSettingsModal() {
+  document.getElementById('settingsModal').classList.remove('active');
+}
+function saveSettings() {
+  appConfig.sheetUrl = document.getElementById('settingSheetUrl').value.trim();
+  appConfig.pin = document.getElementById('settingPin').value.trim() || 'admin2026';
+  appConfig.waTemplateAr = document.getElementById('settingWaAr').value;
+  appConfig.waTemplateFr = document.getElementById('settingWaFr').value;
+  saveConfig();
+  closeSettingsModal();
+  showToast('تم حفظ الإعدادات');
+  if (appConfig.sheetUrl) syncWithGoogleSheet();
+}
+
+// Google Sheets Sync
+async function syncWithGoogleSheet(silent = false) {
+  if (!appConfig.sheetUrl) {
+    if (!silent) showToast('يرجى إدخال رابط Google Sheet Web App في الإعدادات ⚙️ للربط المباشر');
+    return;
+  }
+  const syncDot = document.getElementById('syncDot');
+  const syncText = document.getElementById('syncText');
+  const syncIcon = document.getElementById('syncIcon');
+  if (syncIcon) syncIcon.style.animation = 'spin 1s infinite linear';
+
+  try {
+    const url = appConfig.sheetUrl + (appConfig.sheetUrl.includes('?') ? '&' : '?') + 'action=get_leads&t=' + Date.now();
+    const res = await fetch(url, { method: 'GET' });
+    const data = await res.json();
+    if (data && data.ok && Array.isArray(data.leads)) {
+      // Merge with local leads by matching phone or id
+      data.leads.forEach(remote => {
+        const local = leads.find(l => (l.phone && remote.phone && l.phone.replace(/\D/g,'') === remote.phone.replace(/\D/g,'')) || l.id === remote.id);
+        if (local) {
+          // Update status if remote is newer
+          local.status = remote.status || local.status;
+        } else {
+          leads.unshift({
+            id: 'lead-' + Date.now() + '-' + Math.random().toString(36).substr(2,4),
+            date: remote.date || new Date().toISOString(),
+            full_name: remote.full_name || '',
+            company_name: remote.company_name || '',
+            activity: remote.activity || '',
+            phone: remote.phone || '',
+            email: remote.email || '',
+            wilaya: remote.wilaya || 'Alger',
+            lang: remote.lang || 'ar',
+            source: remote.source || 'google_sheet',
+            status: remote.status || 'Nouveau',
+            notes: remote.notes || ''
+          });
+        }
+      });
+      saveLeads();
+      renderAll();
+      syncDot.classList.remove('offline');
+      syncText.textContent = 'متصل بـ Google Sheets';
+      if (!silent) showToast('تمت المزامنة بنجاح مع Google Sheets');
+    } else {
+      syncDot.classList.remove('offline');
+      syncText.textContent = 'متصل (Google Sheets)';
+      if (!silent) showToast('تم التحقق من الاتصال بـ Google Sheets');
+    }
+  } catch (err) {
+    syncDot.classList.add('offline');
+    syncText.textContent = 'وضع التخزين المحلي';
+    if (!silent) showToast('تعذر المزامنة، جاري العمل بالبيانات المحلية', 'warn');
+  } finally {
+    if (syncIcon) syncIcon.style.animation = 'none';
+  }
+}
+
+async function syncLeadUpdate(lead) {
+  if (!appConfig.sheetUrl) return;
+  try {
+    const url = appConfig.sheetUrl;
+    fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'update_status',
+        phone: lead.phone,
+        status: lead.status,
+        notes: lead.notes || ''
+      })
+    });
+  } catch (e) {}
+}
+
+// Export / Import
+function exportToCSV() {
+  const headers = ['التاريخ', 'الاسم', 'الشركة', 'النشاط', 'الهاتف', 'الإيميل', 'الولاية', 'المصدر', 'الحالة', 'الملاحظات'];
+  const rows = leads.map(l => [
+    formatDate(l.date),
+    `"${(l.full_name || '').replace(/"/g, '""')}"`,
+    `"${(l.company_name || '').replace(/"/g, '""')}"`,
+    `"${(l.activity || '').replace(/"/g, '""')}"`,
+    `"${l.phone || ''}"`,
+    `"${l.email || ''}"`,
+    `"${l.wilaya || ''}"`,
+    `"${l.source || ''}"`,
+    `"${l.status || ''}"`,
+    `"${(l.notes || '').replace(/"/g, '""')}"`
+  ]);
+  const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `IDARATI_Leads_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('تم تصدير ملف الإكسل (CSV) بنجاح');
+}
+
+function exportDataJSON() {
+  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(leads, null, 2));
+  const a = document.createElement('a');
+  a.href = dataStr;
+  a.download = `idarati_backup_${Date.now()}.json`;
+  a.click();
+}
+
+function importDataJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const imported = JSON.parse(evt.target.result);
+      if (Array.isArray(imported)) {
+        leads = imported;
+        saveLeads();
+        renderAll();
+        closeSettingsModal();
+        showToast('تم استيراد البيانات بنجاح!');
+      }
+    } catch (err) {
+      showToast('الملف غير صالح', 'err');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Language Toggle
+function toggleLang() {
+  appConfig.lang = appConfig.lang === 'ar' ? 'fr' : 'ar';
+  saveConfig();
+  applyLang(appConfig.lang);
+  renderAll();
+}
+
+function applyLang(lang) {
+  const isAr = lang === 'ar';
+  document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+  document.documentElement.lang = lang;
+  
+  // Update UI Text
+  document.getElementById('badgeText').textContent = isAr ? 'إدارة المبيعات' : 'CRM & Ventes';
+  document.getElementById('headerSub').textContent = isAr ? 'متابعة ملفات تأسيس الشركات بالجزائر' : 'Suivi des créations d\'entreprises en Algérie';
+  document.getElementById('btnNewLead').textContent = isAr ? 'طلب جديد' : 'Nouveau lead';
+  document.getElementById('btnSync').textContent = isAr ? 'مزامنة' : 'Synchroniser';
+  document.getElementById('btnExport').textContent = isAr ? 'تصدير' : 'Exporter';
+  document.getElementById('searchInput').placeholder = isAr ? 'بحث بالاسم، الهاتف، الشركة...' : 'Recherche nom, tél, société...';
+
+  // Tabs
+  document.getElementById('tabKanbanText').textContent = isAr ? 'لوحة كانبان' : 'Vue Kanban';
+  document.getElementById('tabTableText').textContent = isAr ? 'جدول البيانات' : 'Vue Tableau';
+  document.getElementById('tabAnalyticsText').textContent = isAr ? 'التحليلات والمصادر' : 'Statistiques';
+
+  // KPIs
+  document.getElementById('kpiTotalTitle').textContent = isAr ? 'إجمالي الطلبات المستلمة' : 'Total des demandes';
+  document.getElementById('kpiNewTitle').textContent = isAr ? 'طلبات جديدة (تحتاج اتصال)' : 'Nouveaux leads (à contacter)';
+  document.getElementById('kpiProgressTitle').textContent = isAr ? 'قيد المتابعة والتفاوض' : 'En cours de traitement';
+  document.getElementById('kpiClientsTitle').textContent = isAr ? 'عملاء مؤكدين (تم التوقيع)' : 'Clients signés';
+
+  // Kanban Columns
+  document.getElementById('colNouveau').textContent = isAr ? 'جديد لم يُعالج' : 'Nouveau';
+  document.getElementById('colAppele').textContent = isAr ? 'تم الاتصال به' : 'Appelé';
+  document.getElementById('colRappeler').textContent = isAr ? 'إعادة الاتصال لاحقاً' : 'À rappeler';
+  document.getElementById('colRDV').textContent = isAr ? 'موعد / دراسة ملف' : 'RDV / Dossier';
+  document.getElementById('colClient').textContent = isAr ? 'عميل مؤكد (تم التوقيع)' : 'Client signé';
+  document.getElementById('colRefuse').textContent = isAr ? 'غير مهتم / ملغى' : 'Non intéressé';
+}
+
+// Theme Toggle
+function toggleTheme() {
+  appConfig.theme = appConfig.theme === 'dark' ? 'light' : 'dark';
+  saveConfig();
+  applyTheme(appConfig.theme);
+}
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+// Helpers
+function formatDate(dStr) {
+  if (!dStr) return '';
+  const d = new Date(dStr);
+  if (isNaN(d)) return dStr;
+  return d.toLocaleDateString(appConfig.lang === 'fr' ? 'fr-FR' : 'ar-DZ', {
+    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+  });
+}
+
+function formatRelativeTime(dStr) {
+  if (!dStr) return '';
+  const d = new Date(dStr);
+  const diff = (Date.now() - d.getTime()) / 1000;
+  if (diff < 3600) return appConfig.lang === 'fr' ? `Il y a ${Math.max(1, Math.round(diff/60))} min` : `منذ ${Math.max(1, Math.round(diff/60))} دقيقة`;
+  if (diff < 86400) return appConfig.lang === 'fr' ? `Il y a ${Math.round(diff/3600)} h` : `منذ ${Math.round(diff/3600)} ساعة`;
+  const days = Math.round(diff/86400);
+  return appConfig.lang === 'fr' ? `Il y a ${days} j` : `منذ ${days} يوم`;
+}
+
+function escapeHTML(str) {
+  return String(str || '').replace(/[&<>'"]/g, tag => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[tag] || tag));
+}
+
+function showToast(msg, type = 'info') {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  if (type === 'err') t.style.background = '#DC2626';
+  if (type === 'warn') t.style.background = '#D97706';
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transition = 'opacity 0.3s';
+    setTimeout(() => t.remove(), 300);
+  }, 3200);
+}
+
+// Add CSS keyframe for sync animation
+const style = document.createElement('style');
+style.innerHTML = `@keyframes spin { 100% { transform: rotate(360deg); } }`;
+document.head.appendChild(style);
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
