@@ -35,10 +35,13 @@ window.CONFIG = {
   // 4) الفيديو: ضع ملف idarati-video.mp4 في نفس المجلد مع index.html (أو ألصق رابطاً آخر). اتركه فارغاً لإخفاء القسم.
   VIDEO_URL: "idarati-video.mp4",
 
-  // 5) التسجيل الصوتي لرأي الزبون (اختياري): رابط ملف mp3 / m4a
+  // 5) التسجيلات الصوتية لآراء الزبائن
   AUDIO_URL: "avis-client.mp3",
-  AUDIO_NAME_AR: "رأي زبون حقيقي من زبائن IDARATI",
-  AUDIO_NAME_FR: "Témoignage d'un client IDARATI"
+  AUDIO_NAME_AR: "رأي زبون حقيقي من زبائن IDARATI (1)",
+  AUDIO_NAME_FR: "Témoignage d'un client IDARATI (1)",
+  AUDIO_URL_2: "avis-client-2.ogg",
+  AUDIO_NAME_AR_2: "رأي زبون حقيقي من زبائن IDARATI (2)",
+  AUDIO_NAME_FR_2: "Témoignage d'un client IDARATI (2)"
 };
 </script>
 <!-- ===================================================================== -->
@@ -431,12 +434,22 @@ footer li{margin-bottom:8px}
       <span class="eyebrow" data-i18n="t_eye">آراء زبائننا</span>
       <h2 data-i18n="t_title">ماذا يقولون عن IDARATI؟</h2>
     </div>
-    <div class="audio-box" id="audioBox" hidden>
-      <div class="icon"><svg aria-hidden="true"><use href="#i-mic"/></svg></div>
-      <div style="flex:1;min-width:0">
-        <b data-i18n="t_audio">اسمع تجربة أحد زبائننا</b>
-        <span id="audioName"></span>
-        <audio id="audio" controls preload="none"></audio>
+    <div class="audio-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; max-width:840px; margin:28px auto 0;">
+      <div class="audio-box" id="audioBox" style="margin:0;" hidden>
+        <div class="icon"><svg aria-hidden="true"><use href="#i-mic"/></svg></div>
+        <div style="flex:1;min-width:0">
+          <b data-i18n="t_audio">اسمع تجربة أحد زبائننا (1)</b>
+          <span id="audioName"></span>
+          <audio id="audio" controls preload="none"></audio>
+        </div>
+      </div>
+      <div class="audio-box" id="audioBox2" style="margin:0;" hidden>
+        <div class="icon"><svg aria-hidden="true"><use href="#i-mic"/></svg></div>
+        <div style="flex:1;min-width:0">
+          <b data-i18n="t_audio2">اسمع تجربة أحد زبائننا (2)</b>
+          <span id="audioName2"></span>
+          <audio id="audio2" controls preload="none"></audio>
+        </div>
       </div>
     </div>
     <div class="tgrid">
@@ -647,7 +660,7 @@ var T = {
   st_eye:"كيف نعمل؟", st_title:"4 خطوات بسيطة",
   s1_t:"املأ الاستمارة", s1:"أقل من دقيقة.", s2_t:"فريق إدارتي يتصل بك", s2:"نفهم مشروعك ونحدد معك الشكل القانوني والوثائق المطلوبة.", s3_t:"نتكفّل بالإجراءات", s3:"القانون الأساسي، السجل التجاري، NIF، NIS، CASNOS.", s4_t:"مؤسستك جاهزة", s4:"تستلم وثائقك وملف حسابك البنكي، وتنطلق مع شهرين محاسبة مجانية.",
   months:"أشهر", of_title:"محاسبة مجانية لمؤسستك الجديدة", of_text:"لأن البداية هي الأصعب، نرافقك محاسبياً في أول شهرين من نشاطك بدون أي تكلفة إضافية، حتى تنطلق على أسس صحيحة.", of_cta:"استفد من العرض",
-  t_eye:"آراء زبائننا", t_title:"ماذا يقولون عن IDARATI؟", t_audio:"اسمع تجربة أحد زبائننا",
+  t_eye:"آراء زبائننا", t_title:"ماذا يقولون عن IDARATI؟", t_audio:"اسمع تجربة أحد زبائننا (1)", t_audio2:"اسمع تجربة أحد زبائننا (2)",
   q1:"أنجزنا التأسيس والتسجيل الجبائي في مسار واحد واضح، خطوات مفهومة وبدون مفاجآت.", q2:"اعتمدنا على IDARATI لتحضير كل الملفات بشكل صحيح من أول مرة. احترافية وسرعة في الرد.", q3:"أعجبتنا سرعة التنفيذ ووضوح التواصل، بالضبط ما كنا نحتاجه باش نتقدم بسرعة.",
   fo_eye:"المؤسس والمدير العام", fo_name:"إدريس عنابي", fo_role:"خبير محاسبي وجبائي، مستشار في الموارد البشرية وتسيير المؤسسات",
   fo_bio:"خبرة تفوق 21 سنة في المحاسبة والجباية والموارد البشرية. شغل منصب رئيس مصلحة المحاسبة في OPGI لمدة 6 سنوات، وكوّن أكثر من 2000 متدرب، ورافق أكثر من 120 مؤسسة ومسيّر في انطلاقتهم وتسييرهم.",
@@ -692,7 +705,7 @@ var T = {
   st_eye:"Comment ça marche ?", st_title:"4 étapes simples",
   s1_t:"Remplissez le formulaire", s1:"Moins d'une minute.", s2_t:"L'équipe IDARATI vous appelle", s2:"Nous étudions votre projet et définissons la forme juridique et les documents nécessaires.", s3_t:"On gère les démarches", s3:"Statuts, registre du commerce, NIF, NIS, CASNOS.", s4_t:"Votre entreprise est prête", s4:"Vous recevez vos documents et votre dossier bancaire, avec 2 mois de comptabilité offerts.",
   months:"mois", of_title:"Comptabilité offerte pour votre nouvelle entreprise", of_text:"Parce que le démarrage est le plus difficile, nous assurons votre comptabilité pendant vos 2 premiers mois d'activité sans frais supplémentaires.", of_cta:"Profiter de l'offre",
-  t_eye:"Témoignages", t_title:"Ce que disent nos clients", t_audio:"Écoutez le témoignage d'un client",
+  t_eye:"Témoignages", t_title:"Ce que disent nos clients", t_audio:"Écoutez le témoignage d'un client (1)", t_audio2:"Écoutez le témoignage d'un client (2)",
   q1:"Nous avons finalisé la constitution et l'immatriculation fiscale dans un parcours unique et clair, sans surprises.", q2:"Nous avons compté sur IDARATI pour préparer tous les dossiers correctement dès la première fois. Professionnels et réactifs.", q3:"Rapidité d'exécution et communication claire : exactement ce qu'il nous fallait pour avancer vite.",
   fo_eye:"Fondateur & PDG", fo_name:"Idriss Annabi", fo_role:"Expert-comptable et fiscaliste, consultant en RH et en gestion d'entreprise",
   fo_bio:"Plus de 21 ans d'expérience en comptabilité, fiscalité et ressources humaines. Ancien chef du service comptabilité à l'OPGI pendant 6 ans, il a formé plus de 2000 apprenants et accompagné plus de 120 entreprises et dirigeants.",
@@ -732,7 +745,8 @@ function applyLang(l){
   document.getElementById("activities").innerHTML = d.acts.map(function(a){return '<option value="'+a+'">';}).join("");
   document.getElementById("logosImg").alt = d.logos_alt; document.getElementById("founderImg").alt = d.founder_alt;
   document.querySelectorAll(".js-wa").forEach(function(a){ a.href = waLink(); });
-  document.getElementById("audioName").textContent = l==="ar" ? (C.AUDIO_NAME_AR||"") : (C.AUDIO_NAME_FR||"");
+  var an = document.getElementById("audioName"); if (an) an.textContent = l==="ar" ? (C.AUDIO_NAME_AR||"") : (C.AUDIO_NAME_FR||"");
+  var an2 = document.getElementById("audioName2"); if (an2) an2.textContent = l==="ar" ? (C.AUDIO_NAME_AR_2||"") : (C.AUDIO_NAME_FR_2||"");
   document.querySelectorAll(".error.show").forEach(function(e){ var m=e.getAttribute("data-msg"); if(m) e.textContent=d[m]; });
   try { localStorage.setItem("idarati_lang", l); } catch(e){}
 }
@@ -747,6 +761,7 @@ var vs=document.getElementById("vidSec"), v=document.getElementById("vid");
 if (C.VIDEO_URL) { v.addEventListener("error",function(){vs.hidden=true;},true); var so=document.createElement("source"); so.src=C.VIDEO_URL; so.type="video/mp4"; so.addEventListener("error",function(){vs.hidden=true;}); v.appendChild(so); vs.hidden=false;
   var played=false; v.addEventListener("play",function(){ if(!played){played=true; fbq("trackCustom","VideoPlay");} }); }
 if (C.AUDIO_URL) { var au=document.getElementById("audio"); au.addEventListener("error",function(){document.getElementById("audioBox").hidden=true;}); au.src=C.AUDIO_URL; au.preload="metadata"; document.getElementById("audioBox").hidden=false; au.addEventListener("play",function(){ fbq("trackCustom","AudioPlay"); },{once:true}); }
+if (C.AUDIO_URL_2) { var au2=document.getElementById("audio2"); au2.addEventListener("error",function(){document.getElementById("audioBox2").hidden=true;}); au2.src=C.AUDIO_URL_2; au2.preload="metadata"; document.getElementById("audioBox2").hidden=false; au2.addEventListener("play",function(){ fbq("trackCustom","AudioPlay2"); },{once:true}); }
 
 /* WhatsApp click → Pixel Contact */
 document.addEventListener("click", function(e){ var a=e.target.closest(".js-wa"); if(a) fbq("track","Contact",{method:"whatsapp"}); });
