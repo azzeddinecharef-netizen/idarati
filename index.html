@@ -763,8 +763,15 @@ if (C.VIDEO_URL) { v.addEventListener("error",function(){vs.hidden=true;},true);
 if (C.AUDIO_URL) { var au=document.getElementById("audio"); au.addEventListener("error",function(){document.getElementById("audioBox").hidden=true;}); au.src=C.AUDIO_URL; au.preload="metadata"; document.getElementById("audioBox").hidden=false; au.addEventListener("play",function(){ fbq("trackCustom","AudioPlay"); },{once:true}); }
 if (C.AUDIO_URL_2) { var au2=document.getElementById("audio2"); au2.addEventListener("error",function(){document.getElementById("audioBox2").hidden=true;}); au2.src=C.AUDIO_URL_2; au2.preload="metadata"; document.getElementById("audioBox2").hidden=false; au2.addEventListener("play",function(){ fbq("trackCustom","AudioPlay2"); },{once:true}); }
 
-/* WhatsApp click → Pixel Contact */
-document.addEventListener("click", function(e){ var a=e.target.closest(".js-wa"); if(a) fbq("track","Contact",{method:"whatsapp"}); });
+/* Contact links click (WhatsApp, Phone, Email) → Pixel Contact */
+document.addEventListener("click", function(e){
+  var wa = e.target.closest(".js-wa");
+  if (wa) { fbq("track","Contact",{method:"whatsapp"}); return; }
+  var tel = e.target.closest(".js-tel");
+  if (tel) { fbq("track","Contact",{method:"phone"}); return; }
+  var mail = e.target.closest(".js-mail");
+  if (mail) { fbq("track","Contact",{method:"email"}); return; }
+});
 
 applyLang(lang);
 
