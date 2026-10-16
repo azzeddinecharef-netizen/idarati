@@ -1,0 +1,19 @@
+# Local secrets and environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+service-account*.json
+
+# Editor/system artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Dependencies/build artifacts
+node_modules/
+dist/
+*.zip
