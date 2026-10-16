@@ -789,12 +789,41 @@ form.addEventListener("submit", function(e){
     phone:f.phone.value.trim(), email:f.email.value.trim(), wilaya:w, lang:lang, source:utm(), page:location.href.split("#")[0], event_id:eventId
   });
   btn.disabled=true; btn.textContent=T[lang].sending;
+
+  // حفظ الطلب فوراً في لوحة التحكم IDARATI CRM
+  try {
+    var storedLeads = JSON.parse(localStorage.getItem("idarati_leads_db") || "[]");
+    var newLeadObj = {
+      id: eventId,
+      date: new Date().toISOString(),
+      full_name: f.full_name.value.trim(),
+      company_name: f.company_name.value.trim() || "قيد التسمية",
+      activity: f.activity.value.trim(),
+      phone: f.phone.value.trim(),
+      email: f.email.value.trim(),
+      wilaya: w === "Blida" ? "Blida" : "Alger",
+      lang: lang,
+      source: utm() || "landing",
+      page: location.href.split("#")[0],
+      status: "Nouveau",
+      notes: ""
+    };
+    storedLeads.unshift(newLeadObj);
+    localStorage.setItem("idarati_leads_db", JSON.stringify(storedLeads));
+    localStorage.setItem("idarati_last_lead_time", String(Date.now()));
+    if (window.BroadcastChannel) {
+      new BroadcastChannel('idarati_leads_channel').postMessage({ type: 'new_lead', name: newLeadObj.full_name });
+    }
+  } catch(err) {
+    console.error("Local storage lead save error:", err);
+  }
+
   function done(){
     fbq("track","Lead",{content_name:"Creation entreprise", content_category:w},{eventID:eventId});
     document.getElementById("formWrap").hidden=true; var s=document.getElementById("success"); s.hidden=false; s.focus();
     s.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto":"smooth", block:"center"});
   }
-  if(!C.SHEET_URL){ console.warn("CONFIG.SHEET_URL est vide : la demande n'est enregistrée nulle part.", Object.fromEntries(data)); done(); return; }
+  if(!C.SHEET_URL){ console.warn("CONFIG.SHEET_URL est vide : la demande est enregistrée localement pour le dashboard.", Object.fromEntries(data)); done(); return; }
   fetch(C.SHEET_URL,{method:"POST",mode:"no-cors",body:data})
     .then(done)
     .catch(function(){ btn.disabled=false; btn.textContent=T[lang].submit; status.className="status err"; status.textContent=T[lang].e_send; });
