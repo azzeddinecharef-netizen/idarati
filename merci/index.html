@@ -322,7 +322,9 @@
       'https://connect.facebook.net/en_US/fbevents.js');
 
       fbq('init', pixelId);
-      fbq('track', 'PageView');
+      var pvEventId = "pv_" + Date.now() + "_" + Math.random().toString(36).slice(2, 9);
+      window.pageViewEventId = pvEventId;
+      fbq('track', 'PageView', {}, { eventID: pvEventId });
       
       // Conversion events for media buyers
       var urlParams = new URLSearchParams(window.location.search);
