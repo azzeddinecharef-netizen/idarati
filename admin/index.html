@@ -845,10 +845,376 @@ body {
 .auth-input:focus {
   border-color: var(--teal-2);
 }
-.auth-btn {
+/* Pixel Settings View Styles (Matching Screenshot) */
+.pixel-view-wrapper {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 10px 0 40px;
+}
+.pixel-card-container {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.pixel-card-header {
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: linear-gradient(180deg, rgba(31,95,191,0.05) 0%, transparent 100%);
+}
+.pixel-header-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.pixel-icon-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(242,179,61,0.15), rgba(31,95,191,0.25));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+.pixel-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.pixel-subtitle {
+  font-size: 13px;
+  color: var(--muted);
+}
+.pixel-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(22,122,67,0.12);
+  color: var(--wa);
+  border: 1px solid rgba(22,122,67,0.3);
+}
+.pixel-status-pill.disabled {
+  background: rgba(220,38,38,0.1);
+  color: var(--err);
+  border-color: rgba(220,38,38,0.25);
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+.pixel-card-body {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.pixel-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pixel-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pixel-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.pixel-label .required {
+  color: var(--err);
+}
+.pixel-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+.pixel-optional-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(148,163,184,0.15);
+  color: var(--muted);
+  font-weight: 500;
+}
+.pixel-badge-blue {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(2,132,199,0.15);
+  color: #0284C7;
+  font-weight: 600;
+}
+.pixel-input {
   width: 100%;
-  padding: 12px;
-  font-size: 15px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+.pixel-input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(31,95,191,0.15);
+}
+.pixel-input-with-copy, .pixel-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.pixel-input.has-eye {
+  padding-left: 45px;
+}
+[dir="ltr"] .pixel-input.has-eye {
+  padding-left: 16px;
+  padding-right: 45px;
+}
+.pixel-copy-btn, .pixel-eye-btn {
+  position: absolute;
+  left: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: color 0.15s, background 0.15s;
+}
+[dir="ltr"] .pixel-copy-btn, [dir="ltr"] .pixel-eye-btn {
+  left: auto;
+  right: 10px;
+}
+.pixel-copy-btn:hover, .pixel-eye-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--ink);
+}
+.pixel-domain-box {
+  background: rgba(2,132,199,0.04);
+  border: 1px solid rgba(2,132,199,0.2);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+[data-theme="dark"] .pixel-domain-box {
+  background: rgba(2,132,199,0.08);
+}
+.pixel-domain-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pixel-link {
+  font-size: 12px;
+  color: var(--teal-2);
+  text-decoration: none;
+  font-weight: 500;
+}
+.pixel-link:hover {
+  text-decoration: underline;
+}
+.pixel-domain-desc {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.6;
+}
+.pixel-warning-notice {
+  background: rgba(242,179,61,0.1);
+  border: 1px solid rgba(242,179,61,0.3);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--ink);
+  line-height: 1.6;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.pixel-warning-notice strong {
+  color: #D97706;
+}
+[data-theme="dark"] .pixel-warning-notice strong {
+  color: #FBBF24;
+}
+.pixel-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.pixel-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+.pixel-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.pixel-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #64748B;
+  transition: .3s;
+  border-radius: 34px;
+}
+.pixel-slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+.pixel-switch input:checked + .pixel-slider {
+  background-color: #10B981;
+}
+.pixel-switch input:checked + .pixel-slider:before {
+  transform: translateX(22px);
+}
+.pixel-toggle-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.pixel-events-summary {
+  background: rgba(31,95,191,0.04);
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+.events-summary-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.events-tags-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.event-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+.event-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10B981;
+}
+.pixel-card-footer {
+  padding: 20px 28px;
+  background: rgba(0,0,0,0.03);
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.btn-save-pixel {
+  background: #F59E0B;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #111827;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 30px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(245,158,11,0.25);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+}
+.btn-save-pixel:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(245,158,11,0.35);
+}
+.btn-cancel-pixel {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-cancel-pixel:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--ink);
+}
+.btn-test-pixel {
+  margin-right: auto;
+  background: rgba(31,95,191,0.08);
+  color: var(--teal-2);
+  border: 1px solid rgba(31,95,191,0.3);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 11px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s;
+}
+[dir="ltr"] .btn-test-pixel {
+  margin-right: 0;
+  margin-left: auto;
+}
+.btn-test-pixel:hover {
+  background: rgba(31,95,191,0.15);
 }
 </style>
 </head>
@@ -978,6 +1344,10 @@ body {
       <button class="tab-btn" id="tabAnalytics" onclick="switchView('analytics')">
         <span>📊</span>
         <span id="tabAnalyticsText">التحليلات والمصادر</span>
+      </button>
+      <button class="tab-btn" id="tabPixel" onclick="switchView('pixel')">
+        <span>🎯</span>
+        <span id="tabPixelText">بيانات البكسل</span>
       </button>
     </div>
 
@@ -1132,6 +1502,122 @@ body {
         <span>🏢</span>
       </div>
       <div id="chartActivityBody"></div>
+    </div>
+  </section>
+
+  <!-- 4. Pixel Configuration View (Matching Colleague Screenshot) -->
+  <section id="viewPixel" class="pixel-view-wrapper" style="display:none;">
+    <div class="pixel-card-container">
+      <div class="pixel-card-header">
+        <div class="pixel-header-content">
+          <div class="pixel-icon-badge">🎯</div>
+          <div>
+            <h2 class="pixel-title">بيانات البكسل</h2>
+            <p class="pixel-subtitle">أضف اسماً واضحاً ومعرف البكسل الصحيح حتى تميزه بسهولة لاحقاً.</p>
+          </div>
+        </div>
+        <div class="pixel-status-pill" id="pixelStatusBadge">
+          <span class="status-dot"></span>
+          <span id="pixelStatusBadgeText">جاري التحقق...</span>
+        </div>
+      </div>
+
+      <div class="pixel-card-body">
+        <!-- 1. Pixel Name -->
+        <div class="pixel-field">
+          <label class="pixel-label">اسم البكسل <span class="required">*</span></label>
+          <input type="text" id="pixelName" class="pixel-input" placeholder="اسم وصفي لتمييز هذا البكسل..." value="TEST">
+          <span class="pixel-hint">اسم وصفي لتمييز هذا البكسل</span>
+        </div>
+
+        <!-- 2. Pixel ID -->
+        <div class="pixel-field">
+          <label class="pixel-label">معرف البكسل (Pixel ID) <span class="required">*</span></label>
+          <div class="pixel-input-with-copy">
+            <input type="text" id="pixelId" class="pixel-input" placeholder="أدخل معرّف البكسل من منصة الإعلانات..." value="1093685876189351">
+            <button type="button" class="pixel-copy-btn" onclick="copyPixelId()" title="نسخ المعرّف">📋</button>
+          </div>
+          <span class="pixel-hint">أدخل معرّف البكسل من منصة الإعلانات (Meta Events Manager)</span>
+        </div>
+
+        <!-- 3. Access Token -->
+        <div class="pixel-field">
+          <div class="pixel-label-row">
+            <label class="pixel-label">Access Token (للتتبع من السيرفر)</label>
+            <span class="pixel-optional-badge">اختياري</span>
+          </div>
+          <div class="pixel-input-wrap">
+            <input type="password" id="pixelToken" class="pixel-input has-eye" placeholder="EAABwz...">
+            <button type="button" class="pixel-eye-btn" onclick="toggleTokenVisibility()" id="tokenEyeBtn" title="إظهار / إخفاء الرمز">👁️</button>
+          </div>
+          <span class="pixel-hint">اختياري - للتتبع من جانب السيرفر (Conversions API / Events API) لزيادة دقة تتبع الطلبات وتفادي حظر الإعلانات</span>
+        </div>
+
+        <!-- 4. Domain Verification -->
+        <div class="pixel-domain-box">
+          <div class="pixel-domain-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-weight:700; color:var(--ink);">التحقق من النطاق في Facebook</span>
+              <span class="pixel-badge-blue">اختياري</span>
+            </div>
+            <a href="https://business.facebook.com/settings/owned-domains" target="_blank" rel="noopener" class="pixel-link">
+              الحصول عليه من Business Manager ↗
+            </a>
+          </div>
+          <p class="pixel-domain-desc">
+            أضف كود التحقق من نطاقك في Facebook Business Manager لتتمكن من الإعلان على نطاقك المخصص <strong>idarati.africacold.fr</strong>.
+          </p>
+          
+          <div class="pixel-warning-notice">
+            <span style="font-size:16px;">⚠️</span>
+            <div>
+              <strong>اختياري جداً — لا يتطلب أي تحقق:</strong>
+              لست بحاجة للتحقق من النطاق حتى يشتغل بكسل الفيسبوك. إذا لم يكن لديك كود تحقق جاهز الآن، يمكنك ترك هذه الخانة فارغة وسيعمل البيكسل وتتبع الأحداث بشكل كامل وطبيعي.
+            </div>
+          </div>
+
+          <div class="pixel-field" style="margin-top:10px;">
+            <input type="text" id="pixelDomainCode" class="pixel-input" placeholder="مثال: abc123xyz789...">
+            <span class="pixel-hint">انسخ القيمة الموجودة داخل content="..." من meta tag التحقق الخاص بفيسبوك.</span>
+          </div>
+        </div>
+
+        <!-- 5. Pixel Enabled Toggle -->
+        <div class="pixel-toggle-row" onclick="document.getElementById('pixelEnabled').click()">
+          <label class="pixel-switch" onclick="event.stopPropagation()">
+            <input type="checkbox" id="pixelEnabled" checked onchange="updatePixelToggleLabel()">
+            <span class="pixel-slider"></span>
+          </label>
+          <span class="pixel-toggle-text" id="pixelToggleText">البكسل مفعّل</span>
+        </div>
+
+        <!-- 6. Events Status Box -->
+        <div class="pixel-events-summary">
+          <div class="events-summary-title">الأحداث المربوطة والمفعلة تلقائياً مع هذا البكسل في صفحة الهبوط:</div>
+          <div class="events-tags-grid">
+            <div class="event-tag"><span class="event-dot"></span> <strong>PageView</strong> (تصفح الموقع)</div>
+            <div class="event-tag"><span class="event-dot"></span> <strong>Lead</strong> (تسجيل طلب جديد)</div>
+            <div class="event-tag"><span class="event-dot"></span> <strong>Contact</strong> (واتساب، اتصال، إيميل)</div>
+            <div class="event-tag"><span class="event-dot"></span> <strong>FormStart</strong> (بدء كتابة الطلب)</div>
+            <div class="event-tag"><span class="event-dot"></span> <strong>AudioPlay</strong> (الاستماع للتسجيلات)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Footer Actions -->
+      <div class="pixel-card-footer">
+        <button type="button" class="btn-save-pixel" onclick="savePixelSettings()">
+          <span>✓</span>
+          <span>حفظ البكسل</span>
+        </button>
+        <button type="button" class="btn-cancel-pixel" onclick="resetPixelForm()">
+          إلغاء
+        </button>
+        <a href="http://idarati.africacold.fr/" target="_blank" rel="noopener" class="btn-test-pixel">
+          <span>🔗</span>
+          <span>معاينة واختبار صفحة الهبوط ↗</span>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -1299,6 +1785,14 @@ body {
       </div>
 
       <div class="form-group" style="padding-top:10px; border-top:1px solid var(--line);">
+        <label>إعدادات فيسبوك بكسل (Meta Pixel)</label>
+        <button type="button" class="btn btn-outline" style="width:100%; margin-top:6px; justify-content:center; gap:8px;" onclick="closeSettingsModal(); switchView('pixel');">
+          <span>🎯</span>
+          <span>الانتقال لضبط Pixel ID و Access Token</span>
+        </button>
+      </div>
+
+      <div class="form-group" style="padding-top:10px; border-top:1px solid var(--line);">
         <label>النسخ الاحتياطي للبيانات</label>
         <div style="display:flex; gap:10px; margin-top:6px;">
           <button class="btn btn-secondary" onclick="exportDataJSON()" style="flex:1;">تصدير نسخة JSON</button>
@@ -1331,7 +1825,14 @@ let appConfig = {
   waTemplateAr: 'السلام عليكم ورحمة الله، الأستاذ(ة) {NAME}، معكم مستشاركم القانوني من مؤسسة IDARATI بخصوص طلبكم لإنشاء شركة {COMPANY} في {WILAYA}. هل الوقت مناسب لإفادتكم بالتفاصيل وتحديد موعد؟',
   waTemplateFr: 'Bonjour M./Mme {NAME}, je suis votre conseiller de IDARATI Company concernant votre demande de création d\'entreprise {COMPANY} à {WILAYA}. Quand seriez-vous disponible pour un échange ?',
   lang: 'ar',
-  theme: 'dark'
+  theme: 'dark',
+  pixel: {
+    name: 'TEST',
+    id: '1093685876189351',
+    token: '',
+    domainVerification: '',
+    enabled: true
+  }
 };
 
 // Initial Mock Leads (Demonstrating Algerian Business Creation use-cases)
@@ -1487,6 +1988,19 @@ function loadConfig() {
   if (saved) {
     try { appConfig = { ...appConfig, ...JSON.parse(saved) }; } catch (e) {}
   }
+  // Load dedicated pixel config
+  const savedPixel = localStorage.getItem('idarati_pixel_config');
+  if (savedPixel) {
+    try { appConfig.pixel = { ...(appConfig.pixel || {}), ...JSON.parse(savedPixel) }; } catch(e){}
+  } else if (!appConfig.pixel) {
+    appConfig.pixel = {
+      name: 'TEST',
+      id: '1093685876189351',
+      token: '',
+      domainVerification: '',
+      enabled: true
+    };
+  }
   // Try reading parent landing page SHEET_URL if available
   if (!appConfig.sheetUrl && window.parent && window.parent.CONFIG && window.parent.CONFIG.SHEET_URL) {
     appConfig.sheetUrl = window.parent.CONFIG.SHEET_URL;
@@ -1546,6 +2060,7 @@ function renderAll() {
   if (currentView === 'kanban') renderKanban();
   else if (currentView === 'table') renderTable();
   else if (currentView === 'analytics') renderAnalytics();
+  else if (currentView === 'pixel') renderPixelView();
 }
 
 function getFilteredLeads() {
@@ -1769,13 +2284,135 @@ function renderBars(containerId, dataObj, total) {
 // View Switching
 function switchView(view) {
   currentView = view;
-  ['kanban', 'table', 'analytics'].forEach(v => {
+  ['kanban', 'table', 'analytics', 'pixel'].forEach(v => {
     const el = document.getElementById(`view${v.charAt(0).toUpperCase() + v.slice(1)}`);
     const btn = document.getElementById(`tab${v.charAt(0).toUpperCase() + v.slice(1)}`);
     if (el) el.style.display = (v === view) ? (v === 'kanban' ? 'grid' : (v === 'analytics' ? 'grid' : 'block')) : 'none';
     if (btn) btn.classList.toggle('active', v === view);
   });
+  const filterGroup = document.querySelector('.view-toolbar .filter-group');
+  if (filterGroup) filterGroup.style.display = (view === 'pixel') ? 'none' : 'flex';
   renderAll();
+}
+
+// Meta Pixel Settings Management (Matching Screenshot)
+function renderPixelView() {
+  const pixel = appConfig.pixel || {
+    name: 'TEST',
+    id: '1093685876189351',
+    token: '',
+    domainVerification: '',
+    enabled: true
+  };
+
+  const nameEl = document.getElementById('pixelName');
+  const idEl = document.getElementById('pixelId');
+  const tokenEl = document.getElementById('pixelToken');
+  const domainEl = document.getElementById('pixelDomainCode');
+  const enabledEl = document.getElementById('pixelEnabled');
+  const statusBadge = document.getElementById('pixelStatusBadge');
+  const statusBadgeText = document.getElementById('pixelStatusBadgeText');
+  const toggleText = document.getElementById('pixelToggleText');
+
+  if (nameEl && !nameEl.matches(':focus')) nameEl.value = pixel.name || '';
+  if (idEl && !idEl.matches(':focus')) idEl.value = pixel.id || '';
+  if (tokenEl && !tokenEl.matches(':focus')) tokenEl.value = pixel.token || '';
+  if (domainEl && !domainEl.matches(':focus')) domainEl.value = pixel.domainVerification || '';
+  if (enabledEl) enabledEl.checked = pixel.enabled !== false;
+
+  const isWorking = (pixel.enabled !== false) && /^\d{6,20}$/.test(String(pixel.id||'').trim());
+
+  if (statusBadge && statusBadgeText) {
+    if (isWorking) {
+      statusBadge.className = 'pixel-status-pill';
+      statusBadgeText.textContent = `البكسل مفعّل ونشط (ID: ${pixel.id})`;
+    } else {
+      statusBadge.className = 'pixel-status-pill disabled';
+      statusBadgeText.textContent = pixel.enabled === false ? 'البكسل معطّل حالياً' : 'معرّف البكسل غير مكتمل';
+    }
+  }
+
+  if (toggleText) {
+    toggleText.textContent = (pixel.enabled !== false) ? 'البكسل مفعّل' : 'البكسل معطّل';
+  }
+}
+
+function updatePixelToggleLabel() {
+  const chk = document.getElementById('pixelEnabled');
+  const toggleText = document.getElementById('pixelToggleText');
+  if (chk && toggleText) {
+    toggleText.textContent = chk.checked ? 'البكسل مفعّل' : 'البكسل معطّل';
+  }
+}
+
+function toggleTokenVisibility() {
+  const inp = document.getElementById('pixelToken');
+  const btn = document.getElementById('tokenEyeBtn');
+  if (!inp) return;
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    if (btn) btn.textContent = '🔒';
+  } else {
+    inp.type = 'password';
+    if (btn) btn.textContent = '👁️';
+  }
+}
+
+function copyPixelId() {
+  const idInp = document.getElementById('pixelId');
+  if (!idInp || !idInp.value) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(idInp.value).then(() => {
+      showToast('تم نسخ معرّف البكسل إلى الحافظة 📋');
+    }).catch(() => {
+      idInp.select();
+      document.execCommand('copy');
+      showToast('تم نسخ معرّف البكسل 📋');
+    });
+  } else {
+    idInp.select();
+    document.execCommand('copy');
+    showToast('تم نسخ معرّف البكسل 📋');
+  }
+}
+
+function resetPixelForm() {
+  renderPixelView();
+  showToast('تمت استعادة الإعدادات السابقة');
+}
+
+function savePixelSettings() {
+  const name = document.getElementById('pixelName').value.trim() || 'TEST';
+  const id = document.getElementById('pixelId').value.trim();
+  const token = document.getElementById('pixelToken').value.trim();
+  const domainVerification = document.getElementById('pixelDomainCode').value.trim();
+  const enabled = document.getElementById('pixelEnabled').checked;
+
+  if (enabled && (!id || !/^\d{6,20}$/.test(id))) {
+    showToast('⚠️ يرجى إدخال معرّف بكسل صحيح يتكون من أرقام فقط (15-16 رقماً)', 'err');
+    return;
+  }
+
+  appConfig.pixel = {
+    name,
+    id,
+    token,
+    domainVerification,
+    enabled
+  };
+
+  saveConfig();
+  localStorage.setItem('idarati_pixel_config', JSON.stringify(appConfig.pixel));
+
+  // Sync with landing page tabs via BroadcastChannel
+  try {
+    if (window.BroadcastChannel) {
+      new BroadcastChannel('idarati_pixel_channel').postMessage({ type: 'pixel_update', pixel: appConfig.pixel });
+    }
+  } catch(e){}
+
+  renderPixelView();
+  showToast('✅ تم حفظ بيانات البكسل وتفعيل التتبع بنجاح!');
 }
 
 // Search & Filter Handlers

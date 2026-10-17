@@ -20,7 +20,7 @@
 <script>
 window.CONFIG = {
   // 1) Facebook Pixel ID: ألصق رقم البيكسل هنا (أرقام فقط). اتركه فارغاً لتعطيله.
-  FB_PIXEL_ID: "",
+  FB_PIXEL_ID: "1093685876189351",
 
   // 2) رابط Google Apps Script (Web App) الذي يرسل الطلبات إلى Google Sheets
   //    Exemple : "https://script.google.com/macros/s/XXXXXXXX/exec"
@@ -627,13 +627,40 @@ footer li{margin-bottom:8px}
 "use strict";
 var C = window.CONFIG || {};
 
-/* ---------- Facebook Pixel (only if ID set) ---------- */
+/* ---------- Facebook Pixel (Synced with Dashboard & CONFIG) ---------- */
 function fbq(){ if (window.fbq) window.fbq.apply(null, arguments); }
-if (/^\d{6,20}$/.test(String(C.FB_PIXEL_ID||"").trim())) {
+var storedPixelCfg = null;
+try {
+  var rawPixel = localStorage.getItem("idarati_pixel_config");
+  if (rawPixel) storedPixelCfg = JSON.parse(rawPixel);
+} catch(e){}
+
+var pixelId = (storedPixelCfg && storedPixelCfg.id) ? String(storedPixelCfg.id).trim() : String(C.FB_PIXEL_ID||"").trim();
+var pixelEnabled = storedPixelCfg ? (storedPixelCfg.enabled !== false) : true;
+var domainVerification = (storedPixelCfg && storedPixelCfg.domainVerification) ? String(storedPixelCfg.domainVerification).trim() : "";
+
+if (domainVerification) {
+  var metaVer = document.createElement("meta");
+  metaVer.name = "facebook-domain-verification";
+  metaVer.content = domainVerification;
+  document.head.appendChild(metaVer);
+}
+
+if (pixelEnabled && /^\d{6,20}$/.test(pixelId)) {
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-  window.fbq('init', String(C.FB_PIXEL_ID).trim());
+  window.fbq('init', pixelId);
   window.fbq('track', 'PageView');
 }
+
+try {
+  if (window.BroadcastChannel) {
+    new BroadcastChannel('idarati_pixel_channel').onmessage = function(ev) {
+      if (ev.data && ev.data.type === 'pixel_update' && ev.data.pixel) {
+        try { localStorage.setItem("idarati_pixel_config", JSON.stringify(ev.data.pixel)); } catch(e){}
+      }
+    };
+  }
+} catch(e){}
 
 /* ---------- Translations ---------- */
 var T = {
@@ -842,6 +869,24 @@ form.addEventListener("submit", function(e){
 
   function done(){
     fbq("track","Lead",{content_name:"Creation entreprise", content_category:w},{eventID:eventId});
+    if (storedPixelCfg && storedPixelCfg.token && /^\d{6,20}$/.test(pixelId)) {
+      try {
+        fetch("https://graph.facebook.com/v19.0/" + pixelId + "/events?access_token=" + encodeURIComponent(storedPixelCfg.token), {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({
+            data: [{
+              event_name: "Lead",
+              event_time: Math.floor(Date.now() / 1000),
+              event_id: eventId,
+              action_source: "website",
+              event_source_url: location.href,
+              custom_data: { content_name: "Creation entreprise", content_category: w }
+            }]
+          })
+        }).catch(function(e){ console.warn("CAPI dispatch:", e); });
+      } catch(e){}
+    }
     document.getElementById("formWrap").hidden=true; var s=document.getElementById("success"); s.hidden=false; s.focus();
     s.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto":"smooth", block:"center"});
   }
