@@ -1216,6 +1216,147 @@ body {
 .btn-test-pixel:hover {
   background: rgba(31,95,191,0.15);
 }
+
+/* Tracking URLs Section */
+.pixel-urls-section {
+  margin-top: 24px;
+  background: var(--bg-hover, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.pixel-urls-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pixel-urls-desc {
+  font-size: 13px;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.pixel-badge-green {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+.pixel-urls-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pixel-url-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  gap: 12px;
+  transition: all 0.2s;
+}
+.pixel-url-row:hover {
+  border-color: var(--primary, #2563eb);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.pixel-url-row.highlight-row {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+.pixel-url-info {
+  flex: 1;
+  min-width: 0;
+}
+.pixel-url-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink, #0f172a);
+  margin-bottom: 2px;
+}
+.pixel-url-link {
+  font-family: monospace;
+  font-size: 12px;
+  color: #2563eb;
+  word-break: break-all;
+  direction: ltr;
+  text-align: right;
+}
+.pixel-url-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #475569;
+  white-space: nowrap;
+}
+.pixel-url-tag.highlight-blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+.pixel-url-tag.highlight-green {
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 800;
+}
+.pixel-url-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-copy-url {
+  background: var(--bg-hover, #f1f5f9);
+  border: 1px solid var(--border, #cbd5e1);
+  color: var(--ink, #0f172a);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-copy-url:hover {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+.btn-open-url {
+  background: var(--bg-hover, #f1f5f9);
+  border: 1px solid var(--border, #cbd5e1);
+  color: var(--ink, #0f172a);
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: all 0.15s;
+}
+.btn-open-url:hover {
+  background: #0f172a;
+  color: #fff;
+}
+.pixel-tip-box {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12.5px;
+  color: #92400e;
+}
+
 </style>
 </head>
 <body>
@@ -1603,6 +1744,177 @@ body {
           </div>
         </div>
       </div>
+
+      
+        <!-- 7. Tracking URLs & Dedicated Slugs -->
+        <div class="pixel-urls-section">
+          <div class="pixel-urls-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🔗</span>
+              <strong style="color:var(--ink); font-size:15px;">روابط الصفحات المستقلة للتتبع الإعلاني (Tracking URLs & Slugs)</strong>
+            </div>
+            <span class="pixel-badge-green">11 صفحة مفعلة بسلاش (/)</span>
+          </div>
+          <p class="pixel-urls-desc">
+            تم تخصيص رابط مستقل بسلاش (/) لكل صفحة وقسم مع حدث بكسل مخصص، لتسهيل توجيه الإعلانات وإنشاء <strong>التحويلات المخصصة (Custom Conversions)</strong> بدقة 100%:
+          </p>
+
+          <div class="pixel-urls-table">
+            <!-- Row 1: Home -->
+            <div class="pixel-url-row">
+              <div class="pixel-url-info">
+                <div class="pixel-url-title">🏠 الصفحة الرئيسية (Home)</div>
+                <div class="pixel-url-link">https://idarati.africacold.fr/</div>
+              </div>
+              <div class="pixel-url-tag">PageView</div>
+              <div class="pixel-url-actions">
+                <button type="button" class="btn-copy-url" onclick="copyTrackingUrl('https://idarati.africacold.fr/', this)">📋 نسخ</button>
+                <a href="https://idarati.africacold.fr/" target="_blank" rel="noopener" class="btn-open-url">↗</a>
+              </div>
+            </div>
+
+            <!-- Row 2: Services -->
+            <div class="pixel-url-row">
+              <div class="pixel-url-info">
+                <div class="pixel-url-title">💼 خدماتنا (Services)</div>
+                <div class="pixel-url-link">https://idarati.africacold.fr/services/</div>
+              </div>
+              <div class="pixel-url-tag">ViewServices</div>
+              <div class="pixel-url-actions">
+                <button type="button" class="btn-copy-url" onclick="copyTrackingUrl('https://idarati.africacold.fr/services/', this)">📋 نسخ</button>
+                <a href="https://idarati.africacold.fr/services/" target="_blank" rel="noopener" class="btn-open-url">↗</a>
+              </div>
+            </div>
+
+            <!-- Row 3: Offer -->
+            <div class="pixel-url-row">
+              <div class="pixel-url-info">
+                <div class="pixel-url-title">🎁 عرض شهرين محاسبة مجانية (Offer)</div>
+                <div class="pixel-url-link">https://idarati.africacold.fr/offer/</div>
+              </div>
+              <div class="pixel-url-tag">ViewOffer</div>
+              <div class="pixel-url-actions">
+                <button type="button" class="btn-copy-url" onclick="copyTrackingUrl('https://idarati.africacold.fr/offer/', this)">📋 نسخ</button>
+                <a href="https://idarati.africacold.fr/offer/" target="_blank" rel="noopener" class="btn-open-url">↗</a>
+              </div>
+            </div>
+
+            <!-- Row 4: How It Works -->
+            <div class="pixel-url-row">
+              <div class="pixel-url-info">
+                <div class="pixel-url-title">⚡ كيف نعمل - 4 خطوات (How it works)</div>
+                <div class="pixel-url-link">https://idarati.africacold.fr/how-it-works/</div>
+              </div>
+              <div class="pixel-url-tag">ViewHowItWorks</div>
+              <div class="pixel-url-actions">
+                <button type="button" class="btn-copy-url" onclick="copyTrackingUrl('https://idarati.africacold.fr/how-it-works/', this)">📋 نسخ</button>
+                <a href="https://idarati.africacold.fr/how-it-works/" target="_blank" rel="noopener" class="btn-open-url">↗</a>
+              </div>
+            </div>
+
+            <!-- Row 5: Testimonials -->
+            <div class="pixel-url-row">
+              <div class="pixel-url-info">
+                <div class="pixel-url-title">⭐ آراء وتجارب الزبائن (Testimonials / Avis)</div>
+                <div class="pixel-url-link">https://idarati.africacold.fr/testimonials/</div>
+              </div>
+              <div class="pixel-url-tag">ViewTestimonials</div>
+              <div class="pixel-url-actions">
+                <button type="button" class="btn-copy-url" onclick="copyTrackingUrl('https://idarati.africacold.fr/testimonials/', this)">📋 نسخ</button>
+                <a href="https://idarati.africacold.fr/testimonials/" target="_blank" rel="noopener" class="btn-open-url">↗</a>
+              </div>
+            </div>
+
+            <!-- Row 6: About -->
+            <div class="pixel-url-row">
+              <div class="pixel-url-info">
+                <div class="pixel-url-title">👨‍💼 عن المؤسس إدريس عنابي (About)</div>
+                <div class="pixel-url-link">https://idarati.africacold.fr/about/</div>
+              </div>
+              <div class="pixel-url-tag">ViewAbout</div>
+              <div class="pixel-url-actions">
+                <button type="button" class="btn-copy-url" onclick="copyTrackingUrl('https://idarati.africacold.fr/about/', this)">📋 نسخ</button>
+                <a href="https://idarati.africacold.fr/about/" target="_blank" rel="noopener" class="btn-open-url">↗</a>
+              </div>
+            </div>
+
+            <!-- Row 7: FAQ -->
+            <div class="pixel-url-row">
+              <div class="pixel-url-info">
+                <div class="pixel-url-title">❓ الأسئلة الشائعة (FAQ)</div>
+                <div class="pixel-url-link">https://idarati.africacold.fr/faq/</div>
+              </div>
+              <div class="pixel-url-tag">ViewFAQ</div>
+              <div class="pixel-url-actions">
+                <button type="button" class="btn-copy-url" onclick="copyTrackingUrl('https://idarati.africacold.fr/faq/', this)">📋 نسخ</button>
+                <a href="https://idarati.africacold.fr/faq/" target="_blank" rel="noopener" class="btn-open-url">↗</a>
+              </div>
+            </div>
+
+            <!-- Row 8: Order / Form -->
+            <div class="pixel-url-row">
+              <div class="pixel-url-info">
+                <div class="pixel-url-title">📝 استمارة الطلب وحجز الاستشارة (Order)</div>
+                <div class="pixel-url-link">https://idarati.africacold.fr/order/</div>
+              </div>
+              <div class="pixel-url-tag highlight-blue">InitiateCheckout</div>
+              <div class="pixel-url-actions">
+                <button type="button" class="btn-copy-url" onclick="copyTrackingUrl('https://idarati.africacold.fr/order/', this)">📋 نسخ</button>
+                <a href="https://idarati.africacold.fr/order/" target="_blank" rel="noopener" class="btn-open-url">↗</a>
+              </div>
+            </div>
+
+            <!-- Row 9: Thank You Page -->
+            <div class="pixel-url-row highlight-row">
+              <div class="pixel-url-info">
+                <div class="pixel-url-title">🎉 صفحة الشكر وتأكيد الطلب (Thank You Page)</div>
+                <div class="pixel-url-link">https://idarati.africacold.fr/thank-you/</div>
+              </div>
+              <div class="pixel-url-tag highlight-green">Lead + Purchase ⭐</div>
+              <div class="pixel-url-actions">
+                <button type="button" class="btn-copy-url" onclick="copyTrackingUrl('https://idarati.africacold.fr/thank-you/', this)">📋 نسخ</button>
+                <a href="https://idarati.africacold.fr/thank-you/" target="_blank" rel="noopener" class="btn-open-url">↗</a>
+              </div>
+            </div>
+
+            <!-- Row 10: Merci -->
+            <div class="pixel-url-row highlight-row">
+              <div class="pixel-url-info">
+                <div class="pixel-url-title">🇫🇷 صفحة الشكر بالفرنسية (Merci)</div>
+                <div class="pixel-url-link">https://idarati.africacold.fr/merci/</div>
+              </div>
+              <div class="pixel-url-tag highlight-green">Lead + Purchase ⭐</div>
+              <div class="pixel-url-actions">
+                <button type="button" class="btn-copy-url" onclick="copyTrackingUrl('https://idarati.africacold.fr/merci/', this)">📋 نسخ</button>
+                <a href="https://idarati.africacold.fr/merci/" target="_blank" rel="noopener" class="btn-open-url">↗</a>
+              </div>
+            </div>
+
+            <!-- Row 11: Contact -->
+            <div class="pixel-url-row">
+              <div class="pixel-url-info">
+                <div class="pixel-url-title">📍 صفحة التواصل وعناوين المكاتب (Contact)</div>
+                <div class="pixel-url-link">https://idarati.africacold.fr/contact/</div>
+              </div>
+              <div class="pixel-url-tag">Contact</div>
+              <div class="pixel-url-actions">
+                <button type="button" class="btn-copy-url" onclick="copyTrackingUrl('https://idarati.africacold.fr/contact/', this)">📋 نسخ</button>
+                <a href="https://idarati.africacold.fr/contact/" target="_blank" rel="noopener" class="btn-open-url">↗</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="pixel-tip-box">
+            <span style="font-size:20px;">💡</span>
+            <div>
+              <strong>نصيحة للميديا باير (Facebook / TikTok / Google Ads):</strong>
+              <ul style="margin:4px 0 0 16px; padding:0; font-size:12.5px; line-height:1.6;">
+                <li>استخدم رابط <code>https://idarati.africacold.fr/order/</code> أو <code>/offer/</code> كوجهة إعلانية مباشرة للحملة.</li>
+                <li>في مدير الأحداث (Events Manager): أنشئ <strong>تحويل مخصص (Custom Conversion)</strong> واختر القاعدة: <code>URL contains /thank-you</code> أو <code>/merci</code> لتتبع مبيعات وطلبات الـ Leads بدقة مطلقة.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
 
       <!-- 7. Footer Actions -->
       <div class="pixel-card-footer">
@@ -2355,6 +2667,25 @@ function toggleTokenVisibility() {
   } else {
     inp.type = 'password';
     if (btn) btn.textContent = '👁️';
+  }
+}
+
+
+function copyTrackingUrl(url, btn) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function(){
+      var orig = btn.textContent;
+      btn.textContent = "✓ تم النسخ!";
+      btn.style.background = "#10b981";
+      btn.style.color = "#fff";
+      setTimeout(function(){
+        btn.textContent = orig;
+        btn.style.background = "";
+        btn.style.color = "";
+      }, 1500);
+    });
+  } else {
+    prompt("انسخ الرابط يدوياً:", url);
   }
 }
 
