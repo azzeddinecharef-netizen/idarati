@@ -2,7 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>آراء وتجارب الزبائن مع IDARATI</title>
 <meta name="description" content="استمع لآراء وتجارب أصحاب المؤسسات ورواد الأعمال الذين اعتمدوا على IDARATI في تأسيس شركاتهم ومرافقتهم المحاسبية.">
 <meta name="theme-color" content="#0B1638">
@@ -33,13 +34,13 @@ window.CONFIG = {
   EMAIL: "support@idaraticompany.dz",
 
   // 4) الفيديو: ضع ملف idarati-video.mp4 في نفس المجلد مع index.html (أو ألصق رابطاً آخر). اتركه فارغاً لإخفاء القسم.
-  VIDEO_URL: "idarati-video.mp4",
+  VIDEO_URL: "/idarati-video.mp4",
 
   // 5) التسجيلات الصوتية لآراء الزبائن
-  AUDIO_URL: "avis-client.mp3",
+  AUDIO_URL: "/avis-client.mp3",
   AUDIO_NAME_AR: "رأي زبون حقيقي من زبائن IDARATI",
   AUDIO_NAME_FR: "Témoignage d'un client IDARATI",
-  AUDIO_URL_2: "avis-client-2.ogg",
+  AUDIO_URL_2: "/avis-client-2.ogg",
   AUDIO_NAME_AR_2: "رأي زبون حقيقي من زبائن IDARATI",
   AUDIO_NAME_FR_2: "Témoignage d'un client IDARATI"
 };
@@ -533,20 +534,29 @@ footer li{margin-bottom:8px}
       <h2 data-i18n="t_title">ماذا يقولون عن IDARATI؟</h2>
     </div>
     <div class="audio-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; max-width:840px; margin:28px auto 0;">
-      <div class="audio-box" id="audioBox" style="margin:0;" hidden>
+      <div class="audio-box" id="audioBox" style="margin:0;">
         <div class="icon"><svg aria-hidden="true"><use href="#i-mic"/></svg></div>
         <div style="flex:1;min-width:0">
           <b data-i18n="t_audio">اسمع تجربة أحد زبائننا</b>
           <span id="audioName"></span>
-          <audio id="audio" controls preload="none"></audio>
+          <audio id="audio" controls preload="metadata">
+            <source src="/avis-client.mp3" type="audio/mpeg">
+            <source src="https://idarati.africacold.fr/avis-client.mp3" type="audio/mpeg">
+            متصفحك لا يدعم تشغيل الصوت.
+          </audio>
         </div>
       </div>
-      <div class="audio-box" id="audioBox2" style="margin:0;" hidden>
+      <div class="audio-box" id="audioBox2" style="margin:0;">
         <div class="icon"><svg aria-hidden="true"><use href="#i-mic"/></svg></div>
         <div style="flex:1;min-width:0">
           <b data-i18n="t_audio2">اسمع تجربة أحد زبائننا</b>
           <span id="audioName2"></span>
-          <audio id="audio2" controls preload="none"></audio>
+          <audio id="audio2" controls preload="metadata">
+            <source src="/avis-client-2.ogg" type="audio/ogg">
+            <source src="https://idarati.africacold.fr/avis-client-2.ogg" type="audio/ogg">
+            <source src="/avis-client.mp3" type="audio/mpeg">
+            متصفحك لا يدعم تشغيل الصوت.
+          </audio>
         </div>
       </div>
     </div>
@@ -1017,17 +1027,28 @@ document.getElementById("yr").textContent = new Date().getFullYear();
 var vs=document.getElementById("vidSec"), v=document.getElementById("vid");
 if (C.VIDEO_URL) { v.addEventListener("error",function(){vs.hidden=true;},true); var so=document.createElement("source"); so.src=C.VIDEO_URL; so.type="video/mp4"; so.addEventListener("error",function(){vs.hidden=true;}); v.appendChild(so); vs.hidden=false;
   var played=false; v.addEventListener("play",function(){ if(!played){played=true; fbq("trackCustom","VideoPlay");} }); }
-if (C.AUDIO_URL) { var au=document.getElementById("audio"); au.addEventListener("error",function(){document.getElementById("audioBox").hidden=true;}); au.src=C.AUDIO_URL; au.preload="metadata"; document.getElementById("audioBox").hidden=false; au.addEventListener("play",function(){ fbq("trackCustom","AudioPlay"); },{once:true}); }
-if (C.AUDIO_URL_2) { var au2=document.getElementById("audio2"); au2.addEventListener("error",function(){document.getElementById("audioBox2").hidden=true;}); au2.src=C.AUDIO_URL_2; au2.preload="metadata"; document.getElementById("audioBox2").hidden=false; au2.addEventListener("play",function(){ fbq("trackCustom","AudioPlay2"); },{once:true}); }
-
-/* Contact links click (WhatsApp, Phone, Email) → Pixel Contact */
-document.addEventListener("click", function(e){
-  var wa = e.target.closest(".js-wa");
-  if (wa) { fbq("track","Contact",{method:"whatsapp"}); return; }
-  var tel = e.target.closest(".js-tel");
-  if (tel) { fbq("track","Contact",{method:"phone"}); return; }
-  var mail = e.target.closest(".js-mail");
-  if (mail) { fbq("track","Contact",{method:"email"}); return; }
+// Audio Player Initialization with guaranteed absolute paths & error resilience
+if (C.AUDIO_URL) {
+  var au = document.getElementById("audio");
+  var box = document.getElementById("audioBox");
+  if (au && box) {
+    box.hidden = false;
+    var absAudio1 = C.AUDIO_URL.startsWith("http") ? C.AUDIO_URL : ("/" + C.AUDIO_URL.replace(/^\/+/, ""));
+    au.src = absAudio1;
+    au.preload = "metadata";
+    au.addEventListener("play", function(){ fbq("trackCustom", "AudioPlay"); }, {once: true});
+  }
+}
+if (C.AUDIO_URL_2) {
+  var au2 = document.getElementById("audio2");
+  var box2 = document.getElementById("audioBox2");
+  if (au2 && box2) {
+    box2.hidden = false;
+    var absAudio2 = C.AUDIO_URL_2.startsWith("http") ? C.AUDIO_URL_2 : ("/" + C.AUDIO_URL_2.replace(/^\/+/, ""));
+    au2.src = absAudio2;
+    au2.preload = "metadata";
+    au2.addEventListener("play", function(){ fbq("trackCustom", "AudioPlay2"); }, {once: true});
+  }
 });
 
 applyLang(lang);
