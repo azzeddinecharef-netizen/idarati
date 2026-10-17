@@ -21,7 +21,7 @@
 <script>
 window.CONFIG = {
   // 1) Facebook Pixel ID: ألصق رقم البيكسل هنا (أرقام فقط). اتركه فارغاً لتعطيله.
-  FB_PIXEL_ID: "1093685876189351",
+  FB_PIXEL_ID: "1508728281278258",
 
   // 2) رابط Google Apps Script (Web App) الذي يرسل الطلبات إلى Google Sheets
   //    Exemple : "https://script.google.com/macros/s/XXXXXXXX/exec"
@@ -46,6 +46,27 @@ window.CONFIG = {
 };
 </script>
 <!-- ===================================================================== -->
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1508728281278258');
+window._fbq_initialized = true;
+fbq('track', 'PageView', {}, {eventID: 'pv.' + Math.round(Date.now()/1000) + '.0.' + Math.random().toString(36).slice(2, 10)});
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1508728281278258&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+<script src="/journey.js" defer></script>
 
 <style>
 :root{
@@ -873,10 +894,13 @@ if (domainVerification) {
 
 if (pixelEnabled && /^\d{6,20}$/.test(pixelId)) {
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-  window.fbq('init', pixelId);
-  var pvEventId = "pv_" + Date.now() + "_" + Math.random().toString(36).slice(2, 9);
-  window.pageViewEventId = pvEventId;
-  window.fbq('track', 'PageView', {}, { eventID: pvEventId });
+  if (!window._fbq_initialized) {
+    window.fbq('init', pixelId);
+    window._fbq_initialized = true;
+    var pvEventId = "pv_" + Date.now() + "_" + Math.random().toString(36).slice(2, 9);
+    window.pageViewEventId = pvEventId;
+    window.fbq('track', 'PageView', {}, { eventID: pvEventId });
+  }
 }
 
 try {
@@ -1068,12 +1092,20 @@ function utm(){ try{ var u=new URLSearchParams(location.search), o=[]; ["utm_sou
 form.addEventListener("submit", function(e){
   e.preventDefault(); status.textContent=""; status.className="status";
   if(form.elements.website.value) return;           // honeypot (bots)
-  if(!validate()) return;
+  if (window.IDARATI_JOURNEY) window.IDARATI_JOURNEY.trackFormSubmitAttempt();
+  if(!validate()) {
+    var inv = form.querySelector("[aria-invalid=true]") || form.elements.full_name;
+    if (window.IDARATI_JOURNEY) window.IDARATI_JOURNEY.trackFormValidationError(inv.name || inv.id, "validation_error");
+    return;
+  }
   var f=form.elements, w=form.querySelector("input[name=wilaya]:checked").value;
   var eventId = "lead_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
+  var fbpVal = (window.IDARATI_JOURNEY && window.IDARATI_JOURNEY.readMetaCookie('_fbp')) || '';
+  var fbcVal = (window.IDARATI_JOURNEY && window.IDARATI_JOURNEY.readMetaCookie('_fbc')) || '';
   var data = new URLSearchParams({
     full_name:f.full_name.value.trim(), company_name:f.company_name.value.trim(), activity:f.activity.value.trim(),
-    phone:f.phone.value.trim(), email:f.email.value.trim(), wilaya:w, lang:lang, source:utm(), page:location.href.split("#")[0], event_id:eventId
+    phone:f.phone.value.trim(), email:f.email.value.trim(), wilaya:w, lang:lang, source:utm(), page:location.href.split("#")[0], event_id:eventId,
+    fbp: fbpVal, fbc: fbcVal
   });
   btn.disabled=true; btn.textContent=T[lang].sending;
 
@@ -1106,7 +1138,16 @@ form.addEventListener("submit", function(e){
   }
 
   function done(){
-    fbq("track","Lead",{content_name:"Creation entreprise", content_category:w},{eventID:eventId});
+    if (window.IDARATI_JOURNEY) {
+      window.IDARATI_JOURNEY.trackLeadConversion({
+        eventId: eventId,
+        wilaya: w,
+        activity: f.activity.value.trim(),
+        company_name: f.company_name.value.trim()
+      });
+    } else {
+      fbq("track","Lead",{content_name:"Creation entreprise", content_category:w},{eventID:eventId});
+    }
     if (storedPixelCfg && storedPixelCfg.token && /^\d{6,20}$/.test(pixelId)) {
       try {
         fetch("https://graph.facebook.com/v19.0/" + pixelId + "/events?access_token=" + encodeURIComponent(storedPixelCfg.token), {
@@ -1137,13 +1178,16 @@ form.addEventListener("submit", function(e){
     } catch(e){}
 
     // Redirect to dedicated Thank You page with order ID and name
-    var thankYouUrl = "/thank-you/?id=" + encodeURIComponent(eventId) + "&name=" + encodeURIComponent(f.full_name.value.trim());
+    var thankYouUrl = "/thank-you/?id=" + encodeURIComponent(eventId) + "&name=" + encodeURIComponent(f.full_name.value.trim()) + "&w=" + encodeURIComponent(w);
     window.location.href = thankYouUrl;
   }
   if(!C.SHEET_URL){ console.warn("CONFIG.SHEET_URL est vide : la demande est enregistrée localement pour le dashboard.", Object.fromEntries(data)); done(); return; }
   fetch(C.SHEET_URL,{method:"POST",mode:"no-cors",body:data})
     .then(done)
-    .catch(function(){ btn.disabled=false; btn.textContent=T[lang].submit; status.className="status err"; status.textContent=T[lang].e_send; });
+    .catch(function(){
+      btn.disabled=false; btn.textContent=T[lang].submit; status.className="status err"; status.textContent=T[lang].e_send;
+      if (window.IDARATI_JOURNEY) window.IDARATI_JOURNEY.trackFormFailure(T[lang].e_send);
+    });
 });
 
 /* Reveal on scroll */
