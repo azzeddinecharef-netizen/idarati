@@ -2114,6 +2114,14 @@ body {
           </label>
         </div>
       </div>
+
+      <div class="form-group" style="padding-top:10px; border-top:1px solid var(--line);">
+        <label style="color:var(--err);">تنظيف البيانات المحلية</label>
+        <button type="button" class="btn btn-outline" style="width:100%; margin-top:6px; justify-content:center; gap:8px; border-color:var(--err); color:var(--err);" onclick="clearAllLeads()">
+          <span>🗑️</span>
+          <span>مسح كل الطلبات المحلية والمزامنة مع Google Sheets</span>
+        </button>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeSettingsModal()">إغلاق</button>
@@ -2132,7 +2140,7 @@ const LEADS_KEY = 'idarati_leads_db';
 const AUTH_KEY = 'idarati_auth_token';
 
 let appConfig = {
-  sheetUrl: '',
+  sheetUrl: 'https://script.google.com/macros/s/AKfycbxoqHF0mkE0qnINK7f6Oi59_XAINk5seheTp2YvGzY-k5M4KbYVqRL4xo8cNhXMF8HC/exec',
   pin: 'admin2026',
   waTemplateAr: 'السلام عليكم ورحمة الله، الأستاذ(ة) {NAME}، معكم مستشاركم القانوني من مؤسسة IDARATI بخصوص طلبكم لإنشاء شركة {COMPANY} في {WILAYA}. هل الوقت مناسب لإفادتكم بالتفاصيل وتحديد موعد؟',
   waTemplateFr: 'Bonjour M./Mme {NAME}, je suis votre conseiller de IDARATI Company concernant votre demande de création d\'entreprise {COMPANY} à {WILAYA}. Quand seriez-vous disponible pour un échange ?',
@@ -2147,84 +2155,8 @@ let appConfig = {
   }
 };
 
-// Initial Mock Leads (Demonstrating Algerian Business Creation use-cases)
-const DEFAULT_LEADS = [
-  {
-    id: 'lead-1',
-    date: new Date(Date.now() - 3600000 * 2).toISOString(),
-    full_name: 'أمين بن علي',
-    company_name: 'SARL Atlas Logistics',
-    activity: 'نقل البضائع واللوجستيك',
-    phone: '0770345816',
-    email: 'amine.benali@gmail.com',
-    wilaya: 'Alger',
-    lang: 'ar',
-    source: 'facebook',
-    page: 'landing',
-    status: 'Nouveau',
-    notes: 'مهتم بتأسيس شركة ذات مسؤولية محدودة SARL برأسمال 100 ألف دج.'
-  },
-  {
-    id: 'lead-2',
-    date: new Date(Date.now() - 3600000 * 5).toISOString(),
-    full_name: 'Sofiane Merad',
-    company_name: 'EURL Mediconseil',
-    activity: 'استشارات صيدلانية وشبه طبية',
-    phone: '0555123456',
-    email: 'sofiane.merad@yahoo.fr',
-    wilaya: 'Blida',
-    lang: 'fr',
-    source: 'tiktok',
-    page: 'landing',
-    status: 'Appelé',
-    notes: 'تحدثنا معه هاتفياً، أرسلنا له قائمة الوثائق المطلوبة لحجز التسمية.'
-  },
-  {
-    id: 'lead-3',
-    date: new Date(Date.now() - 3600000 * 24).toISOString(),
-    full_name: 'كريم زروقي',
-    company_name: 'SARL Maghreb Import',
-    activity: 'استيراد وتوزيع المواد الغذائية',
-    phone: '0661789012',
-    email: 'karim.z@outlook.com',
-    wilaya: 'Alger',
-    lang: 'ar',
-    source: 'facebook',
-    page: 'landing',
-    status: 'Rappeler',
-    notes: 'طلب إعادة الاتصال به يوم الأحد صباحاً بعد اجتماع الشركاء.'
-  },
-  {
-    id: 'lead-4',
-    date: new Date(Date.now() - 3600000 * 48).toISOString(),
-    full_name: 'فاطمة الزهراء قاسمي',
-    company_name: 'SPA Numidia Tech',
-    activity: 'تطوير البرمجيات وحلول الذكاء الاصطناعي',
-    phone: '0773998877',
-    email: 'f.kacemi@numidiatech.dz',
-    wilaya: 'Alger',
-    lang: 'fr',
-    source: 'direct',
-    page: 'landing',
-    status: 'RDV',
-    notes: 'موعد في مكتب الجزائر العاصمة يوم الإثنين الساعة 11:00 لإيداع الملف القانوني.'
-  },
-  {
-    id: 'lead-5',
-    date: new Date(Date.now() - 3600000 * 72).toISOString(),
-    full_name: 'رياض بلحاج',
-    company_name: 'EURL Mitidja Froid',
-    activity: 'تبريد صناعي وتكييف',
-    phone: '0560112233',
-    email: 'riad.froid09@gmail.com',
-    wilaya: 'Blida',
-    lang: 'ar',
-    source: 'facebook',
-    page: 'landing',
-    status: 'Client',
-    notes: 'تم توقيع العقد رسمياً واستلام الملف، قيد استخراج السجل التجاري و NIF/NIS.'
-  }
-];
+// Initial Mock Leads - Kept empty to show only real incoming leads
+const DEFAULT_LEADS = [];
 
 let leads = [];
 let currentFilter = { query: '', wilaya: '', source: '' };
@@ -2300,6 +2232,10 @@ function loadConfig() {
   if (saved) {
     try { appConfig = { ...appConfig, ...JSON.parse(saved) }; } catch (e) {}
   }
+  // Ensure default sheetUrl is always populated if empty
+  if (!appConfig.sheetUrl || !appConfig.sheetUrl.trim()) {
+    appConfig.sheetUrl = 'https://script.google.com/macros/s/AKfycbxoqHF0mkE0qnINK7f6Oi59_XAINk5seheTp2YvGzY-k5M4KbYVqRL4xo8cNhXMF8HC/exec';
+  }
   // Load dedicated pixel config
   const savedPixel = localStorage.getItem('idarati_pixel_config');
   if (savedPixel) {
@@ -2314,7 +2250,7 @@ function loadConfig() {
     };
   }
   // Try reading parent landing page SHEET_URL if available
-  if (!appConfig.sheetUrl && window.parent && window.parent.CONFIG && window.parent.CONFIG.SHEET_URL) {
+  if ((!appConfig.sheetUrl || !appConfig.sheetUrl.trim()) && window.parent && window.parent.CONFIG && window.parent.CONFIG.SHEET_URL) {
     appConfig.sheetUrl = window.parent.CONFIG.SHEET_URL;
   }
 }
@@ -2355,11 +2291,18 @@ function logout() {
 function loadLeads() {
   const saved = localStorage.getItem(LEADS_KEY);
   if (saved) {
-    try { leads = JSON.parse(saved); } catch (e) { leads = DEFAULT_LEADS; }
+    try {
+      leads = JSON.parse(saved);
+      if (!Array.isArray(leads)) leads = [];
+      // Clean up legacy mock leads if any exist
+      leads = leads.filter(l => !['lead-1', 'lead-2', 'lead-3', 'lead-4', 'lead-5'].includes(l.id) && l.company_name !== 'SARL Atlas Logistics');
+    } catch (e) {
+      leads = [];
+    }
   } else {
-    leads = DEFAULT_LEADS;
-    saveLeads();
+    leads = [];
   }
+  saveLeads();
 }
 
 function saveLeads() {
@@ -2795,12 +2738,43 @@ function saveLeadDetails() {
 }
 function deleteCurrentLead() {
   const id = document.getElementById('editLeadId').value;
+  const leadToDelete = leads.find(l => l.id === id);
   if (!confirm('هل أنت متأكد من حذف هذا الطلب نهائياً؟')) return;
   leads = leads.filter(l => l.id !== id);
   saveLeads();
   renderAll();
   closeLeadModal();
   showToast('تم حذف الطلب');
+  if (leadToDelete) syncLeadDelete(leadToDelete);
+}
+
+async function syncLeadDelete(lead) {
+  if (!appConfig.sheetUrl) return;
+  try {
+    const url = appConfig.sheetUrl;
+    fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'delete_lead',
+        phone: lead.phone || '',
+        id: lead.id || ''
+      })
+    });
+  } catch (e) {}
+}
+
+function clearAllLeads() {
+  if (!confirm('هل تريد مسح جميع البيانات المحلية وتحديث القائمة مباشرة من Google Sheets؟')) return;
+  leads = [];
+  saveLeads();
+  renderAll();
+  closeSettingsModal();
+  showToast('تم مسح البيانات المحلية ومزامنة الطلبات');
+  if (appConfig.sheetUrl) {
+    syncWithGoogleSheet();
+  }
 }
 function changeLeadStatus(id, newStatus) {
   const lead = leads.find(l => l.id === id);
@@ -2892,15 +2866,17 @@ async function syncWithGoogleSheet(silent = false) {
     const res = await fetch(url, { method: 'GET' });
     const data = await res.json();
     if (data && data.ok && Array.isArray(data.leads)) {
-      // Merge with local leads by matching phone or id
-      data.leads.forEach(remote => {
+      // Filter out mock leads
+      const remoteLeads = data.leads.filter(l => !['lead-1', 'lead-2', 'lead-3', 'lead-4', 'lead-5'].includes(l.id) && l.company_name !== 'SARL Atlas Logistics');
+
+      remoteLeads.forEach(remote => {
         const local = leads.find(l => (l.phone && remote.phone && l.phone.replace(/\D/g,'') === remote.phone.replace(/\D/g,'')) || l.id === remote.id);
         if (local) {
           // Update status if remote is newer
           local.status = remote.status || local.status;
         } else {
           leads.unshift({
-            id: 'lead-' + Date.now() + '-' + Math.random().toString(36).substr(2,4),
+            id: remote.id || ('lead-' + Date.now() + '-' + Math.random().toString(36).substr(2,4)),
             date: remote.date || new Date().toISOString(),
             full_name: remote.full_name || '',
             company_name: remote.company_name || '',
@@ -2915,6 +2891,8 @@ async function syncWithGoogleSheet(silent = false) {
           });
         }
       });
+      // Purge any mock leads
+      leads = leads.filter(l => !['lead-1', 'lead-2', 'lead-3', 'lead-4', 'lead-5'].includes(l.id) && l.company_name !== 'SARL Atlas Logistics');
       saveLeads();
       renderAll();
       syncDot.classList.remove('offline');

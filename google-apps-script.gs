@@ -41,6 +41,22 @@ function doPost(e) {
       return json_({ ok: true, not_found: true });
     }
 
+    // حذف طلب من لوحة التحكم والجدول نهائياً / Supprimer un lead
+    if (p.action === 'delete_lead' && (p.phone || p.id)) {
+      const sh = getSheet_();
+      const data = sh.getDataRange().getValues();
+      const targetPhone = p.phone ? String(p.phone).replace(/\D/g, '') : '';
+      for (let i = 1; i < data.length; i++) {
+        const rowPhone = String(data[i][4] || '').replace(/\D/g, '');
+        const matchPhone = targetPhone && rowPhone && (rowPhone === targetPhone || rowPhone.endsWith(targetPhone.slice(-8)));
+        if (matchPhone || p.id === ('lead-row-' + i)) {
+          sh.deleteRow(i + 1);
+          return json_({ ok: true, deleted: true });
+        }
+      }
+      return json_({ ok: true, not_found: true });
+    }
+
     if (!p.full_name || !p.phone) return json_({ ok: false, error: 'missing fields' });
 
     const sh = getSheet_();
