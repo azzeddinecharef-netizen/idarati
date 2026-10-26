@@ -367,6 +367,33 @@ body {
   left: auto;
   right: 12px;
 }
+.clear-search-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  left: 10px;
+  line-height: 1;
+  transition: all 0.15s;
+}
+[dir="rtl"] .clear-search-btn {
+  left: 10px;
+  right: auto;
+}
+.clear-search-btn:hover {
+  color: var(--ink);
+  border-color: var(--brand);
+}
 .select-filter {
   padding: 8px 12px;
   border: 1px solid var(--line);
@@ -516,6 +543,15 @@ body {
 .pill-source {
   background: var(--gold-soft);
   color: #92400E;
+}
+.pill-service {
+  background: var(--purple-soft);
+  color: var(--purple);
+}
+.pill-amount {
+  background: #DCFCE7;
+  color: #166534;
+  font-weight: 700;
 }
 .card-actions {
   display: flex;
@@ -687,6 +723,9 @@ body {
   box-shadow: var(--shadow-lg);
   animation: modalIn 0.2s ease-out;
 }
+.modal-box.modal-box-lg {
+  max-width: 680px;
+}
 @keyframes modalIn {
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
@@ -698,9 +737,21 @@ body {
   align-items: center;
   justify-content: space-between;
 }
+.modal-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 .modal-title {
   font-size: 17px;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal-subtitle {
+  font-size: 12px;
+  color: var(--muted);
 }
 .modal-close {
   background: transparent;
@@ -715,6 +766,17 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+.form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--teal);
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--line);
+  margin-top: 4px;
 }
 .form-group {
   display: flex;
@@ -743,6 +805,30 @@ body {
   resize: vertical;
   min-height: 80px;
 }
+.form-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  user-select: none;
+  background: var(--wa-soft);
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(22,122,67,0.25);
+  transition: all 0.15s;
+}
+.form-checkbox-label:hover {
+  background: #BBF7D0;
+}
+.form-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--wa);
+  cursor: pointer;
+}
 .modal-footer {
   padding: 16px 20px;
   border-top: 1px solid var(--line);
@@ -750,6 +836,94 @@ body {
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
+}
+
+/* Quick Add & Toolbar buttons */
+.btn-toolbar-add {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.35);
+  font-weight: 700;
+}
+.btn-toolbar-add:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16,185,129,0.45);
+}
+.col-quick-add {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px dashed var(--line);
+  background: var(--card);
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+.col-quick-add:hover {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+  border-style: solid;
+  transform: scale(1.1);
+}
+.table-top-bar {
+  padding: 14px 18px;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.table-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.table-count-badge {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+.fab-add-order {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 80;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), #16378D);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.25);
+  box-shadow: 0 8px 24px rgba(31,95,191,0.45);
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+[dir="rtl"] .fab-add-order {
+  right: auto;
+  left: 24px;
+}
+.fab-add-order:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 12px 28px rgba(31,95,191,0.6);
 }
 
 /* Toast */
@@ -1394,9 +1568,9 @@ body {
       <span id="syncText">وضع التخزين المحلي</span>
     </div>
 
-    <button class="btn btn-primary" onclick="openNewLeadModal()">
-      <span>+</span>
-      <span id="btnNewLead">طلب جديد</span>
+    <button class="btn btn-primary" onclick="openNewLeadModal()" title="إضافة طلبية جديدة يدوياً">
+      <span style="font-size:15px;">➕</span>
+      <span id="btnNewLead">إضافة طلبية يدوياً</span>
     </button>
 
     <button class="btn btn-outline" onclick="syncWithGoogleSheet()" title="تحديث ومزامنة">
@@ -1492,25 +1666,37 @@ body {
       </button>
     </div>
 
+    <button class="btn btn-primary btn-toolbar-add" onclick="openNewLeadModal()" title="إضافة طلبية جديدة يدوياً">
+      <span>➕</span>
+      <span id="btnToolbarAdd">إضافة طلبية يدوياً</span>
+    </button>
+
     <div class="filter-group">
       <div class="search-input-wrap">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="بحث بالاسم، الهاتف، الشركة..." oninput="handleSearch()">
+        <input type="search" id="searchInput" name="crm_search_field_no_fill" placeholder="بحث بالاسم، الهاتف، الشركة..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleSearch()" onsearch="handleSearch()">
+        <button type="button" id="clearSearchBtn" class="clear-search-btn" onclick="clearSearch()" title="مسح البحث">✕</button>
       </div>
 
       <select id="wilayaFilter" class="select-filter" onchange="handleFilter()">
         <option value="">جميع الولايات</option>
-        <option value="Alger">الجزائر العاصمة (Alger)</option>
-        <option value="Blida">البليدة (Blida)</option>
+        <option value="16 - Alger">الجزائر العاصمة (Alger)</option>
+        <option value="09 - Blida">البليدة (Blida)</option>
+        <option value="31 - Oran">وهران (Oran)</option>
+        <option value="25 - Constantine">قسنطينة (Constantine)</option>
+        <option value="19 - Sétif">سطيف (Sétif)</option>
         <option value="Autre">ولايات أخرى</option>
       </select>
 
       <select id="sourceFilter" class="select-filter" onchange="handleFilter()">
         <option value="">جميع مصادر الزيارات</option>
+        <option value="direct">Direct / المباشر</option>
+        <option value="bureau">زيارة للمكتب</option>
+        <option value="whatsapp">WhatsApp</option>
         <option value="facebook">Facebook Ads</option>
         <option value="tiktok">TikTok Ads</option>
         <option value="instagram">Instagram</option>
-        <option value="direct">Direct / المباشر</option>
+        <option value="referral">توصية عميل</option>
       </select>
     </div>
   </section>
@@ -1524,7 +1710,10 @@ body {
           <span class="col-badge"></span>
           <span class="col-title" id="colNouveau">جديد لم يُعالج</span>
         </div>
-        <span class="col-count" id="count-Nouveau">0</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="col-count" id="count-Nouveau">0</span>
+          <button class="col-quick-add" onclick="openNewLeadModal('Nouveau')" title="إضافة طلبية جديدة في قائمة جديد">+</button>
+        </div>
       </div>
       <div class="kanban-cards" id="cards-Nouveau"></div>
     </div>
@@ -1536,7 +1725,10 @@ body {
           <span class="col-badge"></span>
           <span class="col-title" id="colAppele">تم الاتصال به</span>
         </div>
-        <span class="col-count" id="count-Appelé">0</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="col-count" id="count-Appelé">0</span>
+          <button class="col-quick-add" onclick="openNewLeadModal('Appelé')" title="إضافة طلبية في قائمة تم الاتصال">+</button>
+        </div>
       </div>
       <div class="kanban-cards" id="cards-Appelé"></div>
     </div>
@@ -1548,7 +1740,10 @@ body {
           <span class="col-badge"></span>
           <span class="col-title" id="colRappeler">إعادة الاتصال لاحقاً</span>
         </div>
-        <span class="col-count" id="count-Rappeler">0</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="col-count" id="count-Rappeler">0</span>
+          <button class="col-quick-add" onclick="openNewLeadModal('Rappeler')" title="إضافة طلبية في قائمة إعادة الاتصال">+</button>
+        </div>
       </div>
       <div class="kanban-cards" id="cards-Rappeler"></div>
     </div>
@@ -1560,7 +1755,10 @@ body {
           <span class="col-badge"></span>
           <span class="col-title" id="colRDV">موعد / دراسة ملف</span>
         </div>
-        <span class="col-count" id="count-RDV">0</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="col-count" id="count-RDV">0</span>
+          <button class="col-quick-add" onclick="openNewLeadModal('RDV')" title="إضافة طلبية في قائمة المواعيد ودراسة الملف">+</button>
+        </div>
       </div>
       <div class="kanban-cards" id="cards-RDV"></div>
     </div>
@@ -1572,7 +1770,10 @@ body {
           <span class="col-badge"></span>
           <span class="col-title" id="colClient">عميل مؤكد (تم التوقيع)</span>
         </div>
-        <span class="col-count" id="count-Client">0</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="col-count" id="count-Client">0</span>
+          <button class="col-quick-add" onclick="openNewLeadModal('Client')" title="إضافة عميل مؤكد">+</button>
+        </div>
       </div>
       <div class="kanban-cards" id="cards-Client"></div>
     </div>
@@ -1584,7 +1785,10 @@ body {
           <span class="col-badge"></span>
           <span class="col-title" id="colRefuse">غير مهتم / ملغى</span>
         </div>
-        <span class="col-count" id="count-Non intéressé">0</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="col-count" id="count-Non intéressé">0</span>
+          <button class="col-quick-add" onclick="openNewLeadModal('Non intéressé')" title="إضافة في قائمة غير مهتم">+</button>
+        </div>
       </div>
       <div class="kanban-cards" id="cards-Non intéressé"></div>
     </div>
@@ -1592,6 +1796,17 @@ body {
 
   <!-- 2. Table View -->
   <section id="viewTable" class="table-container" style="display:none;">
+    <div class="table-top-bar">
+      <div class="table-title-group">
+        <span style="font-size:18px;">📋</span>
+        <span style="font-weight:700; font-size:15px;" id="tableHeading">جدول الطلبيات والعملاء</span>
+        <span class="table-count-badge" id="tableCountBadge">0 طلبية</span>
+      </div>
+      <button class="btn btn-primary" onclick="openNewLeadModal()" style="font-size:13px; padding:6px 14px;">
+        <span>➕</span>
+        <span id="btnTableAdd">إضافة طلبية يدوياً</span>
+      </button>
+    </div>
     <table class="data-table">
       <thead>
         <tr>
@@ -1937,28 +2152,105 @@ body {
 
 <!-- Lead Details & Notes Modal -->
 <div id="leadModal" class="modal-backdrop">
-  <div class="modal-box">
+  <div class="modal-box modal-box-lg">
     <div class="modal-header">
-      <div class="modal-title" id="modalLeadTitle">تفاصيل طلب العميل</div>
+      <div class="modal-title-wrap">
+        <div class="modal-title" id="modalLeadTitle">📝 تفاصيل وملف الطلبية</div>
+        <div class="modal-subtitle">عرض وتعديل بيانات العميل، النشاط والمتابعة</div>
+      </div>
       <button class="modal-close" onclick="closeLeadModal()">✕</button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="editLeadId">
       
+      <div class="form-section-title">
+        <span>👤</span>
+        <span>بيانات العميل والتواصل</span>
+      </div>
+
       <div class="form-group">
-        <label id="lblLeadName">اسم العميل</label>
-        <input type="text" id="editName" class="form-input">
+        <label id="lblLeadName">اسم العميل *</label>
+        <input type="text" id="editName" class="form-input" required>
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
         <div class="form-group">
-          <label id="lblLeadPhone">رقم الهاتف</label>
-          <input type="text" id="editPhone" class="form-input">
+          <label id="lblLeadPhone">رقم الهاتف *</label>
+          <input type="tel" id="editPhone" class="form-input" required>
         </div>
         <div class="form-group">
           <label id="lblLeadEmail">البريد الإلكتروني</label>
-          <input type="email" id="editEmail" class="form-input">
+          <input type="email" id="editEmail" class="form-input" placeholder="client@example.com">
         </div>
+      </div>
+
+      <div class="form-group">
+        <label id="lblLeadWilaya">الولاية</label>
+        <select id="editWilaya" class="form-select">
+          <option value="16 - Alger">16 - الجزائر العاصمة (Alger)</option>
+          <option value="09 - Blida">09 - البليدة (Blida)</option>
+          <option value="35 - Boumerdès">35 - بومرداس (Boumerdès)</option>
+          <option value="42 - Tipaza">42 - تيبازة (Tipaza)</option>
+          <option value="31 - Oran">31 - وهران (Oran)</option>
+          <option value="25 - Constantine">25 - قسنطينة (Constantine)</option>
+          <option value="19 - Sétif">19 - سطيف (Sétif)</option>
+          <option value="15 - Tizi Ouzou">15 - تيزي وزو (Tizi Ouzou)</option>
+          <option value="06 - Béjaïa">06 - بجاية (Béjaïa)</option>
+          <option value="23 - Annaba">23 - عنابة (Annaba)</option>
+          <option value="10 - Bouira">10 - البويرة (Bouira)</option>
+          <option value="26 - Médéa">26 - المدية (Médéa)</option>
+          <option value="44 - Aïn Defla">44 - عين الدفلى (Aïn Defla)</option>
+          <option value="27 - Mostaganem">27 - مستغانم (Mostaganem)</option>
+          <option value="13 - Tlemcen">13 - تلمسان (Tlemcen)</option>
+          <option value="29 - Mascara">29 - معسكر (Mascara)</option>
+          <option value="22 - Sidi Bel Abbès">22 - سيدي بلعباس (Sidi Bel Abbès)</option>
+          <option value="05 - Batna">05 - باتنة (Batna)</option>
+          <option value="07 - Biskra">07 - بسكرة (Biskra)</option>
+          <option value="39 - El Oued">39 - الوادي (El Oued)</option>
+          <option value="30 - Ouargla">30 - ورقلة (Ouargla)</option>
+          <option value="17 - Djelfa">17 - الجلفة (Djelfa)</option>
+          <option value="28 - M'Sila">28 - المسيلة (M'Sila)</option>
+          <option value="34 - Bordj Bou Arreridj">34 - برج بوعريريج (Bordj Bou Arreridj)</option>
+          <option value="18 - Jijel">18 - جيجل (Jijel)</option>
+          <option value="21 - Skikda">21 - سكيكدة (Skikda)</option>
+          <option value="24 - Guelma">24 - قالمة (Guelma)</option>
+          <option value="43 - Mila">43 - ميلة (Mila)</option>
+          <option value="04 - Oum El Bouaghi">04 - أم البواقي (Oum El Bouaghi)</option>
+          <option value="41 - Souk Ahras">41 - سوق أهراس (Souk Ahras)</option>
+          <option value="40 - Khenchela">40 - خنشلة (Khenchela)</option>
+          <option value="12 - Tébessa">12 - تبسة (Tébessa)</option>
+          <option value="36 - El Tarf">36 - الطارف (El Tarf)</option>
+          <option value="14 - Tiaret">14 - تيارت (Tiaret)</option>
+          <option value="48 - Relizane">48 - غليزان (Relizane)</option>
+          <option value="38 - Tissemsilt">38 - تسمسيلت (Tissemsilt)</option>
+          <option value="20 - Saïda">20 - سعيدة (Saïda)</option>
+          <option value="46 - Aïn Témouchent">46 - عين تموشنت (Aïn Témouchent)</option>
+          <option value="45 - Naâma">45 - النعامة (Naâma)</option>
+          <option value="32 - El Bayadh">32 - البيض (El Bayadh)</option>
+          <option value="03 - Laghouat">03 - الأغواط (Laghouat)</option>
+          <option value="47 - Ghardaïa">47 - غرداية (Ghardaïa)</option>
+          <option value="55 - Touggourt">55 - تقرت (Touggourt)</option>
+          <option value="51 - Ouled Djellal">51 - أولاد جلال (Ouled Djellal)</option>
+          <option value="57 - El M'Ghair">57 - المغير (El M'Ghair)</option>
+          <option value="58 - El Meniaa">58 - المنيعة (El Meniaa)</option>
+          <option value="08 - Béchar">08 - بشار (Béchar)</option>
+          <option value="52 - Béni Abbès">52 - بني عباس (Béni Abbès)</option>
+          <option value="37 - Tindouf">37 - تندوف (Tindouf)</option>
+          <option value="49 - Timimoun">49 - تيميمون (Timimoun)</option>
+          <option value="01 - Adrar">01 - أدرار (Adrar)</option>
+          <option value="50 - Bordj Badji Mokhtar">50 - برج باجي مختار (Bordj Badji Mokhtar)</option>
+          <option value="53 - In Salah">53 - عين صالح (In Salah)</option>
+          <option value="11 - Tamanrasset">11 - تمنراست (Tamanrasset)</option>
+          <option value="54 - In Guezzam">54 - عين قزام (In Guezzam)</option>
+          <option value="56 - Djanet">56 - جانت (Djanet)</option>
+          <option value="33 - Illizi">33 - إليزي (Illizi)</option>
+          <option value="02 - Chlef">02 - الشلف (Chlef)</option>
+        </select>
+      </div>
+
+      <div class="form-section-title">
+        <span>🏢</span>
+        <span>بيانات الشركة والخدمة</span>
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -1967,18 +2259,34 @@ body {
           <input type="text" id="editCompany" class="form-input">
         </div>
         <div class="form-group">
-          <label id="lblLeadWilaya">الولاية</label>
-          <select id="editWilaya" class="form-select">
-            <option value="Alger">الجزائر العاصمة (Alger)</option>
-            <option value="Blida">البليدة (Blida)</option>
-            <option value="Autre">ولاية أخرى</option>
+          <label>الباقة / الخدمة</label>
+          <select id="editService" class="form-select">
+            <option value="">-- اختياري: اختر الخدمة --</option>
+            <option value="باقة التأسيس الشاملة">باقة التأسيس الشاملة (Pack Création)</option>
+            <option value="تأسيس شركة + توطين سنوي">تأسيس شركة + توطين سنوي (Création + Domiciliation)</option>
+            <option value="توطين المقر فقط">توطين المقر فقط (Domiciliation seule)</option>
+            <option value="استشارة قانونية وتجهيز الملف">استشارة قانونية وتجهيز الملف (Conseil)</option>
+            <option value="تعديل السجل التجاري">تعديل السجل التجاري (Modification RC)</option>
+            <option value="مرافقة محاسبية وجبائية">مرافقة محاسبية وجبائية (Comptabilité)</option>
+            <option value="خدمة أخرى">خدمة أخرى مخصصة</option>
           </select>
         </div>
       </div>
 
-      <div class="form-group">
-        <label id="lblLeadActivity">طبيعة النشاط التجاري</label>
-        <input type="text" id="editActivity" class="form-input">
+      <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:12px;">
+        <div class="form-group">
+          <label id="lblLeadActivity">طبيعة النشاط التجاري</label>
+          <input type="text" id="editActivity" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>المبلغ المتفق عليه (دج)</label>
+          <input type="text" id="editAmount" class="form-input" placeholder="مثال: 45000">
+        </div>
+      </div>
+
+      <div class="form-section-title">
+        <span>🔄</span>
+        <span>المتابعة والملاحظات</span>
       </div>
 
       <div class="form-group">
@@ -2006,66 +2314,219 @@ body {
   </div>
 </div>
 
-<!-- New Lead Modal -->
+<!-- New Manual Order Modal -->
 <div id="newLeadModal" class="modal-backdrop">
-  <div class="modal-box">
+  <div class="modal-box modal-box-lg">
     <div class="modal-header">
-      <div class="modal-title" id="modalNewTitle">إضافة طلب يدوي جديد</div>
+      <div class="modal-title-wrap">
+        <div class="modal-title" id="modalNewTitle">
+          <span>➕</span>
+          <span>إضافة طلبية يدوياً</span>
+        </div>
+        <div class="modal-subtitle">تسجيل طلبية جديدة لعميل مباشرة في لوحة التحكم وتحديث قاعدة البيانات</div>
+      </div>
       <button class="modal-close" onclick="closeNewLeadModal()">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label>اسم العميل *</label>
-        <input type="text" id="newName" class="form-input" required placeholder="مثال: يوسف بلقاسم">
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-        <div class="form-group">
-          <label>رقم الهاتف *</label>
-          <input type="tel" id="newPhone" class="form-input" required placeholder="0770123456">
+    <form id="newOrderForm" onsubmit="submitNewLead(event)">
+      <div class="modal-body">
+        
+        <!-- 1. Customer Details -->
+        <div class="form-section-title">
+          <span>👤</span>
+          <span>1. معلومات العميل والاتصال</span>
         </div>
+
+        <div class="form-group">
+          <label>اسم العميل الكامل <span style="color:var(--err);">*</span></label>
+          <input type="text" id="newName" class="form-input" required placeholder="مثال: يوسف بلقاسم">
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>رقم الهاتف <span style="color:var(--err);">*</span></label>
+            <input type="tel" id="newPhone" class="form-input" required placeholder="0550123456 أو 0770...">
+          </div>
+          <div class="form-group">
+            <label>البريد الإلكتروني <span style="color:var(--muted); font-size:11px;">(اختياري)</span></label>
+            <input type="email" id="newEmail" class="form-input" placeholder="client@gmail.com">
+          </div>
+        </div>
+
         <div class="form-group">
           <label>الولاية</label>
           <select id="newWilaya" class="form-select">
-            <option value="Alger">الجزائر العاصمة</option>
-            <option value="Blida">البليدة</option>
-            <option value="Autre">أخرى</option>
+            <option value="16 - Alger" selected>16 - الجزائر العاصمة (Alger)</option>
+            <option value="09 - Blida">09 - البليدة (Blida)</option>
+            <option value="35 - Boumerdès">35 - بومرداس (Boumerdès)</option>
+            <option value="42 - Tipaza">42 - تيبازة (Tipaza)</option>
+            <option value="31 - Oran">31 - وهران (Oran)</option>
+            <option value="25 - Constantine">25 - قسنطينة (Constantine)</option>
+            <option value="19 - Sétif">19 - سطيف (Sétif)</option>
+            <option value="15 - Tizi Ouzou">15 - تيزي وزو (Tizi Ouzou)</option>
+            <option value="06 - Béjaïa">06 - بجاية (Béjaïa)</option>
+            <option value="23 - Annaba">23 - عنابة (Annaba)</option>
+            <option value="10 - Bouira">10 - البويرة (Bouira)</option>
+            <option value="26 - Médéa">26 - المدية (Médéa)</option>
+            <option value="44 - Aïn Defla">44 - عين الدفلى (Aïn Defla)</option>
+            <option value="27 - Mostaganem">27 - مستغانم (Mostaganem)</option>
+            <option value="13 - Tlemcen">13 - تلمسان (Tlemcen)</option>
+            <option value="29 - Mascara">29 - معسكر (Mascara)</option>
+            <option value="22 - Sidi Bel Abbès">22 - سيدي بلعباس (Sidi Bel Abbès)</option>
+            <option value="05 - Batna">05 - باتنة (Batna)</option>
+            <option value="07 - Biskra">07 - بسكرة (Biskra)</option>
+            <option value="39 - El Oued">39 - الوادي (El Oued)</option>
+            <option value="30 - Ouargla">30 - ورقلة (Ouargla)</option>
+            <option value="17 - Djelfa">17 - الجلفة (Djelfa)</option>
+            <option value="28 - M'Sila">28 - المسيلة (M'Sila)</option>
+            <option value="34 - Bordj Bou Arreridj">34 - برج بوعريريج (Bordj Bou Arreridj)</option>
+            <option value="18 - Jijel">18 - جيجل (Jijel)</option>
+            <option value="21 - Skikda">21 - سكيكدة (Skikda)</option>
+            <option value="24 - Guelma">24 - قالمة (Guelma)</option>
+            <option value="43 - Mila">43 - ميلة (Mila)</option>
+            <option value="04 - Oum El Bouaghi">04 - أم البواقي (Oum El Bouaghi)</option>
+            <option value="41 - Souk Ahras">41 - سوق أهراس (Souk Ahras)</option>
+            <option value="40 - Khenchela">40 - خنشلة (Khenchela)</option>
+            <option value="12 - Tébessa">12 - تبسة (Tébessa)</option>
+            <option value="36 - El Tarf">36 - الطارف (El Tarf)</option>
+            <option value="14 - Tiaret">14 - تيارت (Tiaret)</option>
+            <option value="48 - Relizane">48 - غليزان (Relizane)</option>
+            <option value="38 - Tissemsilt">38 - تسمسيلت (Tissemsilt)</option>
+            <option value="20 - Saïda">20 - سعيدة (Saïda)</option>
+            <option value="46 - Aïn Témouchent">46 - عين تموشنت (Aïn Témouchent)</option>
+            <option value="45 - Naâma">45 - النعامة (Naâma)</option>
+            <option value="32 - El Bayadh">32 - البيض (El Bayadh)</option>
+            <option value="03 - Laghouat">03 - الأغواط (Laghouat)</option>
+            <option value="47 - Ghardaïa">47 - غرداية (Ghardaïa)</option>
+            <option value="55 - Touggourt">55 - تقرت (Touggourt)</option>
+            <option value="51 - Ouled Djellal">51 - أولاد جلال (Ouled Djellal)</option>
+            <option value="57 - El M'Ghair">57 - المغير (El M'Ghair)</option>
+            <option value="58 - El Meniaa">58 - المنيعة (El Meniaa)</option>
+            <option value="08 - Béchar">08 - بشار (Béchar)</option>
+            <option value="52 - Béni Abbès">52 - بني عباس (Béni Abbès)</option>
+            <option value="37 - Tindouf">37 - تندوف (Tindouf)</option>
+            <option value="49 - Timimoun">49 - تيميمون (Timimoun)</option>
+            <option value="01 - Adrar">01 - أدرار (Adrar)</option>
+            <option value="50 - Bordj Badji Mokhtar">50 - برج باجي مختار (Bordj Badji Mokhtar)</option>
+            <option value="53 - In Salah">53 - عين صالح (In Salah)</option>
+            <option value="11 - Tamanrasset">11 - تمنراست (Tamanrasset)</option>
+            <option value="54 - In Guezzam">54 - عين قزام (In Guezzam)</option>
+            <option value="56 - Djanet">56 - جانت (Djanet)</option>
+            <option value="33 - Illizi">33 - إليزي (Illizi)</option>
+            <option value="02 - Chlef">02 - الشلف (Chlef)</option>
           </select>
         </div>
-      </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-        <div class="form-group">
-          <label>اسم الشركة المقترح</label>
-          <input type="text" id="newCompany" class="form-input" placeholder="مثال: SARL Atlas Import">
+        <!-- 2. Company & Service Details -->
+        <div class="form-section-title">
+          <span>🏢</span>
+          <span>2. تفاصيل المؤسسة والخدمة المطلوبة</span>
         </div>
-        <div class="form-group">
-          <label>طبيعة النشاط</label>
-          <input type="text" id="newActivity" class="form-input" placeholder="مثال: استيراد وتصدير">
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>اسم الشركة المقترح</label>
+            <input type="text" id="newCompany" class="form-input" placeholder="مثال: Atlas Logistics">
+          </div>
+          <div class="form-group">
+            <label>الشكل القانوني المرغوب</label>
+            <select id="newLegalForm" class="form-select">
+              <option value="">-- اختياري: اختر الصيغة --</option>
+              <option value="SARL">SARL (ش.ذ.م.م - مسؤولية محدودة)</option>
+              <option value="EURL">EURL (ش.ذ.ش.و.ذ.م.م - شخص وحيد)</option>
+              <option value="SPA">SPA (شركة ذات أسهم / مساهمة)</option>
+              <option value="SNC">SNC (شركة التضامن)</option>
+              <option value="Personne Physique">شخص طبيعي / سجل تجاري فردي</option>
+              <option value="Auto-entrepreneur">مقاول ذاتي (Auto-entrepreneur)</option>
+              <option value="Autre">صيغة أخرى</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label>المصدر</label>
-        <select id="newSource" class="form-select">
-          <option value="direct">مباشر / عبر الهاتف</option>
-          <option value="facebook">إعلان فيسبوك</option>
-          <option value="tiktok">تيك توك</option>
-          <option value="referral">توصية من عميل</option>
-        </select>
-      </div>
+        <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>الباقة / الخدمة المطلوبة</label>
+            <select id="newService" class="form-select">
+              <option value="">-- اختر الخدمة --</option>
+              <option value="باقة التأسيس الشاملة">باقة التأسيس الشاملة (Création Complète)</option>
+              <option value="تأسيس شركة + توطين سنوي">تأسيس شركة + توطين سنوي (Création + Domiciliation)</option>
+              <option value="توطين المقر فقط">توطين المقر فقط (Domiciliation de siège)</option>
+              <option value="استشارة قانونية وتجهيز الملف">استشارة قانونية وتجهيز الملف (Conseil Juridique)</option>
+              <option value="تعديل السجل التجاري">تعديل السجل التجاري (Modification RC)</option>
+              <option value="مرافقة محاسبية وجبائية">مرافقة محاسبية وجبائية (Comptabilité)</option>
+              <option value="خدمة أخرى">خدمة مخصصة أخرى</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>قيمة الطلبية (دج)</label>
+            <input type="text" id="newAmount" class="form-input" placeholder="مثال: 45000">
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label>ملاحظات أولية</label>
-        <textarea id="newNotes" class="form-textarea" placeholder="ملاحظات العميل الأولية..."></textarea>
+        <div class="form-group">
+          <label>طبيعة النشاط التجاري</label>
+          <input type="text" id="newActivity" class="form-input" placeholder="مثال: استيراد وتصدير، مقاولة أشغال، تجارة بالجملة، خدمات رقمية...">
+        </div>
+
+        <!-- 3. Status, Source & Notes -->
+        <div class="form-section-title">
+          <span>⚙️</span>
+          <span>3. الحالة الأولية والمصدر</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>حالة الطلبية الأولية</label>
+            <select id="newStatus" class="form-select">
+              <option value="Nouveau" selected>جديد لم يُعالج (Nouveau)</option>
+              <option value="Appelé">تم الاتصال به (Appelé)</option>
+              <option value="Rappeler">إعادة الاتصال لاحقاً (À rappeler)</option>
+              <option value="RDV">موعد / دراسة ملف (RDV / Dossier)</option>
+              <option value="Client">عميل مؤكد (تم التوقيع) (Client signé)</option>
+              <option value="Non intéressé">غير مهتم / ملغى (Non intéressé)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>مصدر الطلبية</label>
+            <select id="newSource" class="form-select">
+              <option value="direct" selected>اتصال هاتفي مباشر (Appel direct)</option>
+              <option value="bureau">زيارة للمكتب / المقر (Au bureau)</option>
+              <option value="whatsapp">محادثة واتساب مباشرة (WhatsApp)</option>
+              <option value="facebook">إعلان فيسبوك (Facebook Ads)</option>
+              <option value="tiktok">تيك توك (TikTok Ads)</option>
+              <option value="instagram">إنستغرام (Instagram)</option>
+              <option value="referral">توصية من عميل (Recommandation)</option>
+              <option value="autre">مصدر آخر</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>ملاحظات المستشار وتفاصيل الاتفاق</label>
+          <textarea id="newNotes" class="form-textarea" placeholder="سجل هنا تفاصيل المحادثة، الموعد المتفق عليه، الوثائق المطلوبة..."></textarea>
+        </div>
+
+        <label class="form-checkbox-label">
+          <input type="checkbox" id="newOpenWa">
+          <span>💬 فتح محادثة WhatsApp مباشرة مع العميل فور حفظ الطلبية</span>
+        </label>
+
       </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeNewLeadModal()">إلغاء</button>
-      <button class="btn btn-primary" onclick="submitNewLead()">إضافة الطلب</button>
-    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeNewLeadModal()">إلغاء</button>
+        <button type="submit" class="btn btn-primary" style="padding:10px 20px; font-weight:700;">
+          <span>➕</span>
+          <span>حفظ وإضافة الطلبية</span>
+        </button>
+      </div>
+    </form>
   </div>
 </div>
+
+<!-- Floating Action Button for Adding Orders Instantly -->
+<button class="fab-add-order" onclick="openNewLeadModal()" title="إضافة طلبية يدوياً" aria-label="إضافة طلبية يدوياً">
+  <span>➕</span>
+</button>
 
 <!-- Settings Modal -->
 <div id="settingsModal" class="modal-backdrop">
@@ -2105,7 +2566,7 @@ body {
       </div>
 
       <div class="form-group" style="padding-top:10px; border-top:1px solid var(--line);">
-        <label>النسخ الاحتياطي للبيانات</label>
+        <label>النسخ الاحتياطي ونقل البيانات</label>
         <div style="display:flex; gap:10px; margin-top:6px;">
           <button class="btn btn-secondary" onclick="exportDataJSON()" style="flex:1;">تصدير نسخة JSON</button>
           <label class="btn btn-secondary" style="flex:1; cursor:pointer;">
@@ -2113,6 +2574,10 @@ body {
             <input type="file" accept=".json" onchange="importDataJSON(event)" style="display:none;">
           </label>
         </div>
+        <button type="button" id="btnPushAllLeads" class="btn btn-outline" style="width:100%; margin-top:8px; justify-content:center; gap:8px; border-color:var(--brand); color:var(--brand);" onclick="pushAllLeadsToSheet()">
+          <span>📤</span>
+          <span id="pushAllCount">رفع ومزامنة جميع الطلبات الحالية إلى Google Sheets</span>
+        </button>
       </div>
 
       <div class="form-group" style="padding-top:10px; border-top:1px solid var(--line);">
@@ -2140,7 +2605,7 @@ const LEADS_KEY = 'idarati_leads_db';
 const AUTH_KEY = 'idarati_auth_token';
 
 let appConfig = {
-  sheetUrl: 'https://script.google.com/macros/s/AKfycbxoqHF0mkE0qnINK7f6Oi59_XAINk5seheTp2YvGzY-k5M4KbYVqRL4xo8cNhXMF8HC/exec',
+  sheetUrl: 'https://script.google.com/macros/s/AKfycbxk3HUf8-62n7iHGxgmO7UgfasDRSmsMjRmSHoLO5kgBxFOAVU_LOw6NvJELw8C7Rck/exec',
   pin: 'admin2026',
   waTemplateAr: 'السلام عليكم ورحمة الله، الأستاذ(ة) {NAME}، معكم مستشاركم القانوني من مؤسسة IDARATI بخصوص طلبكم لإنشاء شركة {COMPANY} في {WILAYA}. هل الوقت مناسب لإفادتكم بالتفاصيل وتحديد موعد؟',
   waTemplateFr: 'Bonjour M./Mme {NAME}, je suis votre conseiller de IDARATI Company concernant votre demande de création d\'entreprise {COMPANY} à {WILAYA}. Quand seriez-vous disponible pour un échange ?',
@@ -2155,8 +2620,107 @@ let appConfig = {
   }
 };
 
-// Initial Mock Leads - Kept empty to show only real incoming leads
-const DEFAULT_LEADS = [];
+// Initial Real Leads
+const DEFAULT_LEADS = [
+  {
+    "id": "lead-row-1",
+    "date": "2026-10-22T15:56:27.107Z",
+    "full_name": "LAROUCI NASSEREDDINE",
+    "company_name": "SARL RBS",
+    "activity": "بناء وأشغال عمومية",
+    "phone": "0557772151",
+    "email": "nassereddinelarouci@yahoo.fr",
+    "wilaya": "Alger",
+    "lang": "ar",
+    "source": "web",
+    "status": "Client",
+    "notes": ""
+  },
+  {
+    "id": "lead-row-2",
+    "date": "2026-10-23T12:44:46.776Z",
+    "full_name": "Mld",
+    "company_name": "",
+    "activity": "تجارة بالتجزئة",
+    "phone": "0771034952",
+    "email": "",
+    "wilaya": "Alger",
+    "lang": "ar",
+    "source": "web",
+    "status": "Nouveau",
+    "notes": ""
+  },
+  {
+    "id": "lead-row-3",
+    "date": "2026-10-23T15:36:14.652Z",
+    "full_name": "Ali Sky",
+    "company_name": "sofain  lmbri",
+    "activity": "استيراد وتصدير",
+    "phone": "+213558576243",
+    "email": "karisonatrac@gmail.com",
+    "wilaya": "Alger",
+    "lang": "ar",
+    "source": "web",
+    "status": "Nouveau",
+    "notes": ""
+  },
+  {
+    "id": "lead-row-4",
+    "date": "2026-10-23T15:44:06.969Z",
+    "full_name": "Abdenacer MAREDJ",
+    "company_name": "",
+    "activity": "تكوين وتعليم",
+    "phone": "0792581917",
+    "email": "maredjnacer@gmail.com",
+    "wilaya": "Alger",
+    "lang": "ar",
+    "source": "web",
+    "status": "Nouveau",
+    "notes": ""
+  },
+  {
+    "id": "lead-row-5",
+    "date": "2026-10-23T15:45:19.770Z",
+    "full_name": "مخناش مصطفى",
+    "company_name": "ميرة ماركت",
+    "activity": "تجارة بالتجزئة",
+    "phone": "0791226500",
+    "email": "musmek442@gmail.com",
+    "wilaya": "Alger",
+    "lang": "ar",
+    "source": "web",
+    "status": "Nouveau",
+    "notes": ""
+  },
+  {
+    "id": "lead-row-6",
+    "date": "2026-10-23T15:53:08.576Z",
+    "full_name": "Abdelkader Addad",
+    "company_name": "Lora",
+    "activity": "Entprise de construction",
+    "phone": "+213540885130",
+    "email": "addadaek@gmail.com",
+    "wilaya": "Alger",
+    "lang": "ar",
+    "source": "web",
+    "status": "Nouveau",
+    "notes": ""
+  },
+  {
+    "id": "lead-row-7",
+    "date": "2026-10-23T21:54:47.139Z",
+    "full_name": "Hayet Hammoudi",
+    "company_name": "EURL Haypro safety",
+    "activity": "تجارة بالجملة",
+    "phone": "0699882505",
+    "email": "hayethammoudi85@gmail.com",
+    "wilaya": "Blida",
+    "lang": "ar",
+    "source": "web",
+    "status": "Rappeler",
+    "notes": ""
+  }
+];
 
 let leads = [];
 let currentFilter = { query: '', wilaya: '', source: '' };
@@ -2170,7 +2734,16 @@ function init() {
   loadLeads();
   applyTheme(appConfig.theme);
   applyLang(appConfig.lang);
+  
+  // Clear any residual browser autofill in search
+  resetSearchState();
   renderAll();
+
+  // Reset search on page restore / reload
+  window.addEventListener('pageshow', function() {
+    resetSearchState();
+    renderAll();
+  });
   
   // 1) Live cross-tab sync (when someone submits the landing page on this device)
   window.addEventListener('storage', function(e) {
@@ -2232,9 +2805,11 @@ function loadConfig() {
   if (saved) {
     try { appConfig = { ...appConfig, ...JSON.parse(saved) }; } catch (e) {}
   }
-  // Ensure default sheetUrl is always populated if empty
-  if (!appConfig.sheetUrl || !appConfig.sheetUrl.trim()) {
-    appConfig.sheetUrl = 'https://script.google.com/macros/s/AKfycbxoqHF0mkE0qnINK7f6Oi59_XAINk5seheTp2YvGzY-k5M4KbYVqRL4xo8cNhXMF8HC/exec';
+  const LATEST_WORKING_URL = 'https://script.google.com/macros/s/AKfycbxk3HUf8-62n7iHGxgmO7UgfasDRSmsMjRmSHoLO5kgBxFOAVU_LOw6NvJELw8C7Rck/exec';
+  // Migrate previous non-working URLs or populate default
+  if (!appConfig.sheetUrl || !appConfig.sheetUrl.trim() || !appConfig.sheetUrl.includes('AKfycbxk3HUf8-62n7iHGxgmO7UgfasDRSmsMjRmSHoLO5kgBxFOAVU_LOw6NvJELw8C7Rck')) {
+    appConfig.sheetUrl = LATEST_WORKING_URL;
+    saveConfig();
   }
   // Load dedicated pixel config
   const savedPixel = localStorage.getItem('idarati_pixel_config');
@@ -2302,6 +2877,13 @@ function loadLeads() {
   } else {
     leads = [];
   }
+  // Ensure real leads are present
+  if (DEFAULT_LEADS && DEFAULT_LEADS.length > 0) {
+    DEFAULT_LEADS.forEach(d => {
+      const exists = leads.some(l => (l.phone && d.phone && l.phone.replace(/\D/g,'') === d.phone.replace(/\D/g,'')) || l.id === d.id);
+      if (!exists) leads.push({ ...d });
+    });
+  }
   saveLeads();
 }
 
@@ -2366,7 +2948,7 @@ function renderKanban() {
 function renderLeadCard(lead) {
   const timeStr = formatRelativeTime(lead.date);
   const cleanPhone = (lead.phone || '').replace(/\s+/g, '');
-  const intlPhone = cleanPhone.startsWith('0') ? '213' + cleanPhone.slice(1) : cleanPhone;
+  const intlPhone = cleanPhone.startsWith('0') ? '213' + cleanPhone.slice(1) : (cleanPhone.startsWith('213') ? cleanPhone : '213' + cleanPhone);
   const isArabic = (lead.lang || 'ar') === 'ar';
   
   // Format WhatsApp Message
@@ -2376,6 +2958,9 @@ function renderLeadCard(lead) {
     .replace('{COMPANY}', lead.company_name || 'الشركة')
     .replace('{WILAYA}', lead.wilaya || 'الجزائر');
   const waUrl = `https://wa.me/${intlPhone}?text=${encodeURIComponent(msg)}`;
+
+  const serviceTag = lead.service ? `<span class="pill pill-service" title="${escapeHTML(lead.service)}">💼 ${escapeHTML(lead.service)}</span>` : '';
+  const amountTag = lead.amount ? `<span class="pill pill-amount" title="قيمة الطلبية">💰 ${escapeHTML(lead.amount)} دج</span>` : '';
 
   return `
     <div class="lead-card" draggable="true" ondragstart="handleDragStart(event, '${lead.id}')" onclick="openLeadModal('${lead.id}')">
@@ -2388,6 +2973,8 @@ function renderLeadCard(lead) {
       <div class="card-badges">
         <span class="pill pill-wilaya">📍 ${escapeHTML(lead.wilaya || 'الجزائر')}</span>
         <span class="pill pill-source">📣 ${escapeHTML(lead.source || 'مباشر')}</span>
+        ${serviceTag}
+        ${amountTag}
       </div>
       <div class="card-actions" onclick="event.stopPropagation()">
         <a href="tel:${cleanPhone}" class="action-btn call-btn" title="اتصال هاتفي">
@@ -2438,9 +3025,14 @@ function renderTable() {
   const tbody = document.getElementById('tableBody');
   if (!tbody) return;
 
+  const countBadge = document.getElementById('tableCountBadge');
+  if (countBadge) {
+    countBadge.textContent = `${filtered.length} ${appConfig.lang === 'fr' ? 'demande(s)' : 'طلبية'}`;
+  }
+
   tbody.innerHTML = filtered.map((l, idx) => {
     const cleanPhone = (l.phone || '').replace(/\s+/g, '');
-    const intlPhone = cleanPhone.startsWith('0') ? '213' + cleanPhone.slice(1) : cleanPhone;
+    const intlPhone = cleanPhone.startsWith('0') ? '213' + cleanPhone.slice(1) : (cleanPhone.startsWith('213') ? cleanPhone : '213' + cleanPhone);
     const isArabic = (l.lang || 'ar') === 'ar';
     const tpl = isArabic ? appConfig.waTemplateAr : appConfig.waTemplateFr;
     const msg = tpl
@@ -2459,7 +3051,11 @@ function renderTable() {
           </a>
         </td>
         <td>${escapeHTML(l.company_name || '—')}</td>
-        <td>${escapeHTML(l.activity || '—')}</td>
+        <td>
+          <div>${escapeHTML(l.activity || '—')}</div>
+          ${l.service ? `<div style="font-size:11px; color:var(--purple); font-weight:600; margin-top:2px;">💼 ${escapeHTML(l.service)}</div>` : ''}
+          ${l.amount ? `<div style="font-size:11.5px; color:#166534; font-weight:700; margin-top:2px;">💰 ${escapeHTML(l.amount)} دج</div>` : ''}
+        </td>
         <td><a href="tel:${cleanPhone}" style="color:var(--teal); font-weight:600;">${escapeHTML(l.phone)}</a></td>
         <td><span class="pill pill-wilaya">${escapeHTML(l.wilaya || 'الجزائر')}</span></td>
         <td><span class="pill pill-source">${escapeHTML(l.source || 'direct')}</span></td>
@@ -2472,7 +3068,7 @@ function renderTable() {
           <div style="display:flex; gap:6px;">
             <a href="tel:${cleanPhone}" class="action-btn call-btn" style="padding:4px 8px;" title="اتصال">📞</a>
             <a href="${waUrl}" target="_blank" rel="noopener" class="action-btn wa-btn" style="padding:4px 8px;" title="واتساب">💬</a>
-            <button class="action-btn" onclick="openLeadModal('${l.id}')" style="padding:4px 8px;" title="تفاصيل">✏️</button>
+            <button class="action-btn" onclick="openLeadModal('${l.id}')" style="padding:4px 8px;" title="تفاصيل وتعديل">✏️</button>
           </div>
         </td>
       </tr>
@@ -2691,9 +3287,31 @@ function savePixelSettings() {
 
 // Search & Filter Handlers
 function handleSearch() {
-  currentFilter.query = document.getElementById('searchInput').value;
+  const inp = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('clearSearchBtn');
+  currentFilter.query = inp ? inp.value.trim() : '';
+  if (clearBtn) clearBtn.style.display = currentFilter.query ? 'flex' : 'none';
   renderAll();
 }
+
+function clearSearch() {
+  const inp = document.getElementById('searchInput');
+  if (inp) inp.value = '';
+  currentFilter.query = '';
+  const clearBtn = document.getElementById('clearSearchBtn');
+  if (clearBtn) clearBtn.style.display = 'none';
+  renderAll();
+  if (inp) inp.focus();
+}
+
+function resetSearchState() {
+  const inp = document.getElementById('searchInput');
+  if (inp) inp.value = '';
+  currentFilter.query = '';
+  const clearBtn = document.getElementById('clearSearchBtn');
+  if (clearBtn) clearBtn.style.display = 'none';
+}
+
 function handleFilter() {
   currentFilter.wilaya = document.getElementById('wilayaFilter').value;
   currentFilter.source = document.getElementById('sourceFilter').value;
@@ -2709,8 +3327,10 @@ function openLeadModal(id) {
   document.getElementById('editPhone').value = lead.phone || '';
   document.getElementById('editEmail').value = lead.email || '';
   document.getElementById('editCompany').value = lead.company_name || '';
-  document.getElementById('editWilaya').value = lead.wilaya || 'Alger';
+  document.getElementById('editWilaya').value = lead.wilaya || '16 - Alger';
   document.getElementById('editActivity').value = lead.activity || '';
+  if (document.getElementById('editService')) document.getElementById('editService').value = lead.service || '';
+  if (document.getElementById('editAmount')) document.getElementById('editAmount').value = lead.amount || '';
   document.getElementById('editStatus').value = lead.status || 'Nouveau';
   document.getElementById('editNotes').value = lead.notes || '';
   document.getElementById('leadModal').classList.add('active');
@@ -2728,6 +3348,8 @@ function saveLeadDetails() {
   lead.company_name = document.getElementById('editCompany').value.trim();
   lead.wilaya = document.getElementById('editWilaya').value;
   lead.activity = document.getElementById('editActivity').value.trim();
+  if (document.getElementById('editService')) lead.service = document.getElementById('editService').value;
+  if (document.getElementById('editAmount')) lead.amount = document.getElementById('editAmount').value.trim();
   lead.status = document.getElementById('editStatus').value;
   lead.notes = document.getElementById('editNotes').value.trim();
   saveLeads();
@@ -2786,46 +3408,204 @@ function changeLeadStatus(id, newStatus) {
   syncLeadUpdate(lead);
 }
 
-// Add New Lead Modal
-function openNewLeadModal() {
-  document.getElementById('newLeadModal').classList.add('active');
-  document.getElementById('newName').focus();
+// Add New Manual Order Modal Handlers
+function openNewLeadModal(preselectedStatus) {
+  const modal = document.getElementById('newLeadModal');
+  if (!modal) return;
+  
+  const form = document.getElementById('newOrderForm');
+  if (form) form.reset();
+
+  document.getElementById('newName').value = '';
+  document.getElementById('newPhone').value = '';
+  document.getElementById('newEmail').value = '';
+  document.getElementById('newCompany').value = '';
+  document.getElementById('newActivity').value = '';
+  document.getElementById('newAmount').value = '';
+  document.getElementById('newNotes').value = '';
+  if (document.getElementById('newLegalForm')) document.getElementById('newLegalForm').selectedIndex = 0;
+  if (document.getElementById('newService')) document.getElementById('newService').selectedIndex = 0;
+  document.getElementById('newWilaya').value = '16 - Alger';
+  document.getElementById('newSource').value = 'direct';
+  if (document.getElementById('newOpenWa')) {
+    document.getElementById('newOpenWa').checked = false;
+  }
+
+  // Pre-select status if given
+  const statusSelect = document.getElementById('newStatus');
+  if (statusSelect) {
+    if (preselectedStatus && COLUMNS.includes(preselectedStatus)) {
+      statusSelect.value = preselectedStatus;
+    } else {
+      statusSelect.value = 'Nouveau';
+    }
+  }
+
+  modal.classList.add('active');
+  setTimeout(() => {
+    const inp = document.getElementById('newName');
+    if (inp) inp.focus();
+  }, 100);
 }
+
 function closeNewLeadModal() {
-  document.getElementById('newLeadModal').classList.remove('active');
+  const modal = document.getElementById('newLeadModal');
+  if (modal) modal.classList.remove('active');
 }
-function submitNewLead() {
+
+function submitNewLead(e) {
+  if (e && e.preventDefault) e.preventDefault();
   const name = document.getElementById('newName').value.trim();
   const phone = document.getElementById('newPhone').value.trim();
-  if (!name || !phone) {
-    showToast('يرجى إدخال الاسم ورقم الهاتف على الأقل', 'err');
+  if (!name) {
+    showToast('⚠️ يرجى إدخال اسم العميل', 'err');
+    document.getElementById('newName').focus();
     return;
   }
+  if (!phone) {
+    showToast('⚠️ يرجى إدخال رقم هاتف العميل', 'err');
+    document.getElementById('newPhone').focus();
+    return;
+  }
+
+  const email = document.getElementById('newEmail') ? document.getElementById('newEmail').value.trim() : '';
+  const wilaya = document.getElementById('newWilaya') ? document.getElementById('newWilaya').value : '16 - Alger';
+  const company = document.getElementById('newCompany') ? document.getElementById('newCompany').value.trim() : '';
+  const legalForm = document.getElementById('newLegalForm') ? document.getElementById('newLegalForm').value : '';
+  const service = document.getElementById('newService') ? document.getElementById('newService').value : '';
+  const activity = document.getElementById('newActivity') ? document.getElementById('newActivity').value.trim() : '';
+  const amount = document.getElementById('newAmount') ? document.getElementById('newAmount').value.trim() : '';
+  const status = document.getElementById('newStatus') ? document.getElementById('newStatus').value : 'Nouveau';
+  const source = document.getElementById('newSource') ? document.getElementById('newSource').value : 'direct';
+  const notes = document.getElementById('newNotes') ? document.getElementById('newNotes').value.trim() : '';
+  const openWa = document.getElementById('newOpenWa') && document.getElementById('newOpenWa').checked;
+
+  let fullCompany = company;
+  if (legalForm) {
+    fullCompany = company ? `${company} (${legalForm})` : `شركة ${legalForm} قيد التسمية`;
+  }
+  if (!fullCompany) fullCompany = 'شركة قيد التسمية';
+
+  let fullActivity = activity;
+  if (service) {
+    fullActivity = activity ? `${activity} [${service}]` : service;
+  }
+  if (!fullActivity) fullActivity = 'تأسيس شركة واستشارة قانونية';
+
   const newLead = {
     id: 'lead-' + Date.now(),
     date: new Date().toISOString(),
     full_name: name,
     phone: phone,
-    wilaya: document.getElementById('newWilaya').value,
-    company_name: document.getElementById('newCompany').value.trim(),
-    activity: document.getElementById('newActivity').value.trim(),
-    source: document.getElementById('newSource').value,
-    notes: document.getElementById('newNotes').value.trim(),
-    status: 'Nouveau',
-    lang: appConfig.lang
+    email: email,
+    wilaya: wilaya,
+    company_name: fullCompany,
+    activity: fullActivity,
+    service: service,
+    legal_form: legalForm,
+    amount: amount,
+    source: source,
+    notes: notes,
+    status: status,
+    lang: appConfig.lang || 'ar'
   };
+
   leads.unshift(newLead);
   saveLeads();
   renderAll();
   closeNewLeadModal();
-  showToast('تمت إضافة الطلب الجديد بنجاح');
+
+  const isOffline = document.getElementById('syncDot')?.classList.contains('offline');
+  if (isOffline) {
+    showToast(`⚠️ تم حفظ طلبية ${name} محلياً (لوحة التحكم في وضع التخزين المحلي - لم ترسل للجدول)`, 'warn');
+  } else {
+    showToast(`✅ تمت إضافة طلبية ${name} بنجاح!`);
+  }
+
+  // Broadcast to other open tabs
+  try {
+    if (window.BroadcastChannel) {
+      new BroadcastChannel('idarati_leads_channel').postMessage({ type: 'new_lead', name: name });
+    }
+  } catch(e) {}
+
+  // Sync to Google Sheets
+  syncLeadAdd(newLead);
+
+  // Open WhatsApp directly if checked
+  if (openWa) {
+    const cleanPhone = phone.replace(/\D/g, '');
+    const intlPhone = cleanPhone.startsWith('0') ? '213' + cleanPhone.slice(1) : (cleanPhone.startsWith('213') ? cleanPhone : '213' + cleanPhone);
+    const isArabic = (appConfig.lang || 'ar') === 'ar';
+    const tpl = isArabic ? appConfig.waTemplateAr : appConfig.waTemplateFr;
+    const msg = tpl
+      .replace('{NAME}', name)
+      .replace('{COMPANY}', fullCompany)
+      .replace('{WILAYA}', wilaya);
+    window.open(`https://wa.me/${intlPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+}
+
+async function syncLeadAdd(lead) {
+  if (!appConfig.sheetUrl) return;
+  try {
+    const params = new URLSearchParams({
+      action: 'add_lead',
+      full_name: lead.full_name || '',
+      phone: lead.phone || '',
+      email: lead.email || '',
+      wilaya: lead.wilaya || 'Alger',
+      company_name: lead.company_name || '',
+      activity: lead.activity || '',
+      service: lead.service || '',
+      amount: lead.amount || '',
+      source: lead.source || 'يدوي (Dashboard)',
+      page: 'لوحة التحكم',
+      status: lead.status || 'Nouveau',
+      notes: lead.notes || ''
+    });
+    fetch(appConfig.sheetUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params
+    });
+  } catch (err) {
+    console.warn('Error syncing new lead to sheet:', err);
+  }
+}
+
+// Push all local leads to Google Sheet
+async function pushAllLeadsToSheet() {
+  if (!appConfig.sheetUrl) {
+    showToast('⚠️ يرجى حفظ رابط Google Sheet أولاً في الإعدادات', 'err');
+    return;
+  }
+  if (!leads || leads.length === 0) {
+    showToast('⚠️ لا توجد طلبات مسجلة حالياً لرفعها', 'warn');
+    return;
+  }
+  if (!confirm(`هل تريد رفع ومزامنة جميع الطلبات الموجودة حالياً (${leads.length} طلب) إلى جدول Google Sheets الجديد؟`)) return;
+
+  const btn = document.getElementById('btnPushAllLeads');
+  const countSpan = document.getElementById('pushAllCount');
+  if (btn) btn.disabled = true;
+
+  showToast(`⏳ جاري رفع ${leads.length} طلب إلى Google Sheets...`);
   
-  // Reset form
-  document.getElementById('newName').value = '';
-  document.getElementById('newPhone').value = '';
-  document.getElementById('newCompany').value = '';
-  document.getElementById('newActivity').value = '';
-  document.getElementById('newNotes').value = '';
+  // Push in reverse order so oldest gets pushed first and newest last
+  const leadsToPush = [...leads].reverse();
+  let count = 0;
+  for (const lead of leadsToPush) {
+    await syncLeadAdd(lead);
+    count++;
+    if (countSpan) countSpan.textContent = `جاري الرفع... (${count}/${leadsToPush.length})`;
+    await new Promise(r => setTimeout(r, 150));
+  }
+
+  if (btn) btn.disabled = false;
+  if (countSpan) countSpan.textContent = `رفع ومزامنة جميع الطلبات الحالية (${leads.length}) إلى Google Sheets`;
+  showToast(`✅ تم رفع جميع الطلبات (${count} طلب) إلى Google Sheets بنجاح!`);
 }
 
 // Settings Modal
@@ -2834,6 +3614,10 @@ function openSettingsModal() {
   document.getElementById('settingPin').value = appConfig.pin || 'admin2026';
   document.getElementById('settingWaAr').value = appConfig.waTemplateAr || '';
   document.getElementById('settingWaFr').value = appConfig.waTemplateFr || '';
+  const countSpan = document.getElementById('pushAllCount');
+  if (countSpan) {
+    countSpan.textContent = `رفع ومزامنة جميع الطلبات الحالية (${leads.length}) إلى Google Sheets`;
+  }
   document.getElementById('settingsModal').classList.add('active');
 }
 function closeSettingsModal() {
@@ -2869,6 +3653,16 @@ async function syncWithGoogleSheet(silent = false) {
       // Filter out mock leads
       const remoteLeads = data.leads.filter(l => !['lead-1', 'lead-2', 'lead-3', 'lead-4', 'lead-5'].includes(l.id) && l.company_name !== 'SARL Atlas Logistics');
 
+      // Check if there are local leads not yet present in remote sheet, and auto-push them
+      const remotePhones = new Set(remoteLeads.map(r => String(r.phone || '').replace(/\D/g, '')).filter(Boolean));
+      const unpushedLeads = leads.filter(l => {
+        const lp = String(l.phone || '').replace(/\D/g, '');
+        return lp && !remotePhones.has(lp);
+      });
+      if (unpushedLeads.length > 0) {
+        unpushedLeads.forEach(u => syncLeadAdd(u));
+      }
+
       remoteLeads.forEach(remote => {
         const local = leads.find(l => (l.phone && remote.phone && l.phone.replace(/\D/g,'') === remote.phone.replace(/\D/g,'')) || l.id === remote.id);
         if (local) {
@@ -2897,7 +3691,13 @@ async function syncWithGoogleSheet(silent = false) {
       renderAll();
       syncDot.classList.remove('offline');
       syncText.textContent = 'متصل بـ Google Sheets';
-      if (!silent) showToast('تمت المزامنة بنجاح مع Google Sheets');
+      if (!silent) {
+        if (unpushedLeads.length > 0) {
+          showToast(`تمت المزامنة بنجاح وجاري رفع ${unpushedLeads.length} طلبات جديدة إلى Google Sheets`);
+        } else {
+          showToast('تمت المزامنة بنجاح مع Google Sheets');
+        }
+      }
     } else {
       syncDot.classList.remove('offline');
       syncText.textContent = 'متصل (Google Sheets)';
@@ -2906,7 +3706,7 @@ async function syncWithGoogleSheet(silent = false) {
   } catch (err) {
     syncDot.classList.add('offline');
     syncText.textContent = 'وضع التخزين المحلي';
-    if (!silent) showToast('تعذر المزامنة، جاري العمل بالبيانات المحلية', 'warn');
+    if (!silent) showToast('تعذر الاتصال بـ Google Sheets (تأكد من إعدادات النشر: Execute as: Me و Who has access: Anyone)', 'warn');
   } finally {
     if (syncIcon) syncIcon.style.animation = 'none';
   }
@@ -3000,7 +3800,13 @@ function applyLang(lang) {
   // Update UI Text
   document.getElementById('badgeText').textContent = isAr ? 'إدارة المبيعات' : 'CRM & Ventes';
   document.getElementById('headerSub').textContent = isAr ? 'متابعة ملفات تأسيس الشركات بالجزائر' : 'Suivi des créations d\'entreprises en Algérie';
-  document.getElementById('btnNewLead').textContent = isAr ? 'طلب جديد' : 'Nouveau lead';
+  document.getElementById('btnNewLead').textContent = isAr ? 'إضافة طلبية يدوياً' : '+ Nouvelle commande';
+  const btnToolbarAdd = document.getElementById('btnToolbarAdd');
+  if (btnToolbarAdd) btnToolbarAdd.textContent = isAr ? 'إضافة طلبية يدوياً' : '+ Nouvelle commande';
+  const btnTableAdd = document.getElementById('btnTableAdd');
+  if (btnTableAdd) btnTableAdd.textContent = isAr ? 'إضافة طلبية يدوياً' : '+ Nouvelle commande';
+  const tableHeading = document.getElementById('tableHeading');
+  if (tableHeading) tableHeading.textContent = isAr ? 'جدول الطلبيات والعملاء' : 'Liste des commandes';
   document.getElementById('btnSync').textContent = isAr ? 'مزامنة' : 'Synchroniser';
   document.getElementById('btnExport').textContent = isAr ? 'تصدير' : 'Exporter';
   document.getElementById('searchInput').placeholder = isAr ? 'بحث بالاسم، الهاتف، الشركة...' : 'Recherche nom, tél, société...';
