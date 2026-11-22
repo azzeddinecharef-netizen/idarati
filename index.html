@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
@@ -547,7 +547,6 @@ footer li{margin-bottom:8px}
           <span id="audioName"></span>
           <audio id="audio" controls preload="metadata">
             <source src="/avis-client.mp3" type="audio/mpeg">
-            <source src="https://idarati.africacold.fr/avis-client.mp3" type="audio/mpeg">
             متصفحك لا يدعم تشغيل الصوت.
           </audio>
         </div>
@@ -559,7 +558,6 @@ footer li{margin-bottom:8px}
           <span id="audioName2"></span>
           <audio id="audio2" controls preload="metadata">
             <source src="/avis-client-2.ogg" type="audio/ogg">
-            <source src="https://idarati.africacold.fr/avis-client-2.ogg" type="audio/ogg">
             <source src="/avis-client.mp3" type="audio/mpeg">
             متصفحك لا يدعم تشغيل الصوت.
           </audio>
@@ -1163,6 +1161,7 @@ form.addEventListener("submit", function(e){
       });
     } else {
       fbq("track","Lead",{content_name:"Creation entreprise", content_category:w},{eventID:eventId});
+      fbq("track","CompleteRegistration",{content_name:"Creation entreprise", content_category:w, status:true},{eventID:eventId});
     }
     if (storedPixelCfg && storedPixelCfg.token && /^\d{6,20}$/.test(pixelId)) {
       try {
@@ -1170,14 +1169,24 @@ form.addEventListener("submit", function(e){
           method: "POST",
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify({
-            data: [{
-              event_name: "Lead",
-              event_time: Math.floor(Date.now() / 1000),
-              event_id: eventId,
-              action_source: "website",
-              event_source_url: location.href,
-              custom_data: { content_name: "Creation entreprise", content_category: w }
-            }]
+            data: [
+              {
+                event_name: "Lead",
+                event_time: Math.floor(Date.now() / 1000),
+                event_id: eventId,
+                action_source: "website",
+                event_source_url: location.href,
+                custom_data: { content_name: "Creation entreprise", content_category: w }
+              },
+              {
+                event_name: "CompleteRegistration",
+                event_time: Math.floor(Date.now() / 1000),
+                event_id: eventId,
+                action_source: "website",
+                event_source_url: location.href,
+                custom_data: { content_name: "Creation entreprise", content_category: w, status: true }
+              }
+            ]
           })
         }).catch(function(e){ console.warn("CAPI dispatch:", e); });
       } catch(e){}
@@ -1197,13 +1206,44 @@ form.addEventListener("submit", function(e){
     var thankYouUrl = "/thank-you/?id=" + encodeURIComponent(eventId) + "&name=" + encodeURIComponent(f.full_name.value.trim()) + "&w=" + encodeURIComponent(w);
     window.location.href = thankYouUrl;
   }
-  if(!C.SHEET_URL){ console.warn("CONFIG.SHEET_URL est vide : la demande est enregistrée localement pour le dashboard.", Object.fromEntries(data)); done(); return; }
-  fetch(C.SHEET_URL,{method:"POST",mode:"no-cors",body:data})
-    .then(done)
-    .catch(function(){
-      btn.disabled=false; btn.textContent=T[lang].submit; status.className="status err"; status.textContent=T[lang].e_send;
-      if (window.IDARATI_JOURNEY) window.IDARATI_JOURNEY.trackFormFailure(T[lang].e_send);
-    });
+
+  // 1) إرسال الطلب وحفظه في قاعدة بيانات ريلواي (Railway PostgreSQL API)
+  var postPayload = {
+    id: eventId,
+    full_name: f.full_name.value.trim(),
+    company_name: f.company_name.value.trim(),
+    activity: f.activity.value.trim(),
+    phone: f.phone.value.trim(),
+    email: f.email.value.trim(),
+    wilaya: w,
+    lang: lang,
+    source: utm() || "landing",
+    page: location.href.split("#")[0],
+    fbp: fbpVal,
+    fbc: fbcVal
+  };
+
+  var apiReq = fetch("/api/leads", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(postPayload)
+  }).catch(function(err){
+    console.warn("Railway API save warning:", err);
+  });
+
+  // 2) إرسال نسخة احتياطية متزامنة إلى Google Sheets إذا كان SHEET_URL متوفراً
+  var sheetReq = (C.SHEET_URL)
+    ? fetch(C.SHEET_URL, { method: "POST", mode: "no-cors", body: data }).catch(function(err){
+        console.warn("Google Sheets save warning:", err);
+      })
+    : Promise.resolve();
+
+  // إتمام التحويل وتوجيه العميل إلى صفحة الشكر فور تسجيل الطلب
+  Promise.allSettled([apiReq, sheetReq]).then(function(){
+    done();
+  }).catch(function(){
+    done();
+  });
 });
 
 /* Reveal on scroll */

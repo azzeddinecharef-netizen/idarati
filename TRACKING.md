@@ -20,7 +20,7 @@
 | **3. نية الطلب** | `AddToCart` / `OrderIntent` | عند النقر على أزرار طلب الاستشارة أو التوجه للاستمارة |
 | **4. رؤية الاستمارة** | `FormView` | بمجرد ظهور قسم استمارة طلب الاستشارة في الشاشة |
 | **5. بدء ملء الاستمارة** | `InitiateCheckout` | عند النقر أو الكتابة في أول حقل من حقول الاستمارة |
-| **6. نجاح التحويل** | `Lead` + `ConsultationRequested` | عند نجاح إرسال استمارة طلب التأسيس |
+| **6. نجاح التحويل** | `Lead` + `CompleteRegistration` + `ConsultationRequested` | عند نجاح إرسال استمارة طلب التأسيس وصفحات الشكر |
 
 ---
 
@@ -79,12 +79,13 @@
 ---
 
 ## 6. الجماهير الموصى بها في Meta Ads Manager:
-- **تحسين الحملات على (Optimization)**: `Lead`.
+- **تحسين الحملات على (Optimization)**: `Lead` أو `CompleteRegistration` (إكمال التسجيل).
 - **تحويلات مخصصة (Custom Conversions)**:
+  - `CompleteRegistration` (إكمال التسجيل بنجاح في الموقع أو صفحة الشكر).
   - `InitiateCheckout` (بدء ملء استمارة التأسيس).
   - `Contact` (التواصل عبر واتساب أو الهاتف).
   - `ViewContent` (الاهتمام وقراءة الخدمات).
 - **جماهير إعادة الاستهداف (Retargeting Audiences)**:
   - `Abandonment` + `FormAbandon` + `ScrollDepth75`.
 - **الجمهور المستبعد من الإعلانات (Exclusion)**:
-  - `Lead` (الزبائن الذين أرسلوا طلباتهم بالفعل).
+  - `Lead` أو `CompleteRegistration` (الزبائن الذين أرسلوا طلباتهم وسجلوا بالفعل).

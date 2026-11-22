@@ -6,7 +6,7 @@
   <title>شكراً لك! تم استلام طلبك بنجاح | IDARATI</title>
   <meta name="description" content="تم استلام طلب استشارتك لتأسيس مؤسستك بنجاح. سيتصل بك فريق IDARATI خلال 24 ساعة عمل لتأكيد التفاصيل.">
   <meta name="robots" content="noindex, follow">
-  <link rel="canonical" href="https://idarati.africacold.fr/thank-you/">
+  <link rel="canonical" href="https://idaraticompany.dz/thank-you/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -355,6 +355,14 @@
         value: 1
       }, { eventID: leadId });
 
+      fbq('track', 'CompleteRegistration', {
+        content_name: 'Creation entreprise',
+        content_category: 'Merci / Thank You',
+        currency: 'DZD',
+        status: true,
+        value: 1
+      }, { eventID: leadId });
+
       fbq('track', 'Purchase', {
         content_name: 'Creation entreprise',
         currency: 'DZD',
@@ -368,14 +376,24 @@
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
-              data: [{
-                event_name: "Lead",
-                event_time: Math.floor(Date.now() / 1000),
-                event_id: leadId,
-                action_source: "website",
-                event_source_url: location.href,
-                custom_data: { content_name: "Creation entreprise", currency: "DZD", value: 1 }
-              }]
+              data: [
+                {
+                  event_name: "Lead",
+                  event_time: Math.floor(Date.now() / 1000),
+                  event_id: leadId,
+                  action_source: "website",
+                  event_source_url: location.href,
+                  custom_data: { content_name: "Creation entreprise", currency: "DZD", value: 1 }
+                },
+                {
+                  event_name: "CompleteRegistration",
+                  event_time: Math.floor(Date.now() / 1000),
+                  event_id: leadId,
+                  action_source: "website",
+                  event_source_url: location.href,
+                  custom_data: { content_name: "Creation entreprise", currency: "DZD", status: true, value: 1 }
+                }
+              ]
             })
           }).catch(function(e){});
         } catch(e){}
@@ -545,7 +563,7 @@
         setLang(currentLang === 'ar' ? 'fr' : 'ar');
       });
 
-      // Ensure Lead event is recorded with deduplication eventID
+      // Ensure Lead and CompleteRegistration events are recorded with deduplication eventID
       try {
         if (window.fbq && leadId) {
           var thankLeadEventId = String(leadId).startsWith('lead_') ? String(leadId) : ('lead_' + leadId);
@@ -553,6 +571,12 @@
             content_name: 'Creation Entreprise',
             content_category: 'legal_consulting',
             currency: 'DZD'
+          }, { eventID: thankLeadEventId });
+          window.fbq('track', 'CompleteRegistration', {
+            content_name: 'Creation Entreprise',
+            content_category: 'legal_consulting',
+            currency: 'DZD',
+            status: true
           }, { eventID: thankLeadEventId });
         }
       } catch(e){}

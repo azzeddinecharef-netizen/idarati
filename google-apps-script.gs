@@ -1,16 +1,13 @@
 /**
- * IDARATI : استقبال طلبات صفحة الهبوط في Google Sheets
- * Réception des demandes de la landing page dans Google Sheets
+ * IDARATI : استقبال طلبات صفحة الهبوط في Google Sheets وتفادي التكرار
+ * Réception et déduplication des demandes de la landing page dans Google Sheets
  *
- * التثبيت (مرة واحدة فقط):
- * 1) افتح Google Sheet جديد  ←  Extensions (الإضافات) ← Apps Script
- * 2) احذف كل الكود الموجود وألصق هذا الملف كاملاً، ثم احفظ.
- * 3) Deploy (نشر) ← New deployment ← النوع: Web app
- *      Execute as: Me (أنا)      Who has access: Anyone (أي شخص)
- * 4) وافق على الأذونات، ثم انسخ رابط "Web app URL" (ينتهي بـ /exec)
- * 5) ألصقه في index.html داخل  CONFIG.SHEET_URL
- *
- * ⚠️ إذا عدّلت هذا الكود لاحقاً: Deploy ← Manage deployments ← Edit ← Version: New version
+ * التثبيت والتحديث:
+ * 1) افتح جدول Google Sheet  ←  Extensions (الإضافات) ← Apps Script
+ * 2) احذف كل الكود القديم وألصق هذا الملف كاملاً، ثم احفظ (Ctrl + S).
+ * 3) لتنظيف الأسطر المكررة حالياً (الـ 99+ سطر):
+ *    اختر الدالة `cleanDuplicatesInSheet` من القائمة المنسدلة في الأعلى واضغط Run (تشغيل) ▶️.
+ * 4) Deploy (نشر) ← Manage deployments ← Edit (أيقونة القلم) ← Version: New version ← Deploy.
  */
 
 const SHEET_NAME     = 'Demandes';   // اسم الورقة
@@ -22,19 +19,26 @@ const HEADERS = ['Date', 'Nom complet', 'Société (nom souhaité)', 'Activité'
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
+  // انتظر حتى 15 ثانية للحصول على القفل لمنع تداخل العمليات
+  lock.waitLock(15000);
   try {
     const p = (e && e.parameter) || {};
-    if (p.website) return json_({ ok: true });                       // anti-spam (honeypot)
+    if (p.website) return json_({ ok: true }); // anti-spam (honeypot)
 
-    // تحديث حالة وملاحظات الطلب من لوحة التحكم / Mise à jour statut & notes depuis le dashboard
+    // 1) تنظيف وحذف جميع التكرارات في الجدول بطلب من لوحة التحكم
+    if (p.action === 'clean_duplicates') {
+      const res = cleanDuplicatesInSheet();
+      return json_({ ok: true, cleaned: true, ...res });
+    }
+
+    // 2) تحديث حالة وملاحظات الطلب من لوحة التحكم
     if (p.action === 'update_status' && p.phone) {
       const sh = getSheet_();
       const data = sh.getDataRange().getValues();
-      const targetPhone = String(p.phone).replace(/\D/g, '');
+      const targetPhone = normPhone_(p.phone);
       for (let i = 1; i < data.length; i++) {
-        const rowPhone = String(data[i][4] || '').replace(/\D/g, '');
-        if (rowPhone && targetPhone && (rowPhone === targetPhone || rowPhone.endsWith(targetPhone.slice(-8)))) {
+        const rowPhone = normPhone_(data[i][4]);
+        if (rowPhone && targetPhone && (rowPhone === targetPhone || isPhoneMatch_(rowPhone, targetPhone))) {
           if (p.status) sh.getRange(i + 1, 11).setValue(p.status);
           if (p.notes !== undefined && p.notes !== null) sh.getRange(i + 1, 12).setValue(p.notes);
           return json_({ ok: true, updated: true });
@@ -43,14 +47,14 @@ function doPost(e) {
       return json_({ ok: true, not_found: true });
     }
 
-    // حذف طلب من لوحة التحكم والجدول نهائياً / Supprimer un lead
+    // 3) حذف طلب من لوحة التحكم والجدول نهائياً
     if (p.action === 'delete_lead' && (p.phone || p.id)) {
       const sh = getSheet_();
       const data = sh.getDataRange().getValues();
-      const targetPhone = p.phone ? String(p.phone).replace(/\D/g, '') : '';
+      const targetPhone = normPhone_(p.phone);
       for (let i = 1; i < data.length; i++) {
-        const rowPhone = String(data[i][4] || '').replace(/\D/g, '');
-        const matchPhone = targetPhone && rowPhone && (rowPhone === targetPhone || rowPhone.endsWith(targetPhone.slice(-8)));
+        const rowPhone = normPhone_(data[i][4]);
+        const matchPhone = targetPhone && rowPhone && (rowPhone === targetPhone || isPhoneMatch_(rowPhone, targetPhone));
         if (matchPhone || p.id === ('lead-row-' + i)) {
           sh.deleteRow(i + 1);
           return json_({ ok: true, deleted: true });
@@ -62,16 +66,34 @@ function doPost(e) {
     if (!p.full_name || !p.phone) return json_({ ok: false, error: 'missing fields' });
 
     const sh = getSheet_();
+    const targetPhone = normPhone_(p.phone);
+
+    // 4) منع التكرار الحاسم: التحقق إن كان رقم الهاتف مسجلاً مسبقاً في الجدول
+    if (targetPhone) {
+      const data = sh.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        const rowPhone = normPhone_(data[i][4]);
+        if (rowPhone && (rowPhone === targetPhone || isPhoneMatch_(rowPhone, targetPhone))) {
+          // العميل مسجل مسبقاً! نقوم فقط بتحديث حالته أو ملاحظاته إن وردت، ولا نكرر السطر إطلاقاً
+          if (p.status && p.status !== 'Nouveau') sh.getRange(i + 1, 11).setValue(p.status);
+          if (p.notes) sh.getRange(i + 1, 12).setValue(p.notes);
+          return json_({ ok: true, duplicate: true, updated: true, row: i + 1, message: 'Lead already exists, updated instead of duplicate.' });
+        }
+      }
+    }
     
     // تركيبة النشاط مع الخدمة والمبلغ إن وجدوا
     let activityText = clean_(p.activity);
     if (p.service) activityText += (activityText ? ' - ' : '') + clean_(p.service);
     if (p.amount) activityText += ' [' + clean_(p.amount) + ' دج]';
 
+    // حفظ رقم الهاتف مسبوقاً بـ ' لضمان عدم حذف الصفر في البداية من طرف Google Sheets
+    const phoneToStore = formatPhoneForStorage_(p.phone);
+
     const row = [
       new Date(),
       clean_(p.full_name), clean_(p.company_name), activityText,
-      clean_(p.phone), clean_(p.email),
+      phoneToStore, clean_(p.email),
       clean_(p.wilaya) || 'Alger',
       clean_(p.lang) || 'ar', clean_(p.source) || (p.action === 'add_lead' ? 'يدوي (Dashboard)' : 'web'), clean_(p.page) || 'لوحة التحكم',
       clean_(p.status) || 'Nouveau',
@@ -95,22 +117,47 @@ function doPost(e) {
 function doGet(e) {
   const p = (e && e.parameter) || {};
 
-  // جلب الطلبات إلى لوحة التحكم / Récupération des demandes pour le dashboard
+  // 1) تنظيف التكرارات عبر رابط مباشر (GET)
+  if (p.action === 'clean_duplicates') {
+    const lock = LockService.getScriptLock();
+    lock.waitLock(15000);
+    try {
+      const res = cleanDuplicatesInSheet();
+      return json_({ ok: true, cleaned: true, ...res });
+    } finally {
+      lock.releaseLock();
+    }
+  }
+
+  // 2) جلب الطلبات إلى لوحة التحكم مع منع التكرار وإعادة أحدث نسخة فقط لكل عميل
   if (p.action === 'get_leads') {
     const sh = getSheet_();
     const data = sh.getDataRange().getValues();
     if (data.length <= 1) return json_({ ok: true, leads: [] });
+    
     const leads = [];
-    for (let i = 1; i < data.length; i++) {
+    const seenPhones = new Set();
+
+    // نقرأ من الأحدث (أسفل الجدول) إلى الأقدم (أعلى الجدول)
+    for (let i = data.length - 1; i >= 1; i--) {
       const r = data[i];
       if (!r[0] && !r[1]) continue;
+      const rawPhone = String(r[4] || '');
+      const norm = normPhone_(rawPhone);
+
+      // استبعاد التكرارات وإرجاع أحدث سطر فقط لهذا العميل
+      if (norm) {
+        if (seenPhones.has(norm)) continue;
+        seenPhones.add(norm);
+      }
+
       leads.push({
         id: 'lead-row-' + i,
         date: r[0] ? new Date(r[0]).toISOString() : new Date().toISOString(),
         full_name: String(r[1] || ''),
         company_name: String(r[2] || ''),
         activity: String(r[3] || ''),
-        phone: String(r[4] || ''),
+        phone: rawPhone.replace(/^'/, ''),
         email: String(r[5] || ''),
         wilaya: String(r[6] || 'Alger'),
         lang: String(r[7] || 'ar'),
@@ -120,13 +167,16 @@ function doGet(e) {
         notes: String(r[11] || '')
       });
     }
+
     return json_({ 
       ok: true, 
       spreadsheet_name: sh.getParent().getName(),
       spreadsheet_url: sh.getParent().getUrl(),
       spreadsheet_id: sh.getParent().getId(),
       sheet_name: sh.getName(),
-      leads: leads.reverse() 
+      total_rows_in_sheet: data.length - 1,
+      unique_leads_count: leads.length,
+      leads: leads 
     });
   }
 
@@ -143,6 +193,67 @@ function doGet(e) {
   }
 
   return json_({ ok: true, service: 'IDARATI leads API' });
+}
+
+/**
+ * دالة لتنظيف وإزالة جميع الأسطر المكررة من جدول Google Sheets بنقرة واحدة فائقة السرعة
+ * اختر هذه الدالة من شريط الأدوات بالأعلى واضغط Run (تشغيل) ▶️
+ */
+function cleanDuplicatesInSheet() {
+  const sh = getSheet_();
+  const data = sh.getDataRange().getValues();
+  if (data.length <= 1) return { total_before: 0, total_after: 0, removed: 0 };
+
+  const header = data[0];
+  const uniqueMap = new Map();
+
+  // نقرأ من الأقدم للأحدث حتى نحافظ على أحدث التحديثات
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const rawPhone = String(row[4] || '');
+    const phone = normPhone_(rawPhone);
+    if (!phone) {
+      if (row[1]) uniqueMap.set('no-phone-' + i, row);
+      continue;
+    }
+    
+    // تنسيق رقم الهاتف ليحتفظ بالصفر في البداية
+    row[4] = formatPhoneForStorage_(rawPhone);
+
+    if (!uniqueMap.has(phone)) {
+      uniqueMap.set(phone, row);
+    } else {
+      const existing = uniqueMap.get(phone);
+      // إذا كانت الحالة في السطر المكرر متقدمة عن Nouveau نعتمدها
+      if (row[10] && row[10] !== 'Nouveau' && existing[10] === 'Nouveau') {
+        existing[10] = row[10];
+      }
+      if (row[11]) {
+        existing[11] = row[11];
+      }
+      if (row[0] && new Date(row[0]) > new Date(existing[0])) {
+        existing[0] = row[0];
+      }
+    }
+  }
+
+  const uniqueRows = [header, ...Array.from(uniqueMap.values())];
+  
+  // مسح الجدول القديم وكتابة الأسطر الفريدة دفعة واحدة
+  sh.clearContents();
+  sh.getRange(1, 1, uniqueRows.length, uniqueRows[0].length).setValues(uniqueRows);
+  
+  // إعادة تنسيق عمود التاريخ وعمود الهاتف
+  sh.getRange('A:A').setNumberFormat('dd/mm/yyyy hh:mm');
+  sh.getRange('E:E').setNumberFormat('@');
+
+  const removed = (data.length - 1) - (uniqueRows.length - 1);
+  Logger.log('✅ تم تنظيف الجدول بنجاح! تم حذف ' + removed + ' سطر مكرر، وبقي ' + (uniqueRows.length - 1) + ' طلبية فريدة.');
+  return {
+    total_before: data.length - 1,
+    total_after: uniqueRows.length - 1,
+    removed: removed
+  };
 }
 
 function getSheet_() {
@@ -179,6 +290,38 @@ function getSheet_() {
   return sh;
 }
 
+// يوحّد رقم الهاتف الجزائري لمقارنة دقيقة ومنع التكرار
+function normPhone_(p) {
+  if (!p) return '';
+  let s = String(p).replace(/\D/g, '');
+  if (s.indexOf('00213') === 0) s = s.substring(5);
+  else if (s.indexOf('213') === 0) s = s.substring(3);
+  s = s.replace(/^0+/, '');
+  return s;
+}
+
+// مقارنة دقيقة بين رقمين هاتف جزائريين
+function isPhoneMatch_(p1, p2) {
+  if (!p1 || !p2) return false;
+  if (p1 === p2) return true;
+  if (p1.length >= 8 && p2.length >= 8) {
+    return p1.slice(-8) === p2.slice(-8);
+  }
+  return false;
+}
+
+// تخزين الهاتف مع الصفر وفي صيغة نصية
+function formatPhoneForStorage_(p) {
+  if (!p) return '';
+  let s = String(p).trim().replace(/^'/, '');
+  const digits = s.replace(/\D/g, '');
+  // إذا كان رقماً جزائرياً بدون صفر وبدون 213 ومكون من 9 أرقام، أضف 0
+  if (digits.length === 9 && /^[567]/.test(digits) && !s.startsWith('+') && !s.startsWith('0')) {
+    s = '0' + digits;
+  }
+  return "'" + s;
+}
+
 // يمنع إدخال صيغ في الجدول ويحدّ الطول
 function clean_(v) {
   v = String(v == null ? '' : v).trim().slice(0, 300);
@@ -190,8 +333,7 @@ function json_(o) {
 }
 
 /**
- * دالة لإضافة الطلبات السبعة مباشرة داخل الجدول بنقرة واحدة
- * اختر هذه الدالة من شريط الأدوات بالأعلى واضغط Run (تشغيل) ▶️
+ * دالة لإضافة الطلبات السبعة الأولية إذا كان الجدول فارغاً
  */
 function seedInitialLeads() {
   const sh = getSheet_();
@@ -299,20 +441,20 @@ function seedInitialLeads() {
   const data = sh.getDataRange().getValues();
   const existingPhones = new Set();
   for (let i = 1; i < data.length; i++) {
-    const p = String(data[i][4] || '').replace(/\D/g, '');
+    const p = normPhone_(data[i][4]);
     if (p) existingPhones.add(p);
   }
 
   let added = 0;
   initialLeads.forEach(function(l) {
-    const rawP = String(l.phone).replace(/\D/g, '');
-    if (!existingPhones.has(rawP)) {
+    const norm = normPhone_(l.phone);
+    if (!existingPhones.has(norm)) {
       sh.appendRow([
         l.date,
         clean_(l.full_name),
         clean_(l.company_name),
         clean_(l.activity),
-        clean_(l.phone),
+        formatPhoneForStorage_(l.phone),
         clean_(l.email),
         clean_(l.wilaya),
         clean_(l.lang),
@@ -321,11 +463,10 @@ function seedInitialLeads() {
         clean_(l.status),
         clean_(l.notes)
       ]);
-      existingPhones.add(rawP);
+      existingPhones.add(norm);
       added++;
     }
   });
 
   Logger.log('✅ تم إدراج ' + added + ' طلبات في Google Sheet بنجاح!');
 }
-

@@ -324,6 +324,7 @@
     };
 
     emit('generate_lead', { meta: 'Lead', params, eventId });
+    emit('complete_registration', { meta: 'CompleteRegistration', params: { ...params, status: true }, eventId });
     emit('consultation_conversion', { meta: 'ConsultationRequested', params, eventId });
   }
 
