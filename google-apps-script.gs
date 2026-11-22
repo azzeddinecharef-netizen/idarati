@@ -101,6 +101,9 @@ function doPost(e) {
     ];
     sh.appendRow(row);
 
+    // 5) إرسال الحدث إلى Meta Conversions API (Graph API v21.0) بنفس معرّف الحدث (lead_IDR-xxxxxx)
+    sendMetaConversionsAPI_(p);
+
     if (NOTIFY_EMAIL) {
       MailApp.sendEmail(NOTIFY_EMAIL,
         'Nouvelle demande - Création d\'entreprise (' + row[6] + ')',
@@ -469,4 +472,107 @@ function seedInitialLeads() {
   });
 
   Logger.log('✅ تم إدراج ' + added + ' طلبات في Google Sheet بنجاح!');
+}
+
+/**
+ * إرسال أحداث التحويل (Lead & CompleteRegistration) إلى Meta Conversions API (Graph API v21.0)
+ */
+function sendMetaConversionsAPI_(p) {
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const token = props.getProperty('FB_ACCESS_TOKEN') || props.getProperty('META_ACCESS_TOKEN') || p.access_token || '';
+    const pixelId = props.getProperty('FB_PIXEL_ID') || '1446779740729835';
+
+    if (!token) {
+      Logger.log('[Meta CAPI] لم يتم العثور على FB_ACCESS_TOKEN في Script Properties. تجاوز الإرسال.');
+      return;
+    }
+
+    // المعرف الموحد المتطابق تماماً مع المتصفح (lead_IDR-xxxxxx)
+    const cleanId = (p.id && String(p.id).startsWith('IDR-'))
+      ? String(p.id)
+      : ((p.event_id && String(p.event_id).startsWith('lead_IDR-'))
+          ? String(p.event_id).replace('lead_', '')
+          : ('IDR-' + Math.floor(100000 + Math.random() * 900000)));
+
+    const eventId = 'lead_' + cleanId;
+    const nowSec = Math.floor(Date.now() / 1000);
+    const sourceUrl = p.page || 'https://idarati-company.africacold.fr/';
+
+    // تنقية وتشفير الهاتف إلى صيغة 213XXXXXXXXX عبر SHA-256
+    let normPhone = String(p.phone || '').replace(/\D/g, '');
+    if (normPhone.indexOf('00213') === 0) normPhone = normPhone.substring(5);
+    else if (normPhone.indexOf('213') === 0) normPhone = normPhone.substring(3);
+    normPhone = normPhone.replace(/^0+/, '');
+    if (normPhone) normPhone = '213' + normPhone;
+
+    const userData = {};
+    if (normPhone) userData.ph = [sha256Hex_(normPhone)];
+    if (p.email && p.email.trim()) userData.em = [sha256Hex_(p.email.trim().toLowerCase())];
+    if (p.user_agent || p.userAgent) userData.client_user_agent = String(p.user_agent || p.userAgent);
+    if (p.fbp) userData.fbp = String(p.fbp);
+    if (p.fbc) userData.fbc = String(p.fbc);
+
+    const events = [
+      {
+        event_name: 'Lead',
+        event_time: nowSec,
+        event_id: eventId,
+        action_source: 'website',
+        event_source_url: sourceUrl,
+        user_data: userData,
+        custom_data: {
+          content_name: 'Creation entreprise',
+          content_category: p.wilaya || 'Alger',
+          currency: 'DZD',
+          value: 1
+        }
+      },
+      {
+        event_name: 'CompleteRegistration',
+        event_time: nowSec,
+        event_id: eventId,
+        action_source: 'website',
+        event_source_url: sourceUrl,
+        user_data: userData,
+        custom_data: {
+          content_name: 'Creation entreprise',
+          content_category: p.wilaya || 'Alger',
+          currency: 'DZD',
+          status: true,
+          value: 1
+        }
+      }
+    ];
+
+    const payload = { data: events };
+    if (p.test_event_code) {
+      payload.test_event_code = String(p.test_event_code).trim();
+    }
+
+    const options = {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    };
+
+    const res = UrlFetchApp.fetch('https://graph.facebook.com/v21.0/' + pixelId + '/events?access_token=' + encodeURIComponent(token), options);
+    Logger.log('[Meta CAPI] Response: ' + res.getResponseCode() + ' ' + res.getContentText());
+  } catch (err) {
+    Logger.log('[Meta CAPI] Error: ' + err.toString());
+  }
+}
+
+function sha256Hex_(str) {
+  if (!str) return '';
+  const digest = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(str).trim().toLowerCase(), Utilities.Charset.UTF_8);
+  let hex = '';
+  for (let i = 0; i < digest.length; i++) {
+    const b = digest[i];
+    let h = (b < 0 ? b + 256 : b).toString(16);
+    if (h.length === 1) h = '0' + h;
+    hex += h;
+  }
+  return hex;
 }

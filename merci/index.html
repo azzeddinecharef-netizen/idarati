@@ -342,62 +342,6 @@
       var pvEventId = "pv_" + Date.now() + "_" + Math.random().toString(36).slice(2, 9);
       window.pageViewEventId = pvEventId;
       fbq('track', 'PageView', {}, { eventID: pvEventId });
-      
-      // Conversion events for media buyers
-      var urlParams = new URLSearchParams(window.location.search);
-      var leadId = urlParams.get('id') || ('lead_' + Date.now());
-      var clientName = urlParams.get('name') || '';
-
-      fbq('track', 'Lead', {
-        content_name: 'Creation entreprise',
-        content_category: 'Merci / Thank You',
-        currency: 'DZD',
-        value: 1
-      }, { eventID: leadId });
-
-      fbq('track', 'CompleteRegistration', {
-        content_name: 'Creation entreprise',
-        content_category: 'Merci / Thank You',
-        currency: 'DZD',
-        status: true,
-        value: 1
-      }, { eventID: leadId });
-
-      fbq('track', 'Purchase', {
-        content_name: 'Creation entreprise',
-        currency: 'DZD',
-        value: 1
-      }, { eventID: leadId });
-
-      // Dispatch to CAPI if token present
-      if (token && /^[0-9]{6,20}$/.test(pixelId)) {
-        try {
-          fetch("https://graph.facebook.com/v19.0/" + pixelId + "/events?access_token=" + encodeURIComponent(token), {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-              data: [
-                {
-                  event_name: "Lead",
-                  event_time: Math.floor(Date.now() / 1000),
-                  event_id: leadId,
-                  action_source: "website",
-                  event_source_url: location.href,
-                  custom_data: { content_name: "Creation entreprise", currency: "DZD", value: 1 }
-                },
-                {
-                  event_name: "CompleteRegistration",
-                  event_time: Math.floor(Date.now() / 1000),
-                  event_id: leadId,
-                  action_source: "website",
-                  event_source_url: location.href,
-                  custom_data: { content_name: "Creation entreprise", currency: "DZD", status: true, value: 1 }
-                }
-              ]
-            })
-          }).catch(function(e){});
-        } catch(e){}
-      }
     })();
   </script>
 </head>
@@ -563,21 +507,33 @@
         setLang(currentLang === 'ar' ? 'fr' : 'ar');
       });
 
-      // Ensure Lead and CompleteRegistration events are recorded with deduplication eventID
+      // Ensure Lead and CompleteRegistration events fire EXACTLY ONCE with single deterministic eventID (lead_IDR-xxxxxx)
+      // Guarded by sessionStorage so page refresh or re-render NEVER re-fires
       try {
-        if (window.fbq && leadId) {
-          var thankLeadEventId = String(leadId).startsWith('lead_') ? String(leadId) : ('lead_' + leadId);
-          window.fbq('track', 'Lead', {
-            content_name: 'Creation Entreprise',
-            content_category: 'legal_consulting',
-            currency: 'DZD'
-          }, { eventID: thankLeadEventId });
-          window.fbq('track', 'CompleteRegistration', {
-            content_name: 'Creation Entreprise',
-            content_category: 'legal_consulting',
-            currency: 'DZD',
-            status: true
-          }, { eventID: thankLeadEventId });
+        var cleanRequestId = String(leadId).startsWith('IDR-') ? String(leadId) : ('IDR-' + String(leadId).replace(/[^0-9]/g, '').slice(-6));
+        var conversionEventId = 'lead_' + cleanRequestId;
+        var guardKey = 'idarati_conv_fired_' + cleanRequestId;
+
+        if (!sessionStorage.getItem(guardKey)) {
+          sessionStorage.setItem(guardKey, '1');
+          if (window.fbq) {
+            window.fbq('track', 'Lead', {
+              content_name: 'Creation Entreprise',
+              content_category: params.get('w') || 'Alger',
+              currency: 'DZD',
+              value: 1
+            }, { eventID: conversionEventId });
+
+            window.fbq('track', 'CompleteRegistration', {
+              content_name: 'Creation Entreprise',
+              content_category: params.get('w') || 'Alger',
+              currency: 'DZD',
+              status: true,
+              value: 1
+            }, { eventID: conversionEventId });
+          }
+        } else {
+          console.info('[Meta Pixel] Conversion already recorded for ' + cleanRequestId + ' in this session. Skipping duplicate.');
         }
       } catch(e){}
 

@@ -1113,13 +1113,31 @@ form.addEventListener("submit", function(e){
     return;
   }
   var f=form.elements, w=form.querySelector("input[name=wilaya]:checked").value;
-  var eventId = "lead_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
+  // Generate a single deterministic Request ID (e.g. IDR-198209) BEFORE sending
+  var requestId = "IDR-" + Math.floor(100000 + Math.random() * 900000);
+  var eventId = "lead_" + requestId;
+
   var fbpVal = (window.IDARATI_JOURNEY && window.IDARATI_JOURNEY.readMetaCookie('_fbp')) || '';
   var fbcVal = (window.IDARATI_JOURNEY && window.IDARATI_JOURNEY.readMetaCookie('_fbc')) || '';
+  var urlParamsObj = new URLSearchParams(location.search);
+  var testEventCode = urlParamsObj.get("test_event_code") || urlParamsObj.get("testCode") || "";
+
   var data = new URLSearchParams({
-    full_name:f.full_name.value.trim(), company_name:f.company_name.value.trim(), activity:f.activity.value.trim(),
-    phone:f.phone.value.trim(), email:f.email.value.trim(), wilaya:w, lang:lang, source:utm(), page:location.href.split("#")[0], event_id:eventId,
-    fbp: fbpVal, fbc: fbcVal
+    id: requestId,
+    event_id: eventId,
+    full_name: f.full_name.value.trim(),
+    company_name: f.company_name.value.trim(),
+    activity: f.activity.value.trim(),
+    phone: f.phone.value.trim(),
+    email: f.email.value.trim(),
+    wilaya: w,
+    lang: lang,
+    source: utm() || "landing",
+    page: location.href.split("#")[0],
+    fbp: fbpVal,
+    fbc: fbcVal,
+    user_agent: navigator.userAgent,
+    test_event_code: testEventCode
   });
   btn.disabled=true; btn.textContent=T[lang].sending;
 
@@ -1127,7 +1145,8 @@ form.addEventListener("submit", function(e){
   try {
     var storedLeads = JSON.parse(localStorage.getItem("idarati_leads_db") || "[]");
     var newLeadObj = {
-      id: eventId,
+      id: requestId,
+      event_id: eventId,
       date: new Date().toISOString(),
       full_name: f.full_name.value.trim(),
       company_name: f.company_name.value.trim() || "قيد التسمية",
@@ -1152,6 +1171,7 @@ form.addEventListener("submit", function(e){
   }
 
   function done(){
+    // Record internal funnel progress in journey
     if (window.IDARATI_JOURNEY) {
       window.IDARATI_JOURNEY.trackLeadConversion({
         eventId: eventId,
@@ -1159,41 +1179,12 @@ form.addEventListener("submit", function(e){
         activity: f.activity.value.trim(),
         company_name: f.company_name.value.trim()
       });
-    } else {
-      fbq("track","Lead",{content_name:"Creation entreprise", content_category:w},{eventID:eventId});
-      fbq("track","CompleteRegistration",{content_name:"Creation entreprise", content_category:w, status:true},{eventID:eventId});
     }
-    if (storedPixelCfg && storedPixelCfg.token && /^\d{6,20}$/.test(pixelId)) {
-      try {
-        fetch("https://graph.facebook.com/v19.0/" + pixelId + "/events?access_token=" + encodeURIComponent(storedPixelCfg.token), {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify({
-            data: [
-              {
-                event_name: "Lead",
-                event_time: Math.floor(Date.now() / 1000),
-                event_id: eventId,
-                action_source: "website",
-                event_source_url: location.href,
-                custom_data: { content_name: "Creation entreprise", content_category: w }
-              },
-              {
-                event_name: "CompleteRegistration",
-                event_time: Math.floor(Date.now() / 1000),
-                event_id: eventId,
-                action_source: "website",
-                event_source_url: location.href,
-                custom_data: { content_name: "Creation entreprise", content_category: w, status: true }
-              }
-            ]
-          })
-        }).catch(function(e){ console.warn("CAPI dispatch:", e); });
-      } catch(e){}
-    }
+
     try {
       localStorage.setItem("idarati_last_lead", JSON.stringify({
-        id: eventId,
+        id: requestId,
+        event_id: eventId,
         full_name: f.full_name.value.trim(),
         phone: f.phone.value.trim(),
         wilaya: w,
@@ -1202,14 +1193,17 @@ form.addEventListener("submit", function(e){
       }));
     } catch(e){}
 
-    // Redirect to dedicated Thank You page with order ID and name
-    var thankYouUrl = "/thank-you/?id=" + encodeURIComponent(eventId) + "&name=" + encodeURIComponent(f.full_name.value.trim()) + "&w=" + encodeURIComponent(w);
+    // Redirect to dedicated Thank You page with deterministic request ID
+    // Conversion events (Lead & CompleteRegistration) fire on the thank-you screen guarded by sessionStorage
+    var thankYouUrl = "/thank-you/?id=" + encodeURIComponent(requestId) + "&name=" + encodeURIComponent(f.full_name.value.trim()) + "&w=" + encodeURIComponent(w);
+    if (testEventCode) thankYouUrl += "&test_event_code=" + encodeURIComponent(testEventCode);
     window.location.href = thankYouUrl;
   }
 
   // 1) إرسال الطلب وحفظه في قاعدة بيانات ريلواي (Railway PostgreSQL API)
   var postPayload = {
-    id: eventId,
+    id: requestId,
+    event_id: eventId,
     full_name: f.full_name.value.trim(),
     company_name: f.company_name.value.trim(),
     activity: f.activity.value.trim(),
@@ -1220,7 +1214,9 @@ form.addEventListener("submit", function(e){
     source: utm() || "landing",
     page: location.href.split("#")[0],
     fbp: fbpVal,
-    fbc: fbcVal
+    fbc: fbcVal,
+    test_event_code: testEventCode,
+    userAgent: navigator.userAgent
   };
 
   var apiReq = fetch("/api/leads", {

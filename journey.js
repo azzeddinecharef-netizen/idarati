@@ -323,8 +323,9 @@
       fbc: readMetaCookie('_fbc')
     };
 
-    emit('generate_lead', { meta: 'Lead', params, eventId });
-    emit('complete_registration', { meta: 'CompleteRegistration', params: { ...params, status: true }, eventId });
+    // Note: Standard conversion events (Lead & CompleteRegistration) are fired
+    // on the dedicated Thank-You/Success screen with a deterministic request ID (lead_IDR-xxxxxx)
+    // and guarded by sessionStorage to prevent duplicate firing.
     emit('consultation_conversion', { meta: 'ConsultationRequested', params, eventId });
   }
 

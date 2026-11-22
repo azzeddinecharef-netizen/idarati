@@ -9,6 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const https = require('https');
 const http = require('http');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const app = express();
@@ -266,22 +267,44 @@ async function dispatchMetaCapi(lead) {
 
   try {
     const nowSec = Math.floor(Date.now() / 1000);
+    const cleanId = String(lead.id || '').startsWith('IDR-')
+      ? lead.id
+      : (String(lead.event_id || '').startsWith('lead_IDR-')
+          ? String(lead.event_id).replace('lead_', '')
+          : (String(lead.id || '').replace(/^lead_/, '')));
+    const eventId = String(lead.event_id || '').startsWith('lead_') ? lead.event_id : ('lead_' + cleanId);
+
+    // Normalize phone to 213XXXXXXXXX and SHA-256 hash
+    let normPhone = String(lead.phone || '').replace(/\D/g, '');
+    if (normPhone.startsWith('00213')) normPhone = normPhone.substring(5);
+    else if (normPhone.startsWith('213')) normPhone = normPhone.substring(3);
+    normPhone = normPhone.replace(/^0+/, '');
+    if (normPhone) normPhone = '213' + normPhone;
+
+    const hashedPhone = normPhone ? crypto.createHash('sha256').update(normPhone).digest('hex') : undefined;
+    const hashedEmail = (lead.email && lead.email.trim()) ? crypto.createHash('sha256').update(lead.email.trim().toLowerCase()).digest('hex') : undefined;
+
+    const userData = {};
+    if (hashedPhone) userData.ph = [hashedPhone];
+    if (hashedEmail) userData.em = [hashedEmail];
+    if (lead.ip) userData.client_ip_address = lead.ip;
+    if (lead.userAgent || lead.user_agent) userData.client_user_agent = lead.userAgent || lead.user_agent;
+    if (lead.fbp) userData.fbp = lead.fbp;
+    if (lead.fbc) userData.fbc = lead.fbc;
+
+    const testEventCode = lead.test_event_code || process.env.META_TEST_EVENT_CODE;
+
     const capiPayload = {
       data: [
         {
           event_name: 'Lead',
           event_time: nowSec,
-          event_id: lead.id,
+          event_id: eventId,
           action_source: 'website',
-          event_source_url: lead.page || 'https://idarati-company.africacold.fr',
-          user_data: {
-            client_ip_address: lead.ip || undefined,
-            client_user_agent: lead.userAgent || undefined,
-            fbp: lead.fbp || undefined,
-            fbc: lead.fbc || undefined
-          },
+          event_source_url: lead.page || 'https://idarati-company.africacold.fr/',
+          user_data: userData,
           custom_data: {
-            content_name: 'Demande Creation Entreprise',
+            content_name: 'Creation entreprise',
             content_category: lead.wilaya || 'Alger',
             currency: 'DZD',
             value: 1
@@ -290,17 +313,12 @@ async function dispatchMetaCapi(lead) {
         {
           event_name: 'CompleteRegistration',
           event_time: nowSec,
-          event_id: lead.id,
+          event_id: eventId,
           action_source: 'website',
-          event_source_url: lead.page || 'https://idarati-company.africacold.fr',
-          user_data: {
-            client_ip_address: lead.ip || undefined,
-            client_user_agent: lead.userAgent || undefined,
-            fbp: lead.fbp || undefined,
-            fbc: lead.fbc || undefined
-          },
+          event_source_url: lead.page || 'https://idarati-company.africacold.fr/',
+          user_data: userData,
           custom_data: {
-            content_name: 'Demande Creation Entreprise',
+            content_name: 'Creation entreprise',
             content_category: lead.wilaya || 'Alger',
             currency: 'DZD',
             status: true,
@@ -310,8 +328,12 @@ async function dispatchMetaCapi(lead) {
       ]
     };
 
+    if (testEventCode) {
+      capiPayload.test_event_code = String(testEventCode).trim();
+    }
+
     const postData = JSON.stringify(capiPayload);
-    const req = https.request(`https://graph.facebook.com/v19.0/${pixelId}/events?access_token=${encodeURIComponent(token)}`, {
+    const req = https.request(`https://graph.facebook.com/v21.0/${pixelId}/events?access_token=${encodeURIComponent(token)}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -377,6 +399,7 @@ app.post(['/api/leads', '/api/orders', '/api/submit'], async (req, res) => {
 
     const newLead = {
       id: eventId,
+      event_id: body.event_id || (String(eventId).startsWith('lead_') ? eventId : ('lead_' + eventId)),
       created_at: new Date().toISOString(),
       full_name: fullName,
       company_name: (body.company_name || '').trim(),
@@ -393,6 +416,7 @@ app.post(['/api/leads', '/api/orders', '/api/submit'], async (req, res) => {
       amount: (body.amount || '').trim(),
       fbp: (body.fbp || '').trim(),
       fbc: (body.fbc || '').trim(),
+      test_event_code: body.test_event_code || req.query.test_event_code || '',
       ip: clientIp,
       userAgent: userAgent
     };
