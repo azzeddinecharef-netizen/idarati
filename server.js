@@ -273,7 +273,7 @@ async function dispatchMetaCapi(lead) {
           event_time: nowSec,
           event_id: lead.id,
           action_source: 'website',
-          event_source_url: lead.page || 'https://idaraticompany.dz',
+          event_source_url: lead.page || 'https://idarati-company.africacold.fr',
           user_data: {
             client_ip_address: lead.ip || undefined,
             client_user_agent: lead.userAgent || undefined,
@@ -292,7 +292,7 @@ async function dispatchMetaCapi(lead) {
           event_time: nowSec,
           event_id: lead.id,
           action_source: 'website',
-          event_source_url: lead.page || 'https://idaraticompany.dz',
+          event_source_url: lead.page || 'https://idarati-company.africacold.fr',
           user_data: {
             client_ip_address: lead.ip || undefined,
             client_user_agent: lead.userAgent || undefined,
