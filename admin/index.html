@@ -604,6 +604,22 @@
     <div class="content">
       <section class="kpis" id="kpis" style="margin-top:18px"></section>
       <section class="funnel-wrap table-only" id="funnel"></section>
+      <section id="view" style="flex:1;display:flex;flex-direction:column;min-height:0"></section>
+    </div>
+  </main>
+</div>
+
+<!-- Drawer & Popovers -->
+<div class="scrim" id="scrim"></div>
+<div class="drawer" id="drawer"></div>
+<div class="notif-pop" id="notifPop" role="dialog"></div>
+
+<!-- New Lead Modal -->
+<div class="modal" id="newLead">
+  <div class="modal-bg" data-close-new></div>
+  <div class="modal-box nl-box" id="nlBox"></div>
+</div>
+
 <!-- Scheduling Modal -->
 <div class="modal" id="sched">
   <div class="modal-bg" data-close-sched></div>
@@ -1569,6 +1585,164 @@ function askDelete(id){
 }
 
 /* Time & countdowns */
+function dueLabel(ms){
+  if (!ms) return '';
+  const d = new Date(ms), today = new Date(), tm = new Date();
+  tm.setDate(tm.getDate()+1);
+  const hhmm = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  if (d.toDateString() === today.toDateString()) return `${t('today')} ${hhmm}`;
+  if (d.toDateString() === tm.toDateString()) return `${t('tomorrow')} ${hhmm}`;
+  return `${fmtDate(ms)} ${hhmm}`;
+}
+
+function chronoText(ms){
+  let diff = Math.abs(ms - Date.now()), sec = Math.floor(diff/1000);
+  const d = Math.floor(sec/86400); sec %= 86400;
+  const hms = `${pad(Math.floor(sec/3600))}:${pad(Math.floor(sec%3600/60))}:${pad(sec%60)}`;
+  return d ? `<bdi class="dd">${d} ${t('dayShort')}</bdi>${hms}` : hms;
+}
+
+const dueState = ms => !ms ? '' : (ms < Date.now() ? 'late' : (ms - Date.now() < 60*60e3 ? 'soon' : ''));
+const reminders = () => leads.filter(l => l.dueAt && SCHEDULED.includes(statusToKey(l.status))).sort((a,b) => a.dueAt - b.dueAt);
+const typeMeta = l => statusToKey(l.status) === 'meeting'
+  ? { lbl: t('tMeet'), icon: 'handshake', col: 'var(--c-meeting)' }
+  : { lbl: t('tCall'), icon: 'callback', col: 'var(--c-callback)' };
+
+/* Scheduling modal */
+let schedCtx = null;
+const toLocalInput = ms => {
+  const d = new Date(ms);
+  return `${isoDay(d)}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
+function quickOptions(){
+  const now = new Date();
+  const at = (days, h) => { const d = new Date(); d.setDate(d.getDate()+days); d.setHours(h,0,0,0); return d.getTime(); };
+  const round = ms => Math.ceil(ms / (15*60e3)) * 15*60e3;
+  const o = [['q1h', round(Date.now()+H)], ['q3h', round(Date.now()+3*H)]];
+  if (now.getHours() < 16) o.push(['qEve', at(0,17)]);
+  o.push(['qTom', at(1,10)], ['qAfter', at(2,10)]);
+  return o;
+}
+
+function openSched(id, stKey){
+  const l = leads.find(x => String(x.id) === String(id));
+  if (!l) return;
+  const meta = stKey === 'meeting' ? { icon:'handshake', col:'var(--c-meeting)' } : { icon:'callback', col:'var(--c-callback)' };
+  schedCtx = { id, stKey, due: (statusToKey(l.status) === stKey && l.dueAt) ? l.dueAt : null };
+  const box = $('#schedBox');
+  box.style.setProperty('--tc', meta.col);
+  box.innerHTML = `
+    <div class="modal-ico">${ico(meta.icon,'')}</div>
+    <h3>${stKey === 'meeting' ? t('schedMeetTitle', esc(l.full_name || l.name)) : t('schedCallTitle', esc(l.full_name || l.name))}</h3>
+    <p>${t('schedText')}</p>
+    <div class="quick">${quickOptions().map(([k,ms]) => `<button type="button" data-q="${ms}">${t(k)}</button>`).join('')}</div>
+    <input type="datetime-local" class="dt-input" id="dtIn" value="${schedCtx.due ? toLocalInput(schedCtx.due) : ''}">
+    <textarea id="schedNote" placeholder="${t('schedNotePh')}"></textarea>
+    <div class="modal-actions">
+      <button class="btn-cancel" data-close-sched>${t('cancel')}</button>
+      <button class="btn-save" id="schedOk" ${schedCtx.due ? '' : 'disabled'}>${t('save')}</button>
+    </div>`;
+
+  const sync = () => {
+    $('#schedOk').disabled = !$('#dtIn').value;
+    box.querySelectorAll('[data-q]').forEach(b => b.classList.toggle('on', $('#dtIn').value === toLocalInput(+b.dataset.q)));
+  };
+  box.querySelectorAll('[data-q]').forEach(b => {
+    b.onclick = () => { $('#dtIn').value = toLocalInput(+b.dataset.q); sync(); };
+  });
+  $('#dtIn').oninput = sync;
+  box.querySelectorAll('[data-close-sched]').forEach(b => b.onclick = closeSched);
+  $('#schedOk').onclick = () => {
+    const due = new Date($('#dtIn').value).getTime();
+    if (!due) return;
+    const { id: i, stKey: s } = schedCtx;
+    const note = $('#schedNote').value;
+    closeSched();
+    setStatus(i, s, due, note);
+  };
+  sync();
+  $('#sched').classList.add('open');
+}
+
+function closeSched(){
+  $('#sched').classList.remove('open');
+  schedCtx = null;
+  if (view === 'table') renderTable();
+}
+
+/* Notifications Popover */
+function renderNotif(){
+  const R = reminders(), late = R.filter(l => l.dueAt < Date.now()), up = R.filter(l => l.dueAt >= Date.now());
+  const item = l => {
+    const m = typeMeta(l), st = dueState(l.dueAt);
+    return `
+    <div class="np-item">
+      <div class="np-row">
+        <div class="np-ico" style="--tc:${m.col}">${ico(m.icon)}</div>
+        <div class="np-main">
+          <div class="np-name">${esc(l.full_name || l.name)}</div>
+          <div class="np-meta">${m.lbl}<i></i><span class="ltr">${dueLabel(l.dueAt)}</span></div>
+        </div>
+      </div>
+      <div class="chrono ${st}" data-chrono="${l.dueAt}">
+        <span class="lbl"><span class="pulse"></span><span data-chrono-lbl>${st==='late' ? t('overdue') : t('remaining')}</span></span>
+        <span class="time" data-chrono-time>${chronoText(l.dueAt)}</span>
+      </div>
+      <div class="np-actions">
+        <button class="np-open" data-np-open="${l.id}">${ico('arrow-out')}${t('npOpen')}</button>
+        <a class="icon-btn" href="tel:${normPhone(l.phone)}" title="${t('call')}">${ico('phone')}</a>
+        <a class="icon-btn wa" href="${waLink(l.phone)}" target="_blank" title="WhatsApp">${ico('wa')}</a>
+      </div>
+    </div>`;
+  };
+  $('#notifPop').innerHTML = `
+    <div class="np-head"><h3>${t('npTitle')}</h3><span class="n">${R.length}</span><button class="icon-btn" id="npClose">${ico('x')}</button></div>
+    <div class="np-body">${R.length ? `
+      ${late.length ? `<div class="np-sec">${t('npLate')}</div>${late.map(item).join('')}` : ''}
+      ${up.length ? `<div class="np-sec">${t('npUpcoming')}</div>${up.map(item).join('')}` : ''}`
+      : `<div class="np-empty"><svg class="i"><use href="#i-bell"/></svg>${t('npEmpty')}</div>`}
+    </div>`;
+  $('#npClose').onclick = closeNotif;
+  document.querySelectorAll('[data-np-open]').forEach(b => b.onclick = () => { closeNotif(); openDrawer(b.dataset.npOpen); });
+}
+
+function openNotif(){ renderNotif(); $('#notifPop').classList.add('open'); $('#notifBtn').classList.add('on'); }
+function closeNotif(){ $('#notifPop').classList.remove('open'); $('#notifBtn').classList.remove('on'); }
+$('#notifBtn').onclick = e => { e.stopPropagation(); $('#notifPop').classList.contains('open') ? closeNotif() : openNotif(); };
+document.addEventListener('click', e => { if (!e.target.closest('#notifPop') && !e.target.closest('#notifBtn')) closeNotif(); });
+
+function updateBadge(){
+  const R = reminders(), hot = R.some(l => l.dueAt - Date.now() < 30*60e3);
+  const b = $('#notifBadge');
+  if (b) {
+    b.textContent = R.length;
+    b.classList.toggle('show', R.length > 0);
+    b.classList.toggle('hot', hot);
+  }
+  const btn = $('#notifBtn');
+  if (btn) btn.classList.toggle('ring', hot);
+}
+
+/* 1-second ticker */
+function tick(){
+  document.querySelectorAll('[data-chrono]').forEach(el => {
+    const ms = +el.dataset.chrono, st = dueState(ms);
+    el.classList.toggle('late', st === 'late'); el.classList.toggle('soon', st === 'soon');
+    const tEl = el.querySelector('[data-chrono-time]');
+    if (tEl) tEl.innerHTML = chronoText(ms);
+    const lEl = el.querySelector('[data-chrono-lbl]');
+    if (lEl) lEl.textContent = st === 'late' ? t('overdue') : t('remaining');
+  });
+  document.querySelectorAll('[data-due-chip]').forEach(el => {
+    const st = dueState(+el.dataset.dueChip);
+    el.classList.toggle('late', st === 'late'); el.classList.toggle('soon', st === 'soon');
+  });
+  updateBadge();
+}
+setInterval(tick, 1000);
+
+/* ================= DRAWER & VOICE DICTATION ================= */
 function historyHTML(l){
   const arr = Array.isArray(l.history) ? [...l.history] : [];
   return arr.sort((a,b) => b.at - a.at).map(ev => {
@@ -1840,10 +2014,12 @@ function render(){
   renderKpis();
   renderFilterState();
   renderTable();
+  updateBadge();
 }
 window.addEventListener('DOMContentLoaded', () => {
   leads = deduplicateLeadsArray(loadLeads());
   render();
+  setInterval(tick, 30000);
 });
 
 </script>
