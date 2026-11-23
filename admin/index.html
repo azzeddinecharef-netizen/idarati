@@ -604,6 +604,26 @@
     <div class="content">
       <section class="kpis" id="kpis" style="margin-top:18px"></section>
       <section class="funnel-wrap table-only" id="funnel"></section>
+<!-- Scheduling Modal -->
+<div class="modal" id="sched">
+  <div class="modal-bg" data-close-sched></div>
+  <div class="modal-box sched-box" id="schedBox"></div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal" id="modal">
+  <div class="modal-bg"></div>
+  <div class="modal-box">
+    <div class="modal-ico"><svg class="i"><use href="#i-trash"/></svg></div>
+    <h3 id="mTitle"></h3>
+    <p id="mText"></p>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="mCancel"></button>
+      <button class="btn-confirm" id="mOk"></button>
+    </div>
+  </div>
+</div>
+
 <!-- In-app Toast -->
 <div class="toast" id="toast"></div>
 
@@ -1504,6 +1524,82 @@ function bindCommon(){
 }
 
 /* ================= ACTIONS & SCHEDULING ================= */
+function requestStatus(id, stKey){
+  const l = leads.find(x => String(x.id) === String(id));
+  if (!l) return;
+  if (SCHEDULED.includes(stKey)) {
+    openSched(id, stKey);
+  } else {
+    setStatus(id, stKey);
+  }
+}
+
+function setStatus(id, stKey, due, note){
+  const l = leads.find(x => String(x.id) === String(id));
+  if (!l) return;
+  const now = Date.now();
+  const oldKey = statusToKey(l.status);
+  const storedVal = keyToStoredStatus(stKey);
+  
+  if (oldKey === stKey) {
+    if (!due) return;
+    l.history.push({ type: 'resched', at: now, due, by: CURRENT_USER });
+  } else {
+    l.history.push({ type: 'status', at: now, from: oldKey, to: stKey, due: due || undefined, by: CURRENT_USER });
+    l.status = storedVal;
+  }
+  l.dueAt = SCHEDULED.includes(stKey) ? due : null;
+  if (note && note.trim()) {
+    l.history.push({ type: 'note', at: now + 1, text: note.trim(), by: CURRENT_USER });
+    l.notes = (l.notes ? l.notes + ' | ' : '') + note.trim();
+  }
+  saveLeads();
+  toast(due ? t('tScheduled', l.full_name || l.name, dueLabel(due)) : t('tMoved', l.full_name || l.name, stLabel(stKey)));
+  syncLeadUpdate(l);
+  render();
+}
+
+function askDelete(id){
+  const l = leads.find(x => String(x.id) === String(id));
+  if (!l) return;
+  pendingDelete = l.id;
+  $('#mTitle').textContent = t('delTitle');
+  $('#mText').textContent = t('delText', l.full_name || l.name);
+  $('#modal').classList.add('open');
+}
+
+/* Time & countdowns */
+function historyHTML(l){
+  const arr = Array.isArray(l.history) ? [...l.history] : [];
+  return arr.sort((a,b) => b.at - a.at).map(ev => {
+    let head, color = 'var(--faint)', body = '';
+    if (ev.type === 'created') {
+      head = ev.manual ? t('evCreatedManual') : t('evCreated');
+      color = 'var(--c-new)';
+    } else if (ev.type === 'status') {
+      color = statusOf(ev.to).color;
+      head = `${t('evStatus')}: <span style="color:var(--muted)">${stLabel(ev.from)}</span> <span class="arrow">${lang==='ar'?'←':'→'}</span> <b>${stLabel(ev.to)}</b>`;
+      if (ev.due) body = `<div class="ev-due">${ico('clock')}<span class="ltr">${fmtDateTime(ev.due)}</span></div>`;
+    } else if (ev.type === 'resched') {
+      head = t('evResched');
+      color = 'var(--c-callback)';
+      body = `<div class="ev-due">${ico('clock')}<span class="ltr">${fmtDateTime(ev.due)}</span></div>`;
+    } else {
+      head = t('evNote');
+      color = 'var(--accent)';
+      body = `<div class="ev-note">${esc(ev.text)}</div>`;
+    }
+    return `<div class="ev" style="--ev:${color}">
+      <div class="ev-head">${head}</div>
+      <div class="ev-time"><span class="ltr">${fmtDateTime(ev.at)}</span> · ${t('by')} ${esc(ev.by || CURRENT_USER)}</div>
+      ${body}
+    </div>`;
+  }).join('');
+}
+
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, dictating = false, dictLang = store.get('crm-dict') || 'ar-DZ', dictBase = '';
+
 
 function renderKpis(){}
 function renderFilterState(){}
