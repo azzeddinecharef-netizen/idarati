@@ -1998,6 +1998,201 @@ document.addEventListener('keydown', e => {
 });
 
 /* ================= NEW LEAD MODAL ================= */
+function openNewLead(){
+  const box = $('#nlBox');
+  box.innerHTML = `
+    <div class="nl-head">
+      <div class="modal-ico nl-ico">${ico('plus','')}</div>
+      <div><h3>${t('nlTitle')}</h3><p>${t('nlSub')}</p></div>
+      <button class="icon-btn" data-close-new>${ico('x')}</button>
+    </div>
+    <form class="nl-form" id="nlForm" novalidate>
+      <div class="f full">
+        <label>${t('fName')} <b>*</b></label>
+        <input id="newName" name="name" autocomplete="off" required>
+        <em></em>
+      </div>
+      <div class="f">
+        <label>${t('fCompany')}</label>
+        <input id="newCompany" name="company" autocomplete="off">
+        <label class="chk"><input type="checkbox" name="pending"><span>${t('fPendingChk')}</span></label>
+      </div>
+      <div class="f">
+        <label>${t('fActivity')} <b>*</b></label>
+        <input id="newActivity" name="activity" autocomplete="off" required>
+        <em></em>
+      </div>
+      <div class="f">
+        <label>${t('fPhone')} <b>*</b></label>
+        <input id="newPhone" name="phone" inputmode="tel" class="ltr-in" placeholder="07 XX XX XX XX" required>
+        <em></em>
+      </div>
+      <div class="f">
+        <label>${t('fWilaya')} <b>*</b></label>
+        <div class="seg" role="radiogroup">
+          ${WILAYAS.map(w => `
+            <label class="seg-opt">
+              <input type="radio" id="newWilaya_${w.code}" name="wilaya" value="${w.v}" ${w.v==='Alger'?'checked':''}>
+              <span><b>${lang === 'ar' ? w.ar : w.v}</b><small>${w.code}</small></span>
+            </label>`).join('')}
+        </div>
+        <em></em>
+      </div>
+      <div class="f">
+        <label>${t('fSource')}</label>
+        <select id="newSource" name="source">
+          ${SOURCES.map(k => `<option value="${k}">${srcLabel(k)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="f">
+        <label>${t('fStatus')}</label>
+        <div class="st-drop" id="nlSt">
+          <span class="dot"></span>
+          <select id="newStatus" name="status">
+            ${STATUSES.map(x => `<option value="${x.id}">${stLabel(x.id)}</option>`).join('')}
+          </select>
+          ${ico('chevron')}
+        </div>
+      </div>
+      <div class="f full due-f" id="nlDue">
+        <label>${t('fDue')} <b>*</b></label>
+        <div class="quick" id="nlQuick">
+          ${quickOptions().map(([k,ms]) => `<button type="button" data-nq="${ms}">${t(k)}</button>`).join('')}
+        </div>
+        <input type="datetime-local" name="due">
+        <em></em>
+      </div>
+      <div class="f full">
+        <label>${t('fNote')} <span class="opt">(${t('optional')})</span></label>
+        <textarea id="newNotes" name="note" rows="2"></textarea>
+      </div>
+
+      <!-- Hidden compatibility inputs -->
+      <input type="hidden" id="newEmail" name="email" value="">
+      <input type="hidden" id="newLegalForm" name="legal_form" value="">
+      <input type="hidden" id="newService" name="service" value="">
+      <input type="hidden" id="newAmount" name="amount" value="">
+      <input type="hidden" id="newWilaya" name="newWilayaHidden" value="Alger">
+      <label style="display:none;"><input type="checkbox" id="newOpenWa" name="open_wa"></label>
+
+      <div class="nl-foot full">
+        <button type="button" class="btn-cancel" data-close-new>${t('cancel')}</button>
+        <button type="submit" class="btn-save">${ico('plus')}${t('createLead')}</button>
+      </div>
+    </form>`;
+
+  const f = $('#nlForm'), el = n => f.elements[n];
+  const setErr = (n, msg, warn) => {
+    const node = el(n);
+    if (!node) return;
+    const w = (node.length !== undefined && !node.tagName ? node[0] : node).closest('.f');
+    if (!w) return;
+    w.classList.toggle('err', !!msg && !warn);
+    w.classList.toggle('warn', !!msg && !!warn);
+    const em = w.querySelector('em');
+    if (em) em.textContent = msg || '';
+  };
+
+  const syncStatus = () => {
+    const st = el('status').value;
+    $('#nlSt').style.setProperty('--st', statusOf(st).color);
+    $('#nlDue').classList.toggle('show', SCHEDULED.includes(st));
+  };
+  el('status').onchange = syncStatus;
+  syncStatus();
+
+  el('pending').onchange = () => {
+    el('company').disabled = el('pending').checked;
+    if (el('pending').checked) el('company').value = '';
+  };
+
+  el('phone').oninput = () => {
+    const v = normPhone(el('phone').value);
+    if (!v) return setErr('phone','');
+    if (!validPhone(v)) return setErr('phone', v.length >= 10 ? t('badPhoneMsg') : '');
+    const d = leads.find(l => isSamePhone(l.phone, v));
+    setErr('phone', d ? t('dupPhone', d.full_name || d.name) : '', true);
+  };
+
+  f.querySelectorAll('[data-nq]').forEach(b => b.onclick = () => {
+    el('due').value = toLocalInput(+b.dataset.nq);
+    f.querySelectorAll('[data-nq]').forEach(x => x.classList.toggle('on', x === b));
+    setErr('due','');
+  });
+  el('due').oninput = () => f.querySelectorAll('[data-nq]').forEach(x => x.classList.toggle('on', el('due').value === toLocalInput(+x.dataset.nq)));
+
+  ['name','activity'].forEach(n => el(n).addEventListener('input', () => setErr(n,'')));
+  f.querySelectorAll('[name=wilaya]').forEach(x => x.addEventListener('change', () => {
+    setErr('wilaya','');
+    if ($('#newWilaya')) $('#newWilaya').value = el('wilaya').value;
+  }));
+
+  box.querySelectorAll('[data-close-new]').forEach(b => b.onclick = closeNewLead);
+
+  f.onsubmit = e => {
+    e.preventDefault();
+    const v = n => (el(n) ? el(n).value.trim() : '');
+    const phone = normPhone(v('phone'));
+    const st = v('status');
+    let ok = true;
+    ['name','activity'].forEach(n => { if (!v(n)) { setErr(n, t('req')); ok = false; } });
+    const wilayaVal = f.querySelector('[name=wilaya]:checked')?.value || 'Alger';
+    if (!phone) { setErr('phone', t('req')); ok = false; }
+    else if (!validPhone(phone)) { setErr('phone', t('badPhoneMsg')); ok = false; }
+    
+    const due = SCHEDULED.includes(st) && v('due') ? new Date(v('due')).getTime() : null;
+    if (SCHEDULED.includes(st) && !due) { setErr('due', t('req')); ok = false; }
+    if (!ok) { f.querySelector('.err input:not([type=radio]), .err select')?.focus(); return; }
+
+    const now = Date.now();
+    const newLead = {
+      id: 'lead-' + now,
+      full_name: v('name'),
+      company_name: el('pending').checked ? '' : v('company'),
+      activity: v('activity'),
+      wilaya: wilayaVal,
+      source: v('source') || 'direct',
+      phone: phone,
+      date: new Date(now).toISOString(),
+      status: keyToStoredStatus(st),
+      dueAt: due,
+      notes: v('note'),
+      history: [{ type: 'created', at: now, by: CURRENT_USER, manual: true }]
+    };
+    if (st !== 'new') {
+      newLead.history.push({ type: 'status', at: now+1, from: 'new', to: st, due: due || undefined, by: CURRENT_USER });
+    }
+    if (v('note')) {
+      newLead.history.push({ type: 'note', at: now+2, text: v('note'), by: CURRENT_USER });
+    }
+
+    leads.unshift(newLead);
+    saveLeads();
+    closeNewLead();
+    applyStatic();
+    render();
+    toast(t('tCreated', newLead.full_name));
+
+    // Remote sync
+    syncLeadAdd(newLead);
+
+    // Cross-tab broadcast
+    try {
+      if (window.BroadcastChannel) {
+        new BroadcastChannel('idarati_leads_channel').postMessage({ type: 'new_lead', name: newLead.full_name });
+      }
+    } catch(_) {}
+  };
+
+  $('#newLead').classList.add('open');
+  setTimeout(() => el('name')?.focus(), 80);
+}
+
+function closeNewLead(){ $('#newLead').classList.remove('open'); }
+$('#addBtn').onclick = openNewLead;
+
+/* ================= ANALYTICS ================= */
+const DAY = 24 * H;
 
 function renderKpis(){}
 function renderFilterState(){}
