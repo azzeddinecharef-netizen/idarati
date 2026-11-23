@@ -519,8 +519,6 @@
   <div class="auth-box">
     <img src="idarati-logo.png" alt="IDARATI" class="auth-logo">
     <div>
-</head>
-<body>
       <h2>IDARATI CRM</h2>
       <p data-t="authSub">Accès sécurisé à la gestion commerciale</p>
     </div>
@@ -658,6 +656,7 @@
   <textarea id="editNotes"></textarea>
 </div>
 
+<!-- ===== Icons ===== -->
 <svg width="0" height="0" style="position:absolute">
   <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16v-4M12 16V8M17 16v-7"/></symbol>
@@ -705,6 +704,7 @@
 </svg>
 
 <script>
+/* ================= I18N ================= */
 const I18N = {
   ar: {
     brandSub:'إدارة المبيعات', navViews:'العرض', navAdmin:'خاص بالأدمين',
@@ -2193,30 +2193,851 @@ $('#addBtn').onclick = openNewLead;
 
 /* ================= ANALYTICS ================= */
 const DAY = 24 * H;
+function firstContactAt(l){
+  const e = (l.history || []).filter(h => h.type === 'status').sort((a,b) => a.at - b.at)[0];
+  return e ? e.at : null;
+}
+const reached = (l, keys) => {
+  const currentKey = statusToKey(l.status);
+  if (keys.includes(currentKey)) return true;
+  return (l.history || []).some(h => h.type === 'status' && keys.includes(h.to));
+};
 
-function renderKpis(){}
-function renderFilterState(){}
-function renderTable(){}
-function renderNotif(){}
-function updateBadge(){}
-function tick(){}
-function closeDrawer(){}
-function syncLeadDelete(){}
+function fmtDur(ms){
+  if (ms == null) return t('noData');
+  const m = Math.round(ms/60e3);
+  if (m < 60) return t('minutes', m);
+  const h = Math.round(m/60);
+  return h < 48 ? t('hours', h) : t('days', Math.round(h/24));
+}
+
+function bars(items, total, color){
+  if (!items.length) return `<div class="an-empty">${t('emptyPeriod')}</div>`;
+  const max = Math.max(...items.map(x => x.n));
+  return `<div class="rows">${items.map(x => `
+    <div>
+      <div class="row-top"><b>${esc(x.label)}</b><span>${x.n} · ${Math.round(x.n/total*100)}%${x.extra ? ' · ' + x.extra : ''}</span></div>
+      <div class="track"><span style="width:${x.n/max*100}%;background:${color}"></span></div>
+    </div>`).join('')}</div>`;
+}
+
+function renderAnalytics(){
+  const S = scoped(), N = S.length;
+  let period = t('periodAll');
+  if (F.from && F.to) period = t('periodRange', fmtIso(F.from), fmtIso(F.to));
+  else if (F.from) period = t('periodFrom', fmtIso(F.from));
+  else if (F.to) period = t('periodTo', fmtIso(F.to));
+
+  const banner = `<div class="period">${ico('calendar')}${t('periodLbl')}: <b>${period}</b>${F.wilaya ? `<span class="sep">·</span><b>${esc(F.wilaya)}</b>` : ''}<span class="sep">·</span>${t('leadsN', N)}</div>`;
+  if (!N) {
+    $('#view').innerHTML = banner + `<div class="placeholder" style="margin-top:12px">${t('emptyPeriod')}</div>`;
+    return;
+  }
+
+  const start = new Date(F.from ? F.from+'T00:00:00' : isoDay(new Date(Math.min(...S.map(l => leadCreatedAt(l)))))+'T00:00:00');
+  const end   = new Date(F.to   ? F.to+'T00:00:00'   : isoDay(new Date())+'T00:00:00');
+  const spanDays = Math.max(1, Math.round((end - start)/DAY) + 1);
+  const weekly = spanDays > 45, step = weekly ? 7 : 1;
+  const buckets = [];
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + step)) {
+    const a = d.getTime(), b = a + step*DAY;
+    buckets.push({ a, n: S.filter(l => leadCreatedAt(l) >= a && leadCreatedAt(l) < b).length });
+  }
+  const maxB = Math.max(1, ...buckets.map(b => b.n));
+  const lbl = ms => fmtDate(ms).slice(0,5);
+  const tchart = `
+    <div class="tchart">${buckets.map(b => `
+      <div class="tbar ${b.n ? '' : 'zero'}">
+        ${b.n ? `<em style="bottom:${b.n/maxB*100}%">${b.n}</em>` : ''}
+        <span style="height:${b.n/maxB*100}%"></span>
+        <div class="tip">${weekly ? t('weekOf', fmtDate(b.a)) : fmtDate(b.a)} · ${t('leadsN', b.n)}</div>
+      </div>`).join('')}</div>
+    <div class="taxis"><span>${lbl(buckets[0].a)}</span>${buckets.length > 2 ? `<span>${lbl(buckets[Math.floor(buckets.length/2)].a)}</span>` : ''}<span>${lbl(buckets[buckets.length-1].a)}</span></div>`;
+
+  const steps = [
+    { k: 'fReceived', n: N, col: 'var(--c-new)' },
+    { k: 'fContacted', n: S.filter(l => reached(l, ['contacted','callback','meeting','signed','lost'])).length, col: 'var(--c-contacted)' },
+    { k: 'fMeeting', n: S.filter(l => reached(l, ['meeting','signed'])).length, col: 'var(--c-meeting)' },
+    { k: 'fSigned', n: S.filter(l => statusToKey(l.status) === 'signed').length, col: 'var(--c-signed)' }
+  ];
+  const funnel = `<div class="fsteps">${steps.map(s => `
+    <div>
+      <div class="fstep-top"><span>${t(s.k)}</span><span><b>${s.n}</b><small>${t('ofTotal', Math.round(s.n/N*100))}</small></span></div>
+      <div class="track"><span style="width:${s.n/N*100}%;background:${s.col}"></span></div>
+    </div>`).join('')}</div>`;
+
+  const contacted = S.map(l => ({ l, at: firstContactAt(l) })).filter(x => x.at);
+  const avg = contacted.length ? contacted.reduce((s,x) => s + (x.at - leadCreatedAt(x.l)), 0) / contacted.length : null;
+  const inSla = contacted.filter(x => x.at - leadCreatedAt(x.l) <= SLA_HOURS*H).length;
+  const slaPct = contacted.length ? Math.round(inSla/contacted.length*100) : null;
+  const notC = S.filter(l => statusToKey(l.status) === 'new').length;
+  const late = S.filter(isLate).length;
+  const resp = `<div class="tiles">
+    <div class="tile"><label>${t('avgFirst')}</label><strong>${fmtDur(avg)}</strong><small>${t('ofContacted')}</small></div>
+    <div class="tile ${slaPct==null ? '' : slaPct>=80 ? 'good' : 'bad'}"><label>${t('inSla', SLA_HOURS)}</label><strong>${slaPct==null ? t('noData') : slaPct+'%'}</strong><small>${inSla} / ${contacted.length}</small></div>
+    <div class="tile"><label>${t('notContacted')}</label><strong>${notC}</strong><small>${Math.round(notC/N*100)}%</small></div>
+    <div class="tile ${late ? 'bad' : 'good'}"><label>${t('lateNow')}</label><strong>${late}</strong><small>${t('needAction')}</small></div>
+  </div>`;
+
+  const group = key => Object.entries(S.reduce((m,l) => {
+    const k = l[key] || 'Autre';
+    (m[k] = (m[k]||[])).push(l);
+    return m;
+  }, {})).map(([label, arr]) => ({
+    label: key === 'source' ? srcLabel(label) : label,
+    n: arr.length,
+    extra: t('convShort', Math.round(arr.filter(l => statusToKey(l.status) === 'signed').length / arr.length * 100))
+  })).sort((a,b) => b.n - a.n);
+
+  $('#view').innerHTML = banner + `
+    <div class="an-grid" style="margin-top:12px">
+      <div class="an-card wide"><div class="an-head"><h3>${t('anTime')}</h3><span>${weekly ? t('anWeekly') : t('anDaily')}</span></div>${tchart}</div>
+      <div class="an-card"><div class="an-head"><h3>${t('anFunnel')}</h3><span>${t('leadsN', N)}</span></div>${funnel}</div>
+      <div class="an-card"><div class="an-head"><h3>${t('anResp')}</h3><span>SLA ${SLA_HOURS}h</span></div>${resp}</div>
+      <div class="an-card"><div class="an-head"><h3>${t('anWilaya')}</h3></div>${bars(group('wilaya'), N, 'var(--c-meeting)')}</div>
+      <div class="an-card"><div class="an-head"><h3>${t('anSource')}</h3></div>${bars(group('source'), N, 'var(--c-contacted)')}</div>
+    </div>`;
+}
+
+/* ================= ADMIN PAGES: PIXEL & SETTINGS ================= */
+const secretField = (id, val, ph) => `<div class="secret"><input type="password" id="${id}" value="${esc(val)}" placeholder="${ph}" autocomplete="new-password"><button type="button" class="icon-btn" data-eye="${id}" title="${t('show')}">${ico('eye')}</button></div>`;
+const admHead = (icon, title, desc, extra='') => `<div class="adm-head"><div class="adm-ico">${ico(icon)}</div><div class="adm-tt"><h3>${title}</h3>${desc ? `<p>${desc}</p>` : ''}</div>${extra}</div>`;
+
+function bindEyes(){
+  document.querySelectorAll('[data-eye]').forEach(b => {
+    b.onclick = () => {
+      const i = document.getElementById(b.dataset.eye);
+      if (!i) return;
+      i.type = i.type === 'password' ? 'text' : 'password';
+      b.innerHTML = ico(i.type === 'password' ? 'eye' : 'eye-off');
+    };
+  });
+}
+
+function renderPixel(){
+  const px = appConfig.pixel || {};
+  const active = px.enabled !== false && String(px.id || '').trim();
+  $('#view').innerHTML = `
+  <div class="adm">
+    <div class="adm-card">
+      ${admHead('target', t('pxCardTitle'), t('pxCardDesc'), `<span class="px-status ${active?'on':''}" id="pixelStatusBadge"><i></i><span id="pixelStatusBadgeText">${active ? t('pxActive') : t('pxInactive')}</span></span>`)}
+      <div class="adm-grid">
+        <div class="f">
+          <label>${t('pxName')} <b>*</b></label>
+          <input id="pixelName" value="${esc(px.name || 'TEST')}" placeholder="${t('pxNamePh')}">
+          <small class="hint">${t('pxNameHint')}</small>
+        </div>
+        <div class="f">
+          <label>${t('pxId')} <b>*</b></label>
+          <div class="with-btn">
+            <input id="pixelId" class="mono" value="${esc(px.id || '')}" placeholder="${t('pxIdPh')}">
+            <button type="button" class="icon-btn" id="pxIdCopy" title="${t('copy_')}">${ico('copy')}</button>
+          </div>
+          <small class="hint">${t('pxIdHint')}</small>
+        </div>
+        <div class="f full">
+          <label>${t('pxToken')} <span class="opt">${t('optional')}</span></label>
+          ${secretField('pixelToken', px.token || '', 'EAABwz...')}
+          <small class="hint">${t('pxTokenHint')}</small>
+        </div>
+      </div>
+      <label class="toggle-row">
+        <input type="checkbox" id="pixelEnabled" ${px.enabled !== false ? 'checked' : ''} style="display:none;">
+        <span class="switch ${px.enabled !== false ? 'on':''}" id="pxSwitch"></span>
+        <span><b>${t('pxEnabled')}</b><small>${t('pxEnabledHint')}</small></span>
+      </label>
+    </div>
+
+    <details class="adm-card fold">
+      <summary>${admHead('shield', `${t('pxDomain')} <span class="opt">${t('optional')}</span>`, t('pxDomainDesc', SITE.replace('https://','')), ico('chevron','sm chev'))}</summary>
+      <div class="note">${ico('alert')}<div><b>${t('pxDomainNoteT')}</b> ${t('pxDomainNote')}</div></div>
+      <div class="f" style="margin-top:10px;">
+        <label>${t('pxDomainCode')}</label>
+        <input id="pixelDomainCode" class="mono" value="${esc(px.domainVerification || '')}" placeholder="${t('pxDomainPh')}">
+        <small class="hint">${t('pxDomainHint')}</small>
+      </div>
+      <a class="link" style="margin-top:8px;" href="https://business.facebook.com/settings/owned-domains" target="_blank">${t('pxBM')} ${ico('arrow-out')}</a>
+    </details>
+
+    <div class="adm-card">
+      ${admHead('bolt', t('pxEvents'), t('pxEventsDesc'))}
+      <div class="ev-grid">${PX_EVENTS.map(([k,d]) => `<div class="ev-chip"><span class="ev-dot"></span><b class="mono">${k}</b><small>${t(d)}</small></div>`).join('')}</div>
+    </div>
+
+    <div class="adm-card">
+      ${admHead('link', t('pxUrls'), t('pxUrlsDesc'), `<span class="pill-count">${t('pxPagesN', PX_PAGES.length)}</span>`)}
+      <div class="url-list">${PX_PAGES.map(([k,path,ev,key]) => `
+        <div class="url-row">
+          <div class="url-main"><b>${t('pg_'+k)}</b><span class="mono url">${SITE}${path}</span></div>
+          <span class="ev-badge ${key?'key':''}">${ev}${key?ico('star'):''}</span>
+          <div class="url-act">
+            <button class="icon-btn" data-copy-url="${SITE}${path}" title="${t('copy_')}">${ico('copy')}</button>
+            <a class="icon-btn" href="${SITE}${path}" target="_blank" title="${t('open')}">${ico('arrow-out')}</a>
+          </div>
+        </div>`).join('')}</div>
+      <div class="tip">${ico('bulb')}<div><b>${t('tipTitle')}</b><ul><li>${t('tip1', `<span class="mono">${SITE}/order/</span>`, '<span class="mono">/offer/</span>')}</li><li>${t('tip2')}</li></ul></div></div>
+    </div>
+
+    <div class="adm-foot">
+      <a class="link" href="${SITE}/" target="_blank">${ico('arrow-out')}${t('pxPreview')}</a>
+      <div class="adm-foot-btns">
+        <button class="btn-cancel" id="pxCancel">${t('cancel')}</button>
+        <button class="btn-save" id="pxSave">${ico('check')}${t('pxSave')}</button>
+      </div>
+    </div>
+  </div>`;
+
+  bindEyes();
+  const sw = $('#pxSwitch');
+  const chk = $('#pixelEnabled');
+  if (sw && chk) {
+    sw.parentElement.onclick = e => {
+      e.preventDefault();
+      chk.checked = !chk.checked;
+      sw.classList.toggle('on', chk.checked);
+    };
+  }
+  $('#pxIdCopy').onclick = copyPixelId;
+  document.querySelectorAll('[data-copy-url]').forEach(b => {
+    b.onclick = () => copyText(b.dataset.copyUrl).then(() => toast(t('tCopied_')));
+  });
+  $('#pxCancel').onclick = renderPixel;
+  $('#pxSave').onclick = savePixelSettings;
+}
+
+function copyPixelId() {
+  const idInp = $('#pixelId');
+  if (!idInp || !idInp.value) return;
+  copyText(idInp.value).then(() => toast(t('tCopied_')));
+}
+
+function savePixelSettings() {
+  const name = $('#pixelName').value.trim() || 'TEST';
+  const id = $('#pixelId').value.trim();
+  const token = $('#pixelToken').value.trim();
+  const domainVerification = $('#pixelDomainCode').value.trim();
+  const enabled = $('#pixelEnabled').checked;
+
+  if (enabled && (!id || !/^\d{6,20}$/.test(id))) {
+    toast(t('pxIdBad'));
+    $('#pixelId').closest('.f')?.classList.add('err');
+    return;
+  }
+
+  appConfig.pixel = { name, id, token, domainVerification, enabled };
+  saveConfig();
+  store.set('idarati_pixel_config', JSON.stringify(appConfig.pixel));
+
+  try {
+    if (window.BroadcastChannel) {
+      new BroadcastChannel('idarati_pixel_channel').postMessage({ type: 'pixel_update', pixel: appConfig.pixel });
+    }
+  } catch(e){}
+
+  toast(t('tPxSaved'));
+  renderPixel();
+}
+
+function renderSettings(){
+  $('#view').innerHTML = `
+  <div class="adm">
+    <div class="adm-card">
+      ${admHead('sheet', t('stSheet'), t('stSheetDesc'), `<span class="px-status ${appConfig.sheetUrl ? 'on' : ''}"><i></i>${appConfig.sheetUrl ? t('connected') : t('notConnected')}</span>`)}
+      <div class="f">
+        <label>${t('stSheetUrl')}</label>
+        <input id="settingSheetUrl" type="url" class="mono" value="${esc(appConfig.sheetUrl || '')}" placeholder="https://script.google.com/macros/s/.../exec">
+        <small class="hint">${t('stSheetHint')}</small>
+      </div>
+    </div>
+
+    <div class="adm-card">
+      ${admHead('lock', t('stPin'), t('stPinDesc'))}
+      <div class="f" style="max-width:360px">
+        <label>${t('stPinLbl')}</label>
+        ${secretField('settingPin', appConfig.pin || 'admin2026', '••••••')}
+      </div>
+    </div>
+
+    <div class="adm-card">
+      ${admHead('wa', t('stWa'), t('stWaDesc'))}
+      <div class="adm-grid">
+        <div class="f"><label>${t('stWaAr')}</label><textarea id="settingWaAr" dir="rtl" rows="4">${esc(appConfig.waTemplateAr || '')}</textarea></div>
+        <div class="f"><label>${t('stWaFr')}</label><textarea id="settingWaFr" dir="ltr" rows="4">${esc(appConfig.waTemplateFr || '')}</textarea></div>
+      </div>
+    </div>
+
+    <button class="adm-card adm-link" id="goPixel">
+      ${admHead('target', t('stPixel'), t('stPixelDesc'), ico('arrow-out','sm chev'))}
+    </button>
+
+    <div class="adm-card">
+      ${admHead('database', t('stBackup'), '')}
+      <div class="act-list">
+        <div class="act-row"><span>${t('stExport')}</span><button class="btn-line" onclick="exportDataJSON()">${ico('download')}JSON</button></div>
+        <div class="act-row"><span>${t('stImport')}</span><label class="btn-line">${ico('upload')}${t('chooseFile')}<input type="file" accept=".json" onchange="importDataJSON(event)" hidden></label></div>
+        <div class="act-row"><span>${t('stPush')}</span><button class="btn-line" id="btnPushAllLeads" onclick="pushAllLeadsToSheet()">${ico('refresh')}${t('run')}</button></div>
+        <div class="act-row"><span>${t('stDedupe')}</span><button class="btn-line" id="btnCleanSheetDuplicates" onclick="cleanGoogleSheetDuplicates()">${ico('layers')}${t('run')}</button></div>
+        <div class="act-row"><span>${t('stInject')}</span><button class="btn-line" id="btnInjectSheetToRailway" onclick="injectSheetLeadsToRailway()">${ico('bolt')}${t('run')}</button></div>
+      </div>
+    </div>
+
+    <div class="adm-card danger">
+      ${admHead('trash', t('stDanger'), '')}
+      <div class="act-row">
+        <span>${t('stWipe')}</span>
+        <button class="btn-danger" onclick="clearAllLeads()">${ico('trash')}${t('stWipeBtn')}</button>
+      </div>
+    </div>
+
+    <div class="adm-foot">
+      <span></span>
+      <div class="adm-foot-btns">
+        <button class="btn-cancel" onclick="renderSettings()">${t('cancel')}</button>
+        <button class="btn-save" onclick="saveSettings()">${ico('check')}${t('stSave')}</button>
+      </div>
+    </div>
+  </div>`;
+
+  bindEyes();
+  $('#goPixel').onclick = () => document.querySelector('[data-view="pixel"]').click();
+}
+
+function saveSettings() {
+  appConfig.sheetUrl = $('#settingSheetUrl').value.trim();
+  appConfig.pin = $('#settingPin').value.trim() || 'admin2026';
+  appConfig.waTemplateAr = $('#settingWaAr').value;
+  appConfig.waTemplateFr = $('#settingWaFr').value;
+  saveConfig();
+  toast(t('tCfgSaved'));
+  renderSettings();
+  if (appConfig.sheetUrl) syncWithGoogleSheet(true);
+}
+
+/* ================= REMOTE SYNC & OPERATIONS ================= */
+async function syncWithGoogleSheet(silent = false) {
+  if (!appConfig.sheetUrl) {
+    if (!silent) toast(t('stSheetHint'));
+    return;
+  }
+  try {
+    const url = appConfig.sheetUrl + (appConfig.sheetUrl.includes('?') ? '&' : '?') + 'action=get_leads&t=' + Date.now();
+    const res = await fetch(url, { method: 'GET' });
+    const data = await res.json();
+    if (data && data.ok && Array.isArray(data.leads)) {
+      const remoteLeads = deduplicateLeadsArray(data.leads);
+      remoteLeads.forEach(remote => {
+        const local = leads.find(l => isSamePhone(l.phone, remote.phone) || l.id === remote.id);
+        if (local) {
+          if (remote.status) local.status = remote.status;
+          if (remote.notes) local.notes = remote.notes;
+          if (remote.full_name) local.full_name = remote.full_name;
+          if (remote.company_name) local.company_name = remote.company_name;
+          if (remote.activity) local.activity = remote.activity;
+          if (remote.wilaya) local.wilaya = remote.wilaya;
+        } else {
+          leads.unshift({
+            id: remote.id || ('lead-' + Date.now() + '-' + Math.random().toString(36).substr(2,4)),
+            date: remote.date || new Date().toISOString(),
+            full_name: remote.full_name || '',
+            company_name: remote.company_name || '',
+            activity: remote.activity || '',
+            phone: remote.phone || '',
+            email: remote.email || '',
+            wilaya: remote.wilaya || 'Alger',
+            source: remote.source || 'google_sheet',
+            status: remote.status || 'Nouveau',
+            notes: remote.notes || '',
+            history: [{ type: 'created', at: new Date(remote.date || Date.now()).getTime(), by: 'Google Sheets' }],
+            dueAt: null
+          });
+        }
+      });
+      leads = deduplicateLeadsArray(leads);
+      saveLeads();
+      renderAll();
+      if (!silent) toast(lang === 'fr' ? ('Synchronisation réussie (' + leads.length + ' demandes)') : ('تمت المزامنة بنجاح (' + leads.length + ' طلبية)'));
+    }
+  } catch (err) {
+    if (!silent) toast(lang === 'fr' ? 'Échec de connexion à Google Sheets' : 'تعذر الاتصال بـ Google Sheets');
+  }
+}
+
+async function syncWithRailwayDb() {
+  try {
+    const res = await fetch('/api/leads');
+    if (!res.ok) return;
+    const json = await res.json();
+    if (json && json.ok && Array.isArray(json.leads || json.data)) {
+      const arr = json.leads || json.data;
+      arr.forEach(remote => {
+        const local = leads.find(l => isSamePhone(l.phone, remote.phone) || l.id === remote.id);
+        if (local) {
+          if (remote.status) local.status = remote.status;
+          if (remote.notes) local.notes = remote.notes;
+        } else {
+          leads.unshift({
+            id: remote.id,
+            date: remote.created_at || remote.date || new Date().toISOString(),
+            full_name: remote.full_name || '',
+            company_name: remote.company_name || '',
+            activity: remote.activity || '',
+            phone: remote.phone || '',
+            email: remote.email || '',
+            wilaya: remote.wilaya || 'Alger',
+            source: remote.source || 'railway_db',
+            status: remote.status || 'Nouveau',
+            notes: remote.notes || '',
+            history: [{ type: 'created', at: new Date(remote.created_at || Date.now()).getTime(), by: 'Railway DB' }],
+            dueAt: null
+          });
+        }
+      });
+      leads = deduplicateLeadsArray(leads);
+      saveLeads();
+      renderAll();
+    }
+  } catch(e) {}
+}
+
+async function syncLeadAdd(lead) {
+  if (!appConfig.sheetUrl) return;
+  try {
+    const params = new URLSearchParams({
+      action: 'add_lead',
+      full_name: lead.full_name || lead.name || '',
+      phone: lead.phone || '',
+      email: lead.email || '',
+      wilaya: lead.wilaya || 'Alger',
+      company_name: lead.company_name || lead.company || '',
+      activity: lead.activity || '',
+      service: lead.service || '',
+      amount: lead.amount || '',
+      source: lead.source || 'Dashboard',
+      page: 'Dashboard',
+      status: keyToStoredStatus(statusToKey(lead.status)),
+      notes: lead.notes || ''
+    });
+    fetch(appConfig.sheetUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params
+    });
+  } catch(e) {}
+}
+
+async function syncLeadUpdate(lead) {
+  if (!appConfig.sheetUrl) return;
+  try {
+    fetch(appConfig.sheetUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'update_status',
+        phone: lead.phone,
+        status: keyToStoredStatus(statusToKey(lead.status)),
+        notes: lead.notes || ''
+      })
+    });
+  } catch(e) {}
+}
+
+async function syncLeadDelete(lead) {
+  if (!appConfig.sheetUrl) return;
+  try {
+    fetch(appConfig.sheetUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'delete_lead',
+        phone: lead.phone || '',
+        id: lead.id || ''
+      })
+    });
+  } catch(e) {}
+}
+
+async function cleanGoogleSheetDuplicates() {
+  if (!appConfig.sheetUrl) return toast(t('stSheetHint'));
+  confirmAction(
+    lang === 'fr' ? 'Nettoyer les doublons dans Google Sheets ?' : 'حذف التكرارات في Google Sheets؟',
+    lang === 'fr' ? 'Cette opération supprimera les lignes en double dans le tableau Google Sheets.' : 'سيتم حذف جميع الأسطر المكررة في جدول Google Sheets.',
+    lang === 'fr' ? 'Nettoyer' : 'حذف التكرارات',
+    async () => {
+      toast(lang === 'fr' ? 'Nettoyage en cours...' : 'جاري تنظيف التكرارات...');
+      try {
+        const url = appConfig.sheetUrl + (appConfig.sheetUrl.includes('?') ? '&' : '?') + 'action=clean_duplicates&t=' + Date.now();
+        const res = await fetch(url);
+        const data = await res.json();
+        toast(lang === 'fr' ? ('Nettoyage terminé (' + (data.removed || 0) + ' doublons supprimés)') : ('تم حذف ' + (data.removed || 0) + ' سطر مكرر'));
+        syncWithGoogleSheet(true);
+      } catch(e) {
+        syncWithGoogleSheet(true);
+      }
+    }
+  );
+}
+
+async function injectSheetLeadsToRailway() {
+  const sheetUrl = appConfig.sheetUrl || (window.CONFIG && window.CONFIG.SHEET_URL);
+  if (!sheetUrl) return toast(t('stSheetHint'));
+  toast(lang === 'fr' ? 'Connexion à Railway et injection des données...' : 'جاري الاتصال بخادم ريلواي وحقن الطلبات...');
+  try {
+    const res = await fetch('/api/leads/import-sheet', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sheetUrl })
+    });
+    const json = await res.json();
+    if (json && json.ok) {
+      toast(lang === 'fr' ? ('Injection réussie : +' + (json.inserted || 0) + ' nouvelles demandes') : ('تم الحقن بنجاح: +' + (json.inserted || 0) + ' طلبية جديدة'));
+      syncWithRailwayDb();
+    } else {
+      toast(json.error || 'Erreur Railway');
+    }
+  } catch(e) {
+    toast('Erreur de connexion à Railway');
+  }
+}
+
+async function pushAllLeadsToSheet() {
+  if (!appConfig.sheetUrl) return toast(t('stSheetHint'));
+  if (!leads.length) return toast(lang === 'fr' ? 'Aucune demande locale' : 'لا توجد طلبات محلية');
+  confirmAction(
+    lang === 'fr' ? 'Synchroniser tout vers Google Sheets ?' : 'مزامنة جميع الطلبات نحو Google Sheets؟',
+    lang === 'fr' ? ('Voulez-vous pousser les ' + leads.length + ' demandes locales vers Google Sheets ?') : ('هل تريد رفع جميع الطلبات (' + leads.length + ') إلى Google Sheets؟'),
+    lang === 'fr' ? 'Envoyer' : 'رفع ومزامنة',
+    async () => {
+      toast(lang === 'fr' ? 'Envoi en cours...' : 'جاري الرفع...');
+      const rev = [...leads].reverse();
+      for (const l of rev) {
+        await syncLeadAdd(l);
+        await new Promise(r => setTimeout(r, 120));
+      }
+      toast(lang === 'fr' ? 'Toutes les demandes ont été poussées' : 'تم رفع جميع الطلبات بنجاح');
+    }
+  );
+}
+
+function clearAllLeads(){
+  confirmAction(
+    t('wipeTitle'),
+    t('wipeText'),
+    t('stWipeBtn'),
+    () => {
+      leads = [];
+      saveLeads();
+      renderAll();
+      toast(lang === 'fr' ? 'Données locales effacées' : 'تم مسح البيانات المحلية');
+      if (appConfig.sheetUrl) syncWithGoogleSheet(true);
+    }
+  );
+}
+
+function exportToCSV() {
+  const headers = ['Date', 'Nom', 'Entreprise', 'Activité', 'Téléphone', 'Email', 'Wilaya', 'Source', 'Statut', 'Notes'];
+  const rows = leads.map(l => [
+    fmtDate(leadCreatedAt(l)),
+    '"' + (l.full_name || l.name || '').replace(/"/g, '""') + '"',
+    '"' + (l.company_name || l.company || '').replace(/"/g, '""') + '"',
+    '"' + (l.activity || '').replace(/"/g, '""') + '"',
+    '"' + (l.phone || '') + '"',
+    '"' + (l.email || '') + '"',
+    '"' + (l.wilaya || '') + '"',
+    '"' + (l.source || '') + '"',
+    '"' + stLabel(statusToKey(l.status)) + '"',
+    '"' + (l.notes || '').replace(/"/g, '""') + '"'
+  ]);
+  const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `IDARATI_Leads_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast(lang === 'fr' ? 'Export CSV téléchargé' : 'تم تحميل ملف CSV');
+}
+
+function exportToPDF() {
+  if (!leads || leads.length === 0) {
+    toast(lang === 'fr' ? 'Aucune demande à exporter' : 'لا توجد طلبات للتصدير');
+    return;
+  }
+  const nowStr = new Date().toLocaleString(lang === 'fr' ? 'fr-FR' : 'ar-DZ', { dateStyle: 'full', timeStyle: 'short' });
+  const totalCount = leads.length;
+  const nouveauCount = leads.filter(l => statusToKey(l.status) === 'new').length;
+  const inProgressCount = leads.filter(l => ['contacted', 'noanswer', 'callback', 'meeting'].includes(statusToKey(l.status))).length;
+  const doneCount = leads.filter(l => statusToKey(l.status) === 'signed').length;
+
+  const rowsHtml = leads.map((l, idx) => {
+    const stKey = statusToKey(l.status);
+    const statusClass = stKey === 'new' ? 'status-new' : (stKey === 'signed' ? 'status-done' : 'status-pending');
+    return `
+      <tr>
+        <td style="text-align:center; font-weight:bold;">${idx + 1}</td>
+        <td>${fmtDate(leadCreatedAt(l))}</td>
+        <td><strong>${esc(l.full_name || l.name || 'Sans nom')}</strong></td>
+        <td dir="ltr" style="text-align:right; font-weight:600;">${esc(fmtPhone(l.phone || ''))}</td>
+        <td>${esc(l.company_name || l.company || '—')}</td>
+        <td>${esc(l.activity || '')}</td>
+        <td>${esc(l.wilaya || 'Alger')}</td>
+        <td><span class="badge ${statusClass}">${esc(stLabel(stKey))}</span></td>
+        <td style="font-size:11px; color:#475569;">${esc(l.notes || '')}</td>
+      </tr>`;
+  }).join('');
+
+  const isAr = lang === 'ar';
+  const printHtml = `
+    <!DOCTYPE html>
+    <html lang="${lang}" dir="${isAr ? 'rtl' : 'ltr'}">
+    <head>
+      <meta charset="utf-8">
+      <title>IDARATI - ${isAr ? 'قائمة الطلبات والاستشارات' : 'Liste des demandes'}</title>
+      <style>
+        @page { size: A4 landscape; margin: 10mm 8mm; }
+        * { box-sizing: border-box; }
+        body {
+          font-family: 'Inter', 'Tajawal', sans-serif;
+          margin: 0; padding: 15px; color: #0f172a; background: #fff; font-size: 11.5px; line-height: 1.4;
+        }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 12px; }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand-logo { background: #0f172a; color: #fff; font-weight: 800; font-size: 16px; padding: 6px 12px; border-radius: 6px; }
+        .title h1 { margin: 0; font-size: 18px; color: #0f172a; }
+        .title p { margin: 3px 0 0; color: #64748b; font-size: 11px; }
+        .meta-box { text-align: ${isAr ? 'left' : 'right'}; font-size: 11px; color: #475569; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+        .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px 10px; border-radius: 6px; text-align: center; }
+        .stat-num { font-size: 15px; font-weight: bold; color: #0f172a; }
+        .stat-lbl { font-size: 10px; color: #64748b; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        th, td { border: 1px solid #cbd5e1; padding: 5px 7px; text-align: ${isAr ? 'right' : 'left'}; }
+        th { background: #f1f5f9; font-weight: 700; color: #1e293b; font-size: 10.5px; }
+        tr:nth-child(even) { background: #f8fafc; }
+        .badge { display: inline-block; padding: 2px 5px; border-radius: 4px; font-size: 9.5px; font-weight: 600; }
+        .status-new { background: #dbeafe; color: #1e40af; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-done { background: #d1fae5; color: #065f46; }
+        .footer { margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 8px; display: flex; justify-content: space-between; font-size: 9.5px; color: #94a3b8; }
+        @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="brand">
+          <div class="brand-logo">IDARATI</div>
+          <div class="title">
+            <h1>${isAr ? 'سجل طلبات واستشارات تأسيس المؤسسات' : 'Registre des dossiers et créations d\'entreprises'}</h1>
+            <p>IDARATI Company CRM</p>
+          </div>
+        </div>
+        <div class="meta-box">
+          <div><strong>${isAr ? 'تاريخ التصدير:' : 'Date d\'export:'}</strong> ${nowStr}</div>
+          <div><strong>${isAr ? 'إجمالي الطلبات:' : 'Total demandes:'}</strong> ${totalCount}</div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num">${totalCount}</div><div class="stat-lbl">${isAr ? 'إجمالي الطلبات' : 'Total'}</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#2563eb;">${nouveauCount}</div><div class="stat-lbl">${isAr ? 'طلبات جديدة' : 'Nouveaux'}</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#d97706;">${inProgressCount}</div><div class="stat-lbl">${isAr ? 'قيد المتابعة' : 'En cours'}</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#059669;">${doneCount}</div><div class="stat-lbl">${isAr ? 'مؤكدة' : 'Signés'}</div></div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:25px; text-align:center;">#</th>
+            <th style="width:100px;">${isAr ? 'التاريخ' : 'Date'}</th>
+            <th>${isAr ? 'الاسم الكامل' : 'Nom'}</th>
+            <th style="width:100px;">${isAr ? 'الهاتف' : 'Téléphone'}</th>
+            <th>${isAr ? 'المؤسسة' : 'Entreprise'}</th>
+            <th>${isAr ? 'النشاط' : 'Activité'}</th>
+            <th style="width:65px;">${isAr ? 'الولاية' : 'Wilaya'}</th>
+            <th style="width:80px;">${isAr ? 'الحالة' : 'Statut'}</th>
+            <th>${isAr ? 'ملاحظات' : 'Notes'}</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      <div class="footer">
+        <div>IDARATI Company — Alger & Blida | Tél: 0773 34 58 16</div>
+        <div>${isAr ? 'وثيقة إدارية رسمية سرية' : 'Document confidentiel IDARATI'}</div>
+      </div>
+      <script>
+        window.addEventListener('DOMContentLoaded', () => setTimeout(() => window.print(), 350));
+      <\/script>
+    </body>
+    </html>`;
+
+  const printWin = window.open('', '_blank');
+  if (printWin) {
+    printWin.document.open();
+    printWin.document.write(printHtml);
+    printWin.document.close();
+  }
+}
+
+function exportDataJSON() {
+  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(leads, null, 2));
+  const a = document.createElement('a');
+  a.href = dataStr;
+  a.download = `idarati_backup_${Date.now()}.json`;
+  a.click();
+  toast(lang === 'fr' ? 'Sauvegarde JSON exportée' : 'تم تصدير نسخة JSON');
+}
+
+function importDataJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const imported = JSON.parse(evt.target.result);
+      if (Array.isArray(imported)) {
+        leads = deduplicateLeadsArray(imported);
+        saveLeads();
+        renderAll();
+        toast(lang === 'fr' ? 'Données importées avec succès' : 'تم استيراد البيانات بنجاح');
+      }
+    } catch(err) {
+      toast(lang === 'fr' ? 'Fichier JSON non valide' : 'الملف غير صالح');
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ================= RENDER MAIN ================= */
+function renderAll(){
+  render();
+}
 
 function render(){
-  checkAuth();
-  applyStatic();
+  const adminView = view === 'pixel' || view === 'settings';
+  document.body.classList.toggle('view-analytics', view === 'analytics');
+  document.body.classList.toggle('view-admin', adminView);
+  
+  if ($('header h1')) $('header h1').textContent = view === 'pixel' ? t('pxTitle') : view === 'settings' ? t('setTitle') : t('title');
+  if ($('header p')) $('header p').textContent  = view === 'pixel' ? t('pxSub')   : view === 'settings' ? t('setSub')   : t('subtitle');
+  
   renderKpis();
   renderFilterState();
-  renderTable();
+  renderPresets();
+  
+  if (view === 'table') renderTable();
+  else if (view === 'analytics') renderAnalytics();
+  else if (view === 'pixel') renderPixel();
+  else if (view === 'settings') renderSettings();
+  
+  if (openId) openDrawer(openId, true);
+  if ($('#notifPop').classList.contains('open')) renderNotif();
   updateBadge();
 }
-window.addEventListener('DOMContentLoaded', () => {
-  leads = deduplicateLeadsArray(loadLeads());
-  render();
-  setInterval(tick, 30000);
-});
 
+/* ================= INITIALIZATION & EVENT LISTENERS ================= */
+function init(){
+  loadConfig();
+  checkAuth();
+  loadLeads();
+  setTheme(appConfig.theme || 'light');
+  applyStatic();
+  
+  const savedAdmin = store.get('crm-admin');
+  setAdmin(savedAdmin === '1');
+
+  // Search input event listeners
+  const qInput = $('#q');
+  if (qInput) {
+    qInput.oninput = e => { F.q = e.target.value.trim().toLowerCase(); render(); };
+  }
+  if ($('#fStatus')) $('#fStatus').onchange = e => { F.status = e.target.value; render(); };
+  if ($('#fWilaya')) $('#fWilaya').onchange = e => { F.wilaya = e.target.value; render(); };
+  if ($('#fFrom')) $('#fFrom').onchange = e => { F.from = e.target.value; if (F.to && F.from > F.to) { F.to = F.from; $('#fTo').value = F.to; } render(); };
+  if ($('#fTo')) $('#fTo').onchange = e => { F.to = e.target.value; render(); };
+  if ($('#resetBtn')) {
+    $('#resetBtn').onclick = () => {
+      Object.keys(F).forEach(k => F[k] = '');
+      if ($('#q')) $('#q').value = '';
+      if ($('#fFrom')) $('#fFrom').value = '';
+      if ($('#fTo')) $('#fTo').value = '';
+      if ($('#fStatus')) $('#fStatus').value = '';
+      if ($('#fWilaya')) $('#fWilaya').value = '';
+      render();
+    };
+  }
+
+  // Navigation items
+  document.querySelectorAll('[data-view]').forEach(b => {
+    b.onclick = () => {
+      document.querySelectorAll('[data-view]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      view = b.dataset.view;
+      render();
+    };
+  });
+
+  // Admin menu actions
+  document.querySelectorAll('[data-act]').forEach(b => {
+    b.onclick = () => {
+      const act = b.dataset.act;
+      if (act === 'sync') syncWithGoogleSheet();
+      else if (act === 'csv') exportToCSV();
+      else if (act === 'pdf') exportToPDF();
+      else if (act === 'dedupe') {
+        const seen = new Set(), before = leads.length;
+        leads = leads.filter(l => {
+          const k = ((l.full_name || l.name || '') + '|' + (l.company_name || l.company || '')).trim().toLowerCase();
+          if (seen.has(k)) return false;
+          seen.add(k);
+          return true;
+        });
+        saveLeads();
+        toast(t('tDedupe', before - leads.length));
+        render();
+      }
+      else if (act === 'relay') injectSheetLeadsToRailway();
+    };
+  });
+
+  // Theme & Lang & Admin toggles
+  if ($('#themeBtn')) $('#themeBtn').onclick = toggleTheme;
+  if ($('#langBtn')) $('#langBtn').onclick = toggleLang;
+  if ($('#adminToggle')) $('#adminToggle').onclick = () => setAdmin(!$('#adminPanel').classList.contains('open'));
+
+  // Cross-tab & Real-time Sync
+  window.addEventListener('storage', e => {
+    if (e.key === LEADS_KEY || e.key === 'idarati_last_lead_time') {
+      loadLeads();
+      render();
+      playNotificationSound();
+    }
+  });
+
+  try {
+    if (window.BroadcastChannel) {
+      new BroadcastChannel('idarati_leads_channel').onmessage = ev => {
+        if (ev.data && ev.data.type === 'new_lead') {
+          loadLeads();
+          render();
+          playNotificationSound();
+          toast(lang === 'fr' ? ('Nouvelle demande : ' + (ev.data.name || '')) : ('وصل طلب جديد: ' + (ev.data.name || '')));
+        }
+      };
+    }
+  } catch(e) {}
+
+  // Background multi-device sync
+  syncWithRailwayDb();
+  if (appConfig.sheetUrl) syncWithGoogleSheet(true);
+  setInterval(() => {
+    syncWithRailwayDb();
+    if (appConfig.sheetUrl) syncWithGoogleSheet(true);
+  }, 25000);
+
+  render();
+}
+
+window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
