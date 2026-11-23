@@ -1600,6 +1600,230 @@ function historyHTML(l){
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, dictating = false, dictLang = store.get('crm-dict') || 'ar-DZ', dictBase = '';
 
+function startDictation(){
+  if (!SR) return toast(t('micNA'));
+  const ta = $('#note'); if (!ta) return;
+  rec = new SR(); rec.lang = dictLang; rec.continuous = true; rec.interimResults = true;
+  dictBase = ta.value ? ta.value.replace(/\s*$/, ' ') : '';
+  rec.onresult = e => {
+    let finalTxt = '', interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const tr = e.results[i][0].transcript;
+      e.results[i].isFinal ? finalTxt += tr : interim += tr;
+    }
+    if (finalTxt) dictBase += finalTxt.trim() + ' ';
+    ta.value = dictBase + interim;
+    ta.scrollTop = ta.scrollHeight;
+    $('#noteBtn').disabled = !ta.value.trim();
+  };
+  rec.onerror = e => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') toast(t('micDenied')); stopDictation(); };
+  rec.onend = () => { if (dictating) { try { rec.start(); } catch(_) { stopDictation(); } } };
+  try { rec.start(); } catch(_) { return; }
+  dictating = true;
+  $('#noteWrap').classList.add('rec'); $('#micBtn').title = t('micStop');
+}
+
+function stopDictation(){
+  dictating = false;
+  if (rec) { rec.onend = null; try { rec.stop(); } catch(_) {} rec = null; }
+  const w = $('#noteWrap');
+  if (w) {
+    w.classList.remove('rec');
+    if ($('#micBtn')) $('#micBtn').title = t('micStart');
+    const ta = $('#note');
+    if (ta) ta.value = ta.value.replace(/\s+$/, '');
+  }
+}
+
+function openDrawer(id, keepNote){
+  stopDictation();
+  const l = leads.find(x => String(x.id) === String(id));
+  if (!l) return;
+  const draft = (keepNote && openId === id && $('#note')) ? esc($('#note').value) : '';
+  openId = id;
+  const dups = dupSet();
+  const late = isLate(l);
+  const stKey = statusToKey(l.status);
+  const createdAt = leadCreatedAt(l);
+  const name = l.full_name || l.name || 'Sans nom';
+  const company = l.company_name || l.company || '';
+  const activity = l.activity || '';
+  const wilaya = l.wilaya || 'Alger';
+  const phone = l.phone || '';
+  const source = l.source || 'web';
+
+  $('#drawer').innerHTML = `
+    <div class="d-head"><h2>${esc(name)}</h2><button class="icon-btn" id="closeD">${ico('x')}</button></div>
+    <div class="d-body">
+      ${dups.has(l.id) ? `<span class="tag dup" style="align-self:flex-start">${ico('layers')}${t('dupWarn')}</span>` : ''}
+      <div class="info-card">
+        <div class="grid2">
+          <div class="field"><label>${t('thCompany')}</label><div>${company ? esc(company) : `<span style="color:var(--faint);font-style:italic;">${t('pending')}</span>`}</div></div>
+          <div class="field"><label>${t('thWilaya')}</label><div>${esc(wilaya)}</div></div>
+          <div class="field"><label>${t('thPhone')}</label><div class="ltr">${fmtPhone(phone)}</div></div>
+          <div class="field"><label>${t('source')}</label><div>${esc(srcLabel(source))}</div></div>
+        </div>
+        <div class="field"><label>${t('thActivity')}</label><div>${esc(activity)}</div></div>
+        <div class="field"><label>${t('received')}</label><div style="color:${late ? 'var(--danger)' : 'inherit'}"><span class="ltr">${fmtDateTime(createdAt)}</span>${late ? ` — ${t('lateWarn')}` : ''}</div></div>
+        <button class="copy-all" id="copyAll"><span class="ca-ico">${ico('clipboard')}${ico('check')}</span><span class="ca-txt">${t('copyAll')}</span><span class="ca-hint">${t('copyAllHint')}</span></button>
+      </div>
+
+      ${l.dueAt && SCHEDULED.includes(stKey) ? (() => {
+        const m = typeMeta(l), st = dueState(l.dueAt);
+        return `
+        <div class="due-card">
+          <div class="due-top">
+            <div class="np-ico" style="--tc:${m.col}">${ico(m.icon)}</div>
+            <div><small>${t('dueLbl')} · ${m.lbl}</small><b class="ltr">${dueLabel(l.dueAt)}</b></div>
+            <button class="due-edit" id="dueEdit">${t('edit')}</button>
+          </div>
+          <div class="chrono ${st}" data-chrono="${l.dueAt}">
+            <span class="lbl"><span class="pulse"></span><span data-chrono-lbl>${st==='late' ? t('overdue') : t('remaining')}</span></span>
+            <span class="time" data-chrono-time>${chronoText(l.dueAt)}</span>
+          </div>
+        </div>`;
+      })() : ''}
+
+      <div>
+        <div class="sec-title">${t('status')}</div>
+        <div class="statuses">${STATUSES.map(s => `<button class="st-btn ${s.id === stKey ? 'on' : ''}" data-st="${s.id}"><i style="background:${s.color}"></i>${stLabel(s.id)}</button>`).join('')}</div>
+      </div>
+
+      <div class="note-box">
+        <div class="sec-title" style="margin:0">${t('addNote')}</div>
+        <div class="note-wrap" id="noteWrap">
+          <textarea id="note" placeholder="${t('notePh')}">${draft}</textarea>
+          <div class="note-bar">
+            <button class="mic" id="micBtn" title="${t('micStart')}" ${SR ? '' : 'disabled'}>${ico('mic')}</button>
+            <button class="mic-lang" id="micLang" title="${t('micLangTip')}" ${SR ? '' : 'disabled'}>${dictLang === 'ar-DZ' ? 'AR' : 'FR'}</button>
+            <span class="listening"><span class="eq"><i></i><i></i><i></i><i></i></span>${t('listening')}</span>
+            ${SR ? '' : `<span class="mic-na">${t('micNA')}</span>`}
+            <button class="btn-sm" id="noteBtn" disabled>${ico('plus')}${t('addNote')}</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sec-title">${t('history')} (${(l.history || []).length})</div>
+        <div class="timeline">${historyHTML(l)}</div>
+      </div>
+    </div>
+    <div class="d-foot">
+      <a class="btn-wa" href="${waLink(phone)}" target="_blank">${ico('wa')}WhatsApp</a>
+      <a class="btn-ghost" href="tel:${normPhone(phone)}">${ico('phone')}${t('call')}</a>
+      <button class="btn-del" title="${t('delete_')}" id="delBtn">${ico('trash')}</button>
+    </div>`;
+
+  $('#drawer').classList.add('open');
+  $('#scrim').classList.add('open');
+  $('#closeD').onclick = closeDrawer;
+  $('#delBtn').onclick = () => askDelete(l.id);
+  $('#copyAll').onclick = () => copyLead(l.id, $('#copyAll'));
+
+  const note = $('#note'), btn = $('#noteBtn');
+  note.oninput = () => btn.disabled = !note.value.trim();
+  note.onkeydown = e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) btn.click(); };
+  btn.onclick = () => { stopDictation(); addNote(l.id, note.value); };
+
+  $('#micBtn').onclick = () => dictating ? stopDictation() : startDictation();
+  $('#micLang').onclick = () => {
+    dictLang = dictLang === 'ar-DZ' ? 'fr-FR' : 'ar-DZ';
+    store.set('crm-dict', dictLang);
+    $('#micLang').textContent = dictLang === 'ar-DZ' ? 'AR' : 'FR';
+    if (dictating) { stopDictation(); startDictation(); }
+  };
+  $('#drawer').querySelectorAll('[data-st]').forEach(b => b.onclick = () => requestStatus(l.id, b.dataset.st));
+  const de = $('#dueEdit');
+  if (de) de.onclick = () => openSched(l.id, stKey);
+}
+
+function addNote(id, text){
+  const l = leads.find(x => String(x.id) === String(id));
+  if (!l || !text.trim()) return;
+  l.history = l.history || [];
+  l.history.push({ type: 'note', at: Date.now(), text: text.trim(), by: CURRENT_USER });
+  l.notes = (l.notes ? l.notes + ' | ' : '') + text.trim();
+  saveLeads();
+  syncLeadUpdate(l);
+  toast(t('tNote'));
+  openDrawer(id, false);
+  renderAll();
+}
+
+function leadText(l){
+  const notes = (l.history || []).filter(h => h.type === 'note');
+  const last = notes[notes.length - 1];
+  const name = l.full_name || l.name || 'Sans nom';
+  const company = l.company_name || l.company || t('pending');
+  const activity = l.activity || '';
+  const wilaya = l.wilaya || 'Alger';
+  const phone = l.phone || '';
+  const source = srcLabel(l.source || 'web');
+  const st = stLabel(statusToKey(l.status));
+  const dateStr = fmtDateTime(leadCreatedAt(l));
+  
+  const lines = [
+    `IDARATI CRM — ${t('leadSheet')}`,
+    '━━━━━━━━━━━━━━',
+    `${t('thName')}: ${name}`,
+    `${t('thCompany')}: ${company}`,
+    `${t('thActivity')}: ${activity}`,
+    `${t('thWilaya')}: ${wilaya}`,
+    `${t('thPhone')}: ${fmtPhone(phone)}`,
+    `WhatsApp: ${waLink(phone)}`,
+    `${t('source')}: ${source}`,
+    `${t('status')}: ${st}`,
+    `${t('received')}: ${dateStr}`
+  ];
+  if (last) lines.push(`${t('lastNote')} (${fmtDateTime(last.at)}): ${last.text}`);
+  return lines.join('\n');
+}
+
+function copyText(txt){
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(txt);
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  ta.remove();
+  return Promise.resolve();
+}
+
+function copyLead(id, btn){
+  const l = leads.find(x => String(x.id) === String(id));
+  if (!l) return;
+  copyText(leadText(l)).then(() => {
+    toast(t('tCopiedLead'));
+    if (btn) {
+      btn.classList.add('done');
+      const txtSpan = btn.querySelector('.ca-txt');
+      if (txtSpan) txtSpan.textContent = t('copiedShort');
+      setTimeout(() => {
+        if (!btn.isConnected) return;
+        btn.classList.remove('done');
+        if (txtSpan) txtSpan.textContent = t('copyAll');
+      }, 1800);
+    }
+  });
+}
+
+function closeDrawer(){
+  stopDictation();
+  openId = null;
+  $('#drawer').classList.remove('open');
+  $('#scrim').classList.remove('open');
+}
+$('#scrim').onclick = closeDrawer;
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if ($('#sched').classList.contains('open')) return closeSched();
+    if ($('#newLead').classList.contains('open')) return closeNewLead();
+    closeNotif(); closeModal(); closeDrawer();
+  }
+});
+
+/* ================= NEW LEAD MODAL ================= */
 
 function renderKpis(){}
 function renderFilterState(){}
