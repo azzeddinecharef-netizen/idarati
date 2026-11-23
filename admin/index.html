@@ -1263,6 +1263,71 @@ function logout() {
   if ($('#authPin')) $('#authPin').value = '';
 }
 
+/* ================= FILTERING & PERIODS ================= */
+const isoDay = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const fmtIso = s => s.split('-').reverse().join('/');
+
+function presetRange(k){
+  const today = new Date();
+  const t0 = isoDay(today);
+  if (k === 'all') return ['', ''];
+  if (k === 'today') return [t0, t0];
+  if (k === '7')  { const d = new Date(); d.setDate(d.getDate()-6); return [isoDay(d), t0]; }
+  if (k === '30') { const d = new Date(); d.setDate(d.getDate()-29); return [isoDay(d), t0]; }
+  if (k === 'month') { const d = new Date(today.getFullYear(), today.getMonth(), 1); return [isoDay(d), t0]; }
+}
+
+const PRESETS = [['all','pAll'],['today','pToday'],['7','p7'],['30','p30'],['month','pMonth']];
+
+function renderPresets(){
+  const container = $('#presets');
+  if (!container) return;
+  container.innerHTML = PRESETS.map(([k,lbl]) => {
+    const [a,b] = presetRange(k);
+    return `<button data-preset="${k}" class="${F.from===a && F.to===b ? 'on':''}">${t(lbl)}</button>`;
+  }).join('');
+  container.querySelectorAll('[data-preset]').forEach(b => {
+    b.onclick = () => {
+      const [a,c] = presetRange(b.dataset.preset);
+      F.from = a; F.to = c;
+      if ($('#fFrom')) $('#fFrom').value = a;
+      if ($('#fTo')) $('#fTo').value = c;
+      render();
+    };
+  });
+}
+
+function filtered(){
+  const from = F.from ? new Date(F.from+'T00:00:00').getTime() : -Infinity;
+  const to   = F.to   ? new Date(F.to+'T23:59:59').getTime()   :  Infinity;
+  return leads.filter(l => {
+    const name = l.full_name || l.name || '';
+    const comp = l.company_name || l.company || '';
+    const act = l.activity || '';
+    const ph = l.phone || '';
+    const notes = l.notes || '';
+    const hay = (name + comp + ph + act + notes).toLowerCase();
+    const stKey = statusToKey(l.status);
+    const matchQ = !F.q || hay.includes(F.q);
+    const matchSt = !F.status || stKey === F.status;
+    const matchW = !F.wilaya || (l.wilaya && l.wilaya.toLowerCase().includes(F.wilaya.toLowerCase()));
+    const created = leadCreatedAt(l);
+    const matchDate = created >= from && created <= to;
+    return matchQ && matchSt && matchW && matchDate;
+  });
+}
+
+function scoped(){
+  const from = F.from ? new Date(F.from+'T00:00:00').getTime() : -Infinity;
+  const to   = F.to   ? new Date(F.to+'T23:59:59').getTime()   :  Infinity;
+  return leads.filter(l => {
+    const matchW = !F.wilaya || (l.wilaya && l.wilaya.toLowerCase().includes(F.wilaya.toLowerCase()));
+    const created = leadCreatedAt(l);
+    return matchW && created >= from && created <= to;
+  });
+}
+
+/* ================= STATIC & THEME & I18N ================= */
 function applyStatic(){
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -1312,6 +1377,133 @@ function setAdmin(open){
   store.set('crm-admin', open ? '1' : '0');
 }
 
+/* ================= KPIS & FUNNEL ================= */
+function renderKpis(){
+  const S = scoped();
+  const all = S.length;
+  const c = id => S.filter(l => statusToKey(l.status) === id).length;
+  const late = S.filter(isLate).length;
+  const prog = c('contacted') + c('noanswer') + c('callback') + c('meeting');
+  const conv = all ? Math.round(c('signed') / all * 100) : 0;
+  
+  const k = [
+    { t: t('kTotal'), v: all, s: t('kTotalS'), icon: 'inbox', col: 'var(--c-new)' },
+    { t: t('kNew'), v: c('new'), s: late ? t('kLate', late, SLA_HOURS) : t('kOnTime'), warn: late > 0, icon: 'clock', col: 'var(--c-callback)' },
+    { t: t('kProgress'), v: prog, s: t('kProgressS'), icon: 'phone', col: 'var(--c-meeting)' },
+    { t: t('kSigned'), v: c('signed'), s: t('kConv', conv), icon: 'check', col: 'var(--c-signed)' }
+  ];
+  
+  if ($('#kpis')) {
+    $('#kpis').innerHTML = k.map(x => `
+      <div class="kpi">
+        <div class="kpi-top">${x.t}<span class="kpi-ico" style="background:color-mix(in srgb, ${x.col} 14%, transparent);color:${x.col}">${ico(x.icon)}</span></div>
+        <strong>${x.v}</strong><small class="${x.warn ? 'warn' : ''}">${x.s}</small>
+      </div>`).join('');
+  }
+  
+  if ($('#funnel')) {
+    $('#funnel').innerHTML = `
+      <div class="funnel-head">${t('funnel')}<span>${t('leadsN', all)}</span></div>
+      <div class="funnel">${STATUSES.map(s => `<span style="flex-grow:${c(s.id)};background:${s.color}"></span>`).join('')}</div>
+      <div class="funnel-legend">${STATUSES.map(s => `<span><i style="background:${s.color}"></i>${stLabel(s.id)} · ${c(s.id)}</span>`).join('')}</div>`;
+  }
+  
+  const d = dupSet().size;
+  if ($('#dupCount')) {
+    $('#dupCount').textContent = d;
+    $('#dupCount').style.display = d ? '' : 'none';
+  }
+  if ($('#navCount')) $('#navCount').textContent = leads.length;
+}
+
+function renderFilterState(){
+  const active = F.q || F.status || F.wilaya || F.from || F.to;
+  if ($('#resetBtn')) $('#resetBtn').classList.toggle('show', !!active);
+  if ($('#fStatus')) $('#fStatus').classList.toggle('active', !!F.status);
+  if ($('#fWilaya')) $('#fWilaya').classList.toggle('active', !!F.wilaya);
+  if ($('#resultCount')) $('#resultCount').textContent = active ? t('results', filtered().length) : '';
+}
+
+/* ================= TABLE VIEW ================= */
+function renderTable(){
+  const list = filtered().sort((a,b) => leadCreatedAt(b) - leadCreatedAt(a));
+  const dups = dupSet();
+  const viewEl = $('#view');
+  if (!viewEl) return;
+  if (!list.length) {
+    viewEl.innerHTML = `<div class="placeholder">${t('noResults')}</div>`;
+    return;
+  }
+  viewEl.innerHTML = `
+  <div class="table-wrap"><table>
+    <thead><tr>
+      <th>${t('thName')}</th>
+      <th>${t('thCompany')}</th>
+      <th>${t('thWilaya')}</th>
+      <th>${t('thPhone')}</th>
+      <th>${t('thStatus')}</th>
+      <th>${t('thDate')}</th>
+      <th></th>
+    </tr></thead>
+    <tbody>${list.map(l => {
+      const stKey = statusToKey(l.status);
+      const s = statusOf(stKey);
+      const createdAt = leadCreatedAt(l);
+      const late = isLate(l);
+      const name = l.full_name || l.name || 'Sans nom';
+      const company = l.company_name || l.company || '';
+      const activity = l.activity || '';
+      const wilaya = l.wilaya || 'Alger';
+      const phone = l.phone || '';
+      return `
+      <tr data-id="${l.id}">
+        <td><b>${esc(name)}</b> ${dups.has(l.id) ? `<span class="tag dup">${t('dup')}</span>` : ''}</td>
+        <td><div>${company ? esc(company) : `<span style="color:var(--faint);font-style:italic;">${t('pending')}</span>`}</div><div style="font-size:12px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(activity)}</div></td>
+        <td>${esc(wilaya)}</td>
+        <td><a href="tel:${normPhone(phone)}" data-stop class="ltr" style="font-weight:500">${fmtPhone(phone)}</a> ${!validPhone(phone) ? `<span class="tag bad" title="${t('badPhone')}">${ico('alert')}</span>` : ''}</td>
+        <td><div class="st-cell">
+          <label class="st-select" style="--st:${s.color}" data-stop>
+            <i></i>
+            <select data-row-st="${l.id}">
+              ${STATUSES.map(x => `<option value="${x.id}" ${x.id === stKey ? 'selected' : ''}>${stLabel(x.id)}</option>`).join('')}
+            </select>
+          </label>
+          ${l.dueAt && SCHEDULED.includes(stKey) ? `<span class="due-chip ${dueState(l.dueAt)}" data-due-chip="${l.dueAt}">${ico(typeMeta(l).icon)}<span class="ltr">${dueLabel(l.dueAt)}</span></span>` : ''}
+        </div></td>
+        <td style="color:${late ? 'var(--danger)' : 'var(--muted)'}">
+          <div class="dt-cell"><span class="ltr">${fmtDate(createdAt)}</span>${late ? ico('alert') : ''}</div>
+          <div class="dt-time ltr">${(d => `${pad(d.getHours())}:${pad(d.getMinutes())}`)(new Date(createdAt))}</div>
+        </td>
+        <td><div class="row-actions">
+          <button class="icon-btn" title="${t('copyAll')}" data-copy-lead="${l.id}">${ico('clipboard')}</button>
+          <a class="icon-btn wa" title="WhatsApp" href="${waLink(phone)}" target="_blank" data-stop>${ico('wa')}</a>
+          <button class="icon-btn danger" title="${t('delete_')}" data-del="${l.id}">${ico('trash')}</button>
+        </div></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+  
+  viewEl.querySelectorAll('tbody tr').forEach(r => {
+    r.addEventListener('click', () => openDrawer(r.dataset.id));
+  });
+  bindCommon();
+}
+
+function bindCommon(){
+  document.querySelectorAll('[data-stop]').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
+  document.querySelectorAll('[data-row-st]').forEach(sel => {
+    sel.addEventListener('click', e => e.stopPropagation());
+    sel.addEventListener('change', e => requestStatus(sel.dataset.rowSt, sel.value));
+  });
+  document.querySelectorAll('[data-copy-lead]').forEach(b => {
+    b.addEventListener('click', e => { e.stopPropagation(); copyLead(b.dataset.copyLead); });
+  });
+  document.querySelectorAll('[data-del]').forEach(b => {
+    b.addEventListener('click', e => { e.stopPropagation(); askDelete(b.dataset.del); });
+  });
+}
+
+/* ================= ACTIONS & SCHEDULING ================= */
 
 function renderKpis(){}
 function renderFilterState(){}
@@ -1325,9 +1517,12 @@ function syncLeadDelete(){}
 function render(){
   checkAuth();
   applyStatic();
-  $('#view').innerHTML = '<div style="padding:32px;"><h2>Vue principale</h2><p style="color:var(--muted);">Phase 2: Layout & sidebar navigation configurés.</p></div>';
+  renderKpis();
+  renderFilterState();
+  renderTable();
 }
 window.addEventListener('DOMContentLoaded', () => {
+  leads = deduplicateLeadsArray(loadLeads());
   render();
 });
 
