@@ -73,70 +73,361 @@ body {
 ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #334155; }
 
-/* Header */
-.top-nav {
+/* CRM App Layout */
+.crm-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg);
+}
+
+/* Sidebar Navigation */
+.crm-sidebar {
+  width: 275px;
+  min-width: 275px;
+  background: #0B1638;
+  color: #fff;
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
   position: sticky;
   top: 0;
-  z-index: 50;
-  height: var(--header-h);
-  background: rgba(11, 22, 56, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
+  height: 100vh;
+  z-index: 100;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+  user-select: none;
+}
+
+[data-theme="dark"] .crm-sidebar {
+  background: #070E24;
+  border-inline-end: 1px solid #1E2E5C;
+}
+
+.sidebar-brand {
+  padding: 18px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
-.brand-group {
+
+.brand-left {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  min-width: 0;
 }
+
 .brand-logo {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   background: linear-gradient(135deg, #1F5FBF, #4FB0F0);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 20px;
+  font-weight: 800;
+  font-size: 18px;
   color: #fff;
   box-shadow: 0 4px 12px rgba(31,95,191,0.4);
+  flex-shrink: 0;
 }
-.brand-title {
+
+.brand-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brand-name {
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.brand-sub {
+  font-size: 11px;
+  color: #94A3B8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-close-btn {
+  display: none;
+  background: rgba(255,255,255,0.08);
+  border: 0;
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+.sidebar-status-wrap {
+  padding: 10px 18px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.sidebar-menu {
+  flex: 1;
+  padding: 16px 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.menu-section-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748B;
+  padding: 0 8px;
+  letter-spacing: 0.05em;
+}
+
+.menu-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: transparent;
+  border: 0;
+  color: #D1D5DB;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-align: start;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+}
+
+.menu-item.active {
+  background: #1F5FBF;
+  color: #FFFFFF;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(31, 95, 191, 0.35);
+}
+
+.menu-item-pdf {
+  color: #F87171;
+}
+.menu-item-pdf:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #FCA5A5;
+}
+
+.menu-item-highlight {
+  color: #34D399;
+}
+.menu-item-highlight:hover {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6EE7B7;
+}
+
+.menu-icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  flex-shrink: 0;
+}
+
+.menu-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-footer {
+  padding: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.footer-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: transparent;
+  border: 0;
+  color: #94A3B8;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s;
+}
+
+.footer-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #F1F5F9;
+}
+
+.footer-btn-logout:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #FCA5A5;
+}
+
+/* CRM Content & Topbar */
+.crm-content {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
-.brand-name {
-  font-weight: 700;
+
+.crm-topbar {
+  height: 66px;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+[data-theme="dark"] .crm-topbar {
+  background: #0B1638;
+  border-bottom: 1px solid #1E2E5C;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.sidebar-toggle-btn {
+  display: none;
+  background: var(--card-hover);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
   font-size: 18px;
-  letter-spacing: 0.5px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.topbar-title-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.topbar-sub {
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-filters {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.brand-name span.badge {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  background: rgba(242, 179, 61, 0.2);
-  color: var(--gold);
-  border-radius: 20px;
-  border: 1px solid rgba(242, 179, 61, 0.4);
-}
-.brand-sub {
-  font-size: 12px;
-  color: #94A3B8;
+
+.btn-add-lead {
+  white-space: nowrap;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 9px;
+  gap: 6px;
 }
 
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* Mobile responsive */
+@media (max-width: 1024px) {
+  .crm-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: 0;
+    transform: translateX(-100%);
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+  }
+  html[dir="rtl"] .crm-sidebar {
+    transform: translateX(100%);
+  }
+  .crm-sidebar.open {
+    transform: translateX(0) !important;
+  }
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 95;
+  }
+  .sidebar-backdrop.open {
+    display: block;
+  }
+  .sidebar-close-btn {
+    display: flex;
+  }
+  .sidebar-toggle-btn {
+    display: flex;
+  }
+  .topbar-filters .select-filter {
+    display: none;
+  }
 }
 .btn {
   display: inline-flex;
@@ -1549,65 +1840,158 @@ body {
   </div>
 </div>
 
-<!-- Header -->
-<header class="top-nav">
-  <div class="brand-group">
-    <div class="brand-logo">I</div>
-    <div class="brand-title">
-      <div class="brand-name">
-        IDARATI CRM
-        <span class="badge" id="badgeText">إدارة المبيعات</span>
+<!-- CRM Layout Shell -->
+<div class="crm-layout">
+  <!-- Sidebar Navigation -->
+  <aside class="crm-sidebar" id="crmSidebar" aria-label="Sidebar Navigation">
+    <div class="sidebar-brand">
+      <div class="brand-left">
+        <div class="brand-logo">ID</div>
+        <div class="brand-info">
+          <div class="brand-name">
+            IDARATI CRM
+            <span class="badge" id="badgeText">إدارة المبيعات</span>
+          </div>
+          <div class="brand-sub" id="sidebarBrandSub">لوحة التحكم وإدارة الطلبات</div>
+        </div>
       </div>
-      <div class="brand-sub" id="headerSub">متابعة ملفات تأسيس الشركات بالجزائر</div>
-    </div>
-  </div>
-
-  <div class="nav-actions">
-    <div class="status-indicator" id="syncStatus">
-      <span class="status-dot" id="syncDot"></span>
-      <span id="syncText">وضع التخزين المحلي</span>
+      <button class="sidebar-close-btn" onclick="toggleSidebar()" aria-label="Close Sidebar">✕</button>
     </div>
 
-    <button class="btn btn-primary" onclick="openNewLeadModal()" title="إضافة طلبية جديدة يدوياً">
-      <span style="font-size:15px;">➕</span>
-      <span id="btnNewLead">إضافة طلبية يدوياً</span>
-    </button>
+    <div class="sidebar-status-wrap">
+      <div class="status-indicator" id="syncStatus">
+        <span class="status-dot" id="syncDot"></span>
+        <span id="syncText">وضع التخزين المحلي</span>
+      </div>
+    </div>
 
-    <button class="btn btn-outline" onclick="syncWithGoogleSheet()" title="تحديث ومزامنة">
-      <span id="syncIcon">🔄</span>
-      <span id="btnSync">مزامنة</span>
-    </button>
+    <div class="sidebar-menu">
+      <!-- Section 1: Views -->
+      <div class="menu-section-label" id="lblNavViews">المساحات ولوحات العمل</div>
+      <nav class="menu-nav">
+        <button class="menu-item active" id="sideNavKanban" onclick="switchView('kanban'); closeSidebarOnMobile();">
+          <span class="menu-icon">🗂️</span>
+          <span class="menu-text" id="navKanban">لوحة كانبان</span>
+        </button>
+        <button class="menu-item" id="sideNavTable" onclick="switchView('table'); closeSidebarOnMobile();">
+          <span class="menu-icon">📋</span>
+          <span class="menu-text" id="navTable">جدول الطلبيات</span>
+        </button>
+        <button class="menu-item" id="sideNavAnalytics" onclick="switchView('analytics'); closeSidebarOnMobile();">
+          <span class="menu-icon">📊</span>
+          <span class="menu-text" id="navAnalytics">التحليلات والمسار</span>
+        </button>
+      </nav>
 
-    <button class="btn btn-outline" onclick="exportToCSV()" title="تصدير إكسل">
-      <span>📥</span>
-      <span id="btnExport">تصدير إكسل</span>
-    </button>
+      <!-- Section 2: Data & Operations -->
+      <div class="menu-section-label" id="lblNavOps">إدارة البيانات والمزامنة</div>
+      <nav class="menu-nav">
+        <button class="menu-item" onclick="syncWithGoogleSheet()">
+          <span class="menu-icon" id="syncIcon">🔄</span>
+          <span class="menu-text" id="navSync">مزامنة مع Google Sheets</span>
+        </button>
+        <button class="menu-item" onclick="exportToCSV()">
+          <span class="menu-icon">📥</span>
+          <span class="menu-text" id="navExportCsv">تصدير إكسل (CSV)</span>
+        </button>
+        <button class="menu-item menu-item-pdf" onclick="exportToPDF()">
+          <span class="menu-icon">📄</span>
+          <span class="menu-text" id="navExportPdf">تحميل القائمة PDF</span>
+        </button>
+        <button class="menu-item" onclick="cleanGoogleSheetDuplicates()">
+          <span class="menu-icon">🧹</span>
+          <span class="menu-text" id="navCleanDuplicates">تنظيف وحذف التكرارات</span>
+        </button>
+        <button class="menu-item menu-item-highlight" onclick="injectSheetLeadsToRailway()">
+          <span class="menu-icon">⚡</span>
+          <span class="menu-text" id="navInjectRailway">حقن الطلبات في ريلواي</span>
+        </button>
+      </nav>
 
-    <button class="btn btn-outline" onclick="exportToPDF()" title="تحميل القائمة PDF" style="border-color:#dc2626; color:#dc2626; font-weight:600;">
-      <span>📄</span>
-      <span id="btnPdf">تحميل PDF</span>
-    </button>
+      <!-- Section 3: Integrations & Config -->
+      <div class="menu-section-label" id="lblNavConfig">الربط والتهيئة</div>
+      <nav class="menu-nav">
+        <button class="menu-item" id="sideNavPixel" onclick="switchView('pixel'); closeSidebarOnMobile();">
+          <span class="menu-icon">🎯</span>
+          <span class="menu-text" id="navPixel">بيانات البكسل (Meta Pixel)</span>
+        </button>
+        <button class="menu-item" onclick="openSettingsModal()">
+          <span class="menu-icon">⚙️</span>
+          <span class="menu-text" id="navSettings">إعدادات الربط والـ PIN</span>
+        </button>
+      </nav>
+    </div>
 
-    <button class="btn btn-outline btn-icon" onclick="toggleLang()" title="Changer la langue / تغيير اللغة">
-      <span id="langIcon">🌐</span>
-    </button>
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <button class="footer-btn" onclick="toggleLang()" title="Changer la langue / تغيير اللغة">
+        <span class="footer-icon">🌐</span>
+        <span class="footer-text" id="langToggleBtn">Français</span>
+      </button>
+      <button class="footer-btn" onclick="toggleTheme()" title="الوضع الليلي / النهاري">
+        <span class="footer-icon" id="themeIcon">🌙</span>
+        <span class="footer-text" id="themeToggleBtn">المظهر</span>
+      </button>
+      <button class="footer-btn footer-btn-logout" onclick="logout()" title="تسجيل الخروج">
+        <span class="footer-icon">🚪</span>
+        <span class="footer-text" id="logoutBtn">تسجيل الخروج</span>
+      </button>
+    </div>
+  </aside>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
-    <button class="btn btn-outline btn-icon" onclick="toggleTheme()" title="الوضع الليلي / النهاري">
-      <span id="themeIcon">🌙</span>
-    </button>
+  <!-- Main Content Area -->
+  <div class="crm-content">
+    <header class="crm-topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Menu">
+          <span>☰</span>
+        </button>
+        <div class="topbar-title-wrap">
+          <h1 class="topbar-title" id="topbarTitle">لوحة متابعة الطلبيات</h1>
+          <span class="topbar-sub" id="topbarSub">متابعة وتحديث ملفات تأسيس الشركات</span>
+        </div>
+      </div>
 
-    <button class="btn btn-outline btn-icon" onclick="openSettingsModal()" title="الإعدادات">
-      <span>⚙️</span>
-    </button>
+      <div class="topbar-right">
+        <div class="topbar-filters">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="search" id="searchInput" name="crm_search_field_no_fill" placeholder="بحث بالاسم، الهاتف، الشركة..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleSearch()" onsearch="handleSearch()">
+            <button type="button" id="clearSearchBtn" class="clear-search-btn" onclick="clearSearch()" title="مسح البحث">✕</button>
+          </div>
 
-    <button class="btn btn-outline btn-icon" onclick="logout()" title="تسجيل الخروج">
-      <span>🚪</span>
-    </button>
-  </div>
-</header>
+          <select id="wilayaFilter" class="select-filter" onchange="handleFilter()">
+            <option value="">جميع الولايات</option>
+            <option value="16 - Alger">الجزائر العاصمة (Alger)</option>
+            <option value="09 - Blida">البليدة (Blida)</option>
+            <option value="31 - Oran">وهران (Oran)</option>
+            <option value="25 - Constantine">قسنطينة (Constantine)</option>
+            <option value="19 - Sétif">سطيف (Sétif)</option>
+            <option value="Autre">ولايات أخرى</option>
+          </select>
 
-<!-- Main Container -->
-<main class="main-wrapper">
+          <select id="sourceFilter" class="select-filter" onchange="handleFilter()">
+            <option value="">جميع مصادر الزيارات</option>
+            <option value="direct">Direct / المباشر</option>
+            <option value="bureau">زيارة للمكتب</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="facebook">Facebook Ads</option>
+            <option value="tiktok">TikTok Ads</option>
+            <option value="instagram">Instagram</option>
+            <option value="referral">توصية عميل</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary btn-add-lead" onclick="openNewLeadModal()" title="إضافة طلبية جديدة يدوياً">
+          <span>➕</span>
+          <span id="btnNewLead">إضافة طلبية يدوياً</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="main-wrapper">
 
   <!-- KPI Metrics Banner -->
   <section class="kpi-grid">
@@ -1650,7 +2034,7 @@ body {
     </div>
   </section>
 
-  <!-- Navigation & Filters Toolbar -->
+  <!-- Views Pill Switcher -->
   <section class="view-toolbar">
     <div class="tabs-group">
       <button class="tab-btn active" id="tabKanban" onclick="switchView('kanban')">
@@ -1669,40 +2053,6 @@ body {
         <span>🎯</span>
         <span id="tabPixelText">بيانات البكسل</span>
       </button>
-    </div>
-
-    <button class="btn btn-primary btn-toolbar-add" onclick="openNewLeadModal()" title="إضافة طلبية جديدة يدوياً">
-      <span>➕</span>
-      <span id="btnToolbarAdd">إضافة طلبية يدوياً</span>
-    </button>
-
-    <div class="filter-group">
-      <div class="search-input-wrap">
-        <span class="search-icon">🔍</span>
-        <input type="search" id="searchInput" name="crm_search_field_no_fill" placeholder="بحث بالاسم، الهاتف، الشركة..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleSearch()" onsearch="handleSearch()">
-        <button type="button" id="clearSearchBtn" class="clear-search-btn" onclick="clearSearch()" title="مسح البحث">✕</button>
-      </div>
-
-      <select id="wilayaFilter" class="select-filter" onchange="handleFilter()">
-        <option value="">جميع الولايات</option>
-        <option value="16 - Alger">الجزائر العاصمة (Alger)</option>
-        <option value="09 - Blida">البليدة (Blida)</option>
-        <option value="31 - Oran">وهران (Oran)</option>
-        <option value="25 - Constantine">قسنطينة (Constantine)</option>
-        <option value="19 - Sétif">سطيف (Sétif)</option>
-        <option value="Autre">ولايات أخرى</option>
-      </select>
-
-      <select id="sourceFilter" class="select-filter" onchange="handleFilter()">
-        <option value="">جميع مصادر الزيارات</option>
-        <option value="direct">Direct / المباشر</option>
-        <option value="bureau">زيارة للمكتب</option>
-        <option value="whatsapp">WhatsApp</option>
-        <option value="facebook">Facebook Ads</option>
-        <option value="tiktok">TikTok Ads</option>
-        <option value="instagram">Instagram</option>
-        <option value="referral">توصية عميل</option>
-      </select>
     </div>
   </section>
 
@@ -2153,7 +2503,9 @@ body {
     </div>
   </section>
 
-</main>
+    </main>
+  </div>
+</div>
 
 <!-- Lead Details & Notes Modal -->
 <div id="leadModal" class="modal-backdrop">
@@ -3013,6 +3365,24 @@ function updateKPIs() {
 
 // Kanban Renderer
 const COLUMNS = ['Nouveau', 'Appelé', 'Rappeler', 'RDV', 'Client', 'Non intéressé'];
+const STATUS_LABELS = {
+  ar: {
+    'Nouveau': 'جديد لم يُعالج',
+    'Appelé': 'تم الاتصال به',
+    'Rappeler': 'إعادة الاتصال لاحقاً',
+    'RDV': 'موعد / دراسة ملف',
+    'Client': 'عميل مؤكد (تم التوقيع)',
+    'Non intéressé': 'غير مهتم / ملغى'
+  },
+  fr: {
+    'Nouveau': 'Nouveau',
+    'Appelé': 'Appelé',
+    'Rappeler': 'À rappeler',
+    'RDV': 'RDV / Dossier',
+    'Client': 'Client signé',
+    'Non intéressé': 'Non intéressé'
+  }
+};
 
 function renderKanban() {
   const filtered = getFilteredLeads();
@@ -3143,7 +3513,10 @@ function renderTable() {
         <td><span class="pill pill-source">${escapeHTML(l.source || 'direct')}</span></td>
         <td>
           <select class="status-select" onchange="changeLeadStatus('${l.id}', this.value)">
-            ${COLUMNS.map(s => `<option value="${s}" ${l.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+            ${COLUMNS.map(s => {
+              const label = (STATUS_LABELS[appConfig.lang] && STATUS_LABELS[appConfig.lang][s]) || s;
+              return `<option value="${s}" ${l.status === s ? 'selected' : ''}>${label}</option>`;
+            }).join('')}
           </select>
         </td>
         <td>
@@ -3214,17 +3587,35 @@ function renderBars(containerId, dataObj, total) {
   }).join('');
 }
 
-// View Switching
+// View Switching & Sidebar Controls
+function toggleSidebar() {
+  const sidebar = document.getElementById('crmSidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  if (!sidebar) return;
+  const isOpen = sidebar.classList.toggle('open');
+  if (backdrop) backdrop.classList.toggle('open', isOpen);
+}
+
+function closeSidebarOnMobile() {
+  if (window.innerWidth <= 1024) {
+    const sidebar = document.getElementById('crmSidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    if (sidebar) sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+  }
+}
+
 function switchView(view) {
   currentView = view;
   ['kanban', 'table', 'analytics', 'pixel'].forEach(v => {
-    const el = document.getElementById(`view${v.charAt(0).toUpperCase() + v.slice(1)}`);
-    const btn = document.getElementById(`tab${v.charAt(0).toUpperCase() + v.slice(1)}`);
+    const capitalized = v.charAt(0).toUpperCase() + v.slice(1);
+    const el = document.getElementById(`view${capitalized}`);
+    const tabBtn = document.getElementById(`tab${capitalized}`);
+    const sideBtn = document.getElementById(`sideNav${capitalized}`);
     if (el) el.style.display = (v === view) ? (v === 'kanban' ? 'grid' : (v === 'analytics' ? 'grid' : 'block')) : 'none';
-    if (btn) btn.classList.toggle('active', v === view);
+    if (tabBtn) tabBtn.classList.toggle('active', v === view);
+    if (sideBtn) sideBtn.classList.toggle('active', v === view);
   });
-  const filterGroup = document.querySelector('.view-toolbar .filter-group');
-  if (filterGroup) filterGroup.style.display = (view === 'pixel') ? 'none' : 'flex';
   renderAll();
 }
 
@@ -4258,41 +4649,103 @@ function applyLang(lang) {
   const isAr = lang === 'ar';
   document.documentElement.dir = isAr ? 'rtl' : 'ltr';
   document.documentElement.lang = lang;
+  document.title = isAr ? 'لوحة التحكم | IDARATI CRM' : 'Tableau de bord | IDARATI CRM';
+
+  const setTxt = (id, txt) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = txt;
+  };
+
+  // 1. Sidebar Brand & Nav Items
+  setTxt('badgeText', isAr ? 'إدارة المبيعات' : 'CRM & Ventes');
+  setTxt('sidebarBrandSub', isAr ? 'لوحة التحكم وإدارة الطلبات' : 'Gestion des commandes & CRM');
   
-  // Update UI Text
-  document.getElementById('badgeText').textContent = isAr ? 'إدارة المبيعات' : 'CRM & Ventes';
-  document.getElementById('headerSub').textContent = isAr ? 'متابعة ملفات تأسيس الشركات بالجزائر' : 'Suivi des créations d\'entreprises en Algérie';
-  document.getElementById('btnNewLead').textContent = isAr ? 'إضافة طلبية يدوياً' : '+ Nouvelle commande';
-  const btnToolbarAdd = document.getElementById('btnToolbarAdd');
-  if (btnToolbarAdd) btnToolbarAdd.textContent = isAr ? 'إضافة طلبية يدوياً' : '+ Nouvelle commande';
-  const btnTableAdd = document.getElementById('btnTableAdd');
-  if (btnTableAdd) btnTableAdd.textContent = isAr ? 'إضافة طلبية يدوياً' : '+ Nouvelle commande';
-  const tableHeading = document.getElementById('tableHeading');
-  if (tableHeading) tableHeading.textContent = isAr ? 'جدول الطلبيات والعملاء' : 'Liste des commandes';
-  document.getElementById('btnSync').textContent = isAr ? 'مزامنة' : 'Synchroniser';
-  document.getElementById('btnExport').textContent = isAr ? 'تصدير إكسل' : 'Exporter Excel';
-  const btnPdf = document.getElementById('btnPdf');
-  if (btnPdf) btnPdf.textContent = isAr ? 'تحميل PDF' : 'Télécharger PDF';
-  document.getElementById('searchInput').placeholder = isAr ? 'بحث بالاسم، الهاتف، الشركة...' : 'Recherche nom, tél, société...';
+  setTxt('lblNavViews', isAr ? 'المساحات ولوحات العمل' : 'Espaces de travail');
+  setTxt('navKanban', isAr ? 'لوحة كانبان' : 'Tableau Kanban');
+  setTxt('navTable', isAr ? 'جدول الطلبيات' : 'Liste des commandes');
+  setTxt('navAnalytics', isAr ? 'التحليلات والمسار' : 'Statistiques & Funnel');
+  
+  setTxt('lblNavOps', isAr ? 'إدارة البيانات والمزامنة' : 'Données & Opérations');
+  setTxt('navSync', isAr ? 'مزامنة مع Google Sheets' : 'Synchroniser Google Sheets');
+  setTxt('navExportCsv', isAr ? 'تصدير إكسل (CSV)' : 'Exporter Excel (CSV)');
+  setTxt('navExportPdf', isAr ? 'تحميل القائمة PDF' : 'Télécharger la liste (PDF)');
+  setTxt('navCleanDuplicates', isAr ? 'تنظيف وحذف التكرارات' : 'Nettoyer les doublons');
+  setTxt('navInjectRailway', isAr ? 'حقن الطلبات في ريلواي' : 'Injecter dans Railway DB');
 
-  // Tabs
-  document.getElementById('tabKanbanText').textContent = isAr ? 'لوحة كانبان' : 'Vue Kanban';
-  document.getElementById('tabTableText').textContent = isAr ? 'جدول البيانات' : 'Vue Tableau';
-  document.getElementById('tabAnalyticsText').textContent = isAr ? 'التحليلات والمصادر' : 'Statistiques';
+  setTxt('lblNavConfig', isAr ? 'الربط والتهيئة' : 'Intégrations & Config');
+  setTxt('navPixel', isAr ? 'بيانات البكسل (Meta Pixel)' : 'Configuration Meta Pixel');
+  setTxt('navSettings', isAr ? 'إعدادات الربط والـ PIN' : 'Paramètres & Code PIN');
 
-  // KPIs
-  document.getElementById('kpiTotalTitle').textContent = isAr ? 'إجمالي الطلبات المستلمة' : 'Total des demandes';
-  document.getElementById('kpiNewTitle').textContent = isAr ? 'طلبات جديدة (تحتاج اتصال)' : 'Nouveaux leads (à contacter)';
-  document.getElementById('kpiProgressTitle').textContent = isAr ? 'قيد المتابعة والتفاوض' : 'En cours de traitement';
-  document.getElementById('kpiClientsTitle').textContent = isAr ? 'عملاء مؤكدين (تم التوقيع)' : 'Clients signés';
+  // Sidebar Footer: Button label invites user to toggle to the OTHER language
+  setTxt('langToggleBtn', isAr ? 'Français' : 'العربية');
+  setTxt('themeToggleBtn', isAr ? 'المظهر' : 'Thème');
+  setTxt('logoutBtn', isAr ? 'تسجيل الخروج' : 'Déconnexion');
 
-  // Kanban Columns
-  document.getElementById('colNouveau').textContent = isAr ? 'جديد لم يُعالج' : 'Nouveau';
-  document.getElementById('colAppele').textContent = isAr ? 'تم الاتصال به' : 'Appelé';
-  document.getElementById('colRappeler').textContent = isAr ? 'إعادة الاتصال لاحقاً' : 'À rappeler';
-  document.getElementById('colRDV').textContent = isAr ? 'موعد / دراسة ملف' : 'RDV / Dossier';
-  document.getElementById('colClient').textContent = isAr ? 'عميل مؤكد (تم التوقيع)' : 'Client signé';
-  document.getElementById('colRefuse').textContent = isAr ? 'غير مهتم / ملغى' : 'Non intéressé';
+  // 2. Topbar
+  setTxt('topbarTitle', isAr ? 'لوحة متابعة الطلبيات' : 'Gestion des Commandes');
+  setTxt('topbarSub', isAr ? 'متابعة وتحديث ملفات تأسيس الشركات' : 'Suivi et traitement des dossiers de création d\'entreprises');
+  
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.placeholder = isAr ? 'بحث بالاسم، الهاتف، الشركة...' : 'Recherche par nom, tél, société...';
+  }
+  const clearBtn = document.getElementById('clearSearchBtn');
+  if (clearBtn) clearBtn.title = isAr ? 'مسح البحث' : 'Effacer';
+
+  // Filters
+  const wilayaSelect = document.getElementById('wilayaFilter');
+  if (wilayaSelect && wilayaSelect.options.length > 0) {
+    wilayaSelect.options[0].textContent = isAr ? 'جميع الولايات' : 'Toutes les wilayas';
+  }
+  const sourceSelect = document.getElementById('sourceFilter');
+  if (sourceSelect && sourceSelect.options.length > 0) {
+    sourceSelect.options[0].textContent = isAr ? 'جميع مصادر الزيارات' : 'Toutes les sources';
+  }
+
+  // Action Buttons & Headings
+  setTxt('btnNewLead', isAr ? 'إضافة طلبية يدوياً' : '+ Nouvelle commande');
+  setTxt('btnTableAdd', isAr ? 'إضافة طلبية يدوياً' : '+ Nouvelle commande');
+  setTxt('tableHeading', isAr ? 'جدول الطلبيات والعملاء' : 'Liste des commandes');
+
+  // 3. Tabs
+  setTxt('tabKanbanText', isAr ? 'لوحة كانبان' : 'Vue Kanban');
+  setTxt('tabTableText', isAr ? 'جدول البيانات' : 'Vue Tableau');
+  setTxt('tabAnalyticsText', isAr ? 'التحليلات والمصادر' : 'Statistiques');
+  setTxt('tabPixelText', isAr ? 'بيانات البكسل' : 'Meta Pixel');
+
+  // 4. KPI Cards
+  setTxt('kpiTotalTitle', isAr ? 'إجمالي الطلبات المستلمة' : 'Total des demandes');
+  setTxt('kpiTotalSub', isAr ? 'جميع الطلبات عبر صفحة الهبوط' : 'Commandes via la landing page');
+  setTxt('kpiNewTitle', isAr ? 'طلبات جديدة (تحتاج اتصال)' : 'Nouveaux leads (à contacter)');
+  setTxt('kpiNewSub', isAr ? 'لم يتم الاتصال بهم بعد' : 'En attente d\'appel');
+  setTxt('kpiProgressTitle', isAr ? 'قيد المتابعة والتفاوض' : 'En cours de traitement');
+  setTxt('kpiProgressSub', isAr ? 'تم الاتصال أو إعادة الاتصال' : 'Appelé ou relancé');
+  setTxt('kpiClientsTitle', isAr ? 'عملاء مؤكدين (تم التوقيع)' : 'Clients signés');
+
+  // 5. Kanban Columns
+  setTxt('colNouveau', isAr ? 'جديد لم يُعالج' : 'Nouveau (non traité)');
+  setTxt('colAppele', isAr ? 'تم الاتصال به' : 'Appelé');
+  setTxt('colRappeler', isAr ? 'إعادة الاتصال لاحقاً' : 'À rappeler plus tard');
+  setTxt('colRDV', isAr ? 'موعد / دراسة ملف' : 'RDV / Étude de dossier');
+  setTxt('colClient', isAr ? 'عميل مؤكد (تم التوقيع)' : 'Client signé (validé)');
+  setTxt('colRefuse', isAr ? 'غير مهتم / ملغى' : 'Non intéressé / Annulé');
+
+  // 6. Table Headers
+  setTxt('thDate', isAr ? 'التاريخ' : 'Date');
+  setTxt('thName', isAr ? 'الاسم الكامل' : 'Nom complet');
+  setTxt('thCompany', isAr ? 'اسم الشركة' : 'Société');
+  setTxt('thActivity', isAr ? 'النشاط' : 'Activité');
+  setTxt('thPhone', isAr ? 'رقم الهاتف' : 'Téléphone');
+  setTxt('thWilaya', isAr ? 'الولاية' : 'Wilaya');
+  setTxt('thSource', isAr ? 'المصدر' : 'Source');
+  setTxt('thStatus', isAr ? 'الحالة' : 'Statut');
+  setTxt('thActions', isAr ? 'إجراءات سريعة' : 'Actions rapides');
+
+  // 7. Analytics Chart Titles
+  setTxt('chartWilayaTitle', isAr ? 'توزيع الطلبات حسب الولاية' : 'Répartition des demandes par wilaya');
+  setTxt('chartStatusTitle', isAr ? 'مسار مبيعات الطلبات (Funnel)' : 'Entonnoir de conversion (Funnel)');
+  setTxt('chartSourcesTitle', isAr ? 'مصادر الحملات الإعلانية (UTM)' : 'Sources des campagnes (UTM)');
+  setTxt('chartActivityTitle', isAr ? 'الأنشطة الأكثر طلباً' : 'Activités les plus demandées');
 }
 
 // Theme Toggle
