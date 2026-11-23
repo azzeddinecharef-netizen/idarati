@@ -66,7 +66,7 @@ src="https://www.facebook.com/tr?id=1446779740729835&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
 
-<script src="/journey.js" defer></script>
+<script src="/journey.js?v=2.2" defer></script>
 
 <style>
 :root{
@@ -1119,12 +1119,19 @@ form.addEventListener("submit", function(e){
 
   var fbpVal = (window.IDARATI_JOURNEY && window.IDARATI_JOURNEY.readMetaCookie('_fbp')) || '';
   var fbcVal = (window.IDARATI_JOURNEY && window.IDARATI_JOURNEY.readMetaCookie('_fbc')) || '';
+  
+  // Persist and retrieve test_event_code from URL or sessionStorage
   var urlParamsObj = new URLSearchParams(location.search);
-  var testEventCode = urlParamsObj.get("test_event_code") || urlParamsObj.get("testCode") || "";
+  var rawTestCode = urlParamsObj.get("test_event_code") || urlParamsObj.get("testCode");
+  if (rawTestCode) {
+    try { sessionStorage.setItem("idarati_test_event_code", rawTestCode.trim()); } catch(e){}
+  }
+  var testEventCode = rawTestCode || (function(){ try { return sessionStorage.getItem("idarati_test_event_code") || ""; } catch(e){ return ""; } })();
 
   var data = new URLSearchParams({
     id: requestId,
     event_id: eventId,
+    eventId: eventId,
     full_name: f.full_name.value.trim(),
     company_name: f.company_name.value.trim(),
     activity: f.activity.value.trim(),
@@ -1134,6 +1141,7 @@ form.addEventListener("submit", function(e){
     lang: lang,
     source: utm() || "landing",
     page: location.href.split("#")[0],
+    event_source_url: location.href.split("#")[0],
     fbp: fbpVal,
     fbc: fbcVal,
     user_agent: navigator.userAgent,
@@ -1187,15 +1195,20 @@ form.addEventListener("submit", function(e){
         event_id: eventId,
         full_name: f.full_name.value.trim(),
         phone: f.phone.value.trim(),
+        email: f.email.value.trim(),
         wilaya: w,
         activity: f.activity.value.trim(),
         date: new Date().toISOString()
       }));
     } catch(e){}
 
-    // Redirect to dedicated Thank You page with deterministic request ID
+    // Redirect to dedicated Thank You page with deterministic request ID and customer details for Advanced Matching
     // Conversion events (Lead & CompleteRegistration) fire on the thank-you screen guarded by sessionStorage
-    var thankYouUrl = "/thank-you/?id=" + encodeURIComponent(requestId) + "&name=" + encodeURIComponent(f.full_name.value.trim()) + "&w=" + encodeURIComponent(w);
+    var thankYouUrl = "/thank-you/?id=" + encodeURIComponent(requestId) + 
+      "&name=" + encodeURIComponent(f.full_name.value.trim()) + 
+      "&w=" + encodeURIComponent(w) + 
+      "&phone=" + encodeURIComponent(f.phone.value.trim());
+    if (f.email.value.trim()) thankYouUrl += "&email=" + encodeURIComponent(f.email.value.trim());
     if (testEventCode) thankYouUrl += "&test_event_code=" + encodeURIComponent(testEventCode);
     window.location.href = thankYouUrl;
   }

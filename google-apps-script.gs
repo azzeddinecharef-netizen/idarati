@@ -476,30 +476,38 @@ function seedInitialLeads() {
 
 /**
  * إرسال أحداث التحويل (Lead & CompleteRegistration) إلى Meta Conversions API (Graph API v21.0)
+ * يستخدم التوكن المخزن بأمان في Script Properties (الاسم المعتمد: META_CAPI_TOKEN)
  */
 function sendMetaConversionsAPI_(p) {
   try {
     const props = PropertiesService.getScriptProperties();
-    const token = props.getProperty('FB_ACCESS_TOKEN') || props.getProperty('META_ACCESS_TOKEN') || p.access_token || '';
-    const pixelId = props.getProperty('FB_PIXEL_ID') || '1446779740729835';
+    // 1) جلب التوكن من Script Properties بالاسم META_CAPI_TOKEN (مع دعم التسميات البديلة)
+    const token = props.getProperty('META_CAPI_TOKEN') || props.getProperty('FB_ACCESS_TOKEN') || props.getProperty('META_ACCESS_TOKEN') || p.access_token || '';
+    const pixelId = props.getProperty('META_PIXEL_ID') || props.getProperty('FB_PIXEL_ID') || '1446779740729835';
 
     if (!token) {
-      Logger.log('[Meta CAPI] لم يتم العثور على FB_ACCESS_TOKEN في Script Properties. تجاوز الإرسال.');
+      Logger.log('[Meta CAPI] تحذير: لم يتم العثور على META_CAPI_TOKEN في Script Properties. تجاوز إرسال CAPI.');
       return;
     }
 
-    // المعرف الموحد المتطابق تماماً مع المتصفح (lead_IDR-xxxxxx)
-    const cleanId = (p.id && String(p.id).startsWith('IDR-'))
-      ? String(p.id)
-      : ((p.event_id && String(p.event_id).startsWith('lead_IDR-'))
-          ? String(p.event_id).replace('lead_', '')
-          : ('IDR-' + Math.floor(100000 + Math.random() * 900000)));
+    // 2) استخراج وتوحيد معرف الحدث (lead_IDR-xxxxxx) ليتطابق بنسبة 100% مع المتصفح
+    const rawId = p.event_id || p.eventId || p.id || '';
+    let cleanId = '';
+    if (String(rawId).startsWith('lead_IDR-')) {
+      cleanId = String(rawId).replace('lead_', '');
+    } else if (String(rawId).startsWith('IDR-')) {
+      cleanId = String(rawId);
+    } else if (String(rawId).startsWith('lead_')) {
+      cleanId = String(rawId).replace('lead_', '');
+    } else {
+      cleanId = 'IDR-' + Math.floor(100000 + Math.random() * 900000);
+    }
 
     const eventId = 'lead_' + cleanId;
     const nowSec = Math.floor(Date.now() / 1000);
-    const sourceUrl = p.page || 'https://idarati-company.africacold.fr/';
+    const sourceUrl = p.event_source_url || p.page || 'https://idarati-company.africacold.fr/';
 
-    // تنقية وتشفير الهاتف إلى صيغة 213XXXXXXXXX عبر SHA-256
+    // 3) تنقية وتشفير الهاتف إلى صيغة 213XXXXXXXXX عبر SHA-256
     let normPhone = String(p.phone || '').replace(/\D/g, '');
     if (normPhone.indexOf('00213') === 0) normPhone = normPhone.substring(5);
     else if (normPhone.indexOf('213') === 0) normPhone = normPhone.substring(3);
@@ -508,11 +516,17 @@ function sendMetaConversionsAPI_(p) {
 
     const userData = {};
     if (normPhone) userData.ph = [sha256Hex_(normPhone)];
-    if (p.email && p.email.trim()) userData.em = [sha256Hex_(p.email.trim().toLowerCase())];
+    if (p.email && String(p.email).trim()) {
+      userData.em = [sha256Hex_(String(p.email).trim().toLowerCase())];
+    }
     if (p.user_agent || p.userAgent) userData.client_user_agent = String(p.user_agent || p.userAgent);
     if (p.fbp) userData.fbp = String(p.fbp);
     if (p.fbc) userData.fbc = String(p.fbc);
+    if (p.client_ip || p.ip) userData.client_ip_address = String(p.client_ip || p.ip);
 
+    const wilayaVal = p.wilaya || 'Alger';
+
+    // 4) إرسال حدثين فقط: Lead و CompleteRegistration بنفس معرّف الحدث ومن دون أي Purchase
     const events = [
       {
         event_name: 'Lead',
@@ -523,7 +537,7 @@ function sendMetaConversionsAPI_(p) {
         user_data: userData,
         custom_data: {
           content_name: 'Creation entreprise',
-          content_category: p.wilaya || 'Alger',
+          content_category: wilayaVal,
           currency: 'DZD',
           value: 1
         }
@@ -537,7 +551,7 @@ function sendMetaConversionsAPI_(p) {
         user_data: userData,
         custom_data: {
           content_name: 'Creation entreprise',
-          content_category: p.wilaya || 'Alger',
+          content_category: wilayaVal,
           currency: 'DZD',
           status: true,
           value: 1
@@ -546,7 +560,8 @@ function sendMetaConversionsAPI_(p) {
     ];
 
     const payload = { data: events };
-    if (p.test_event_code) {
+    // 5) إدراج test_event_code فقط إذا تم تمريره من الواجهة الأمامية للاختبار
+    if (p.test_event_code && String(p.test_event_code).trim()) {
       payload.test_event_code = String(p.test_event_code).trim();
     }
 
@@ -557,10 +572,14 @@ function sendMetaConversionsAPI_(p) {
       muteHttpExceptions: true
     };
 
-    const res = UrlFetchApp.fetch('https://graph.facebook.com/v21.0/' + pixelId + '/events?access_token=' + encodeURIComponent(token), options);
-    Logger.log('[Meta CAPI] Response: ' + res.getResponseCode() + ' ' + res.getContentText());
+    const endpoint = 'https://graph.facebook.com/v21.0/' + pixelId + '/events?access_token=' + encodeURIComponent(token);
+    const res = UrlFetchApp.fetch(endpoint, options);
+    // 6) تسجيل الرد كاملاً في سجلات Apps Script (Executions) للتشخيص الفوري
+    Logger.log('[Meta CAPI] Endpoint: ' + endpoint.replace(token, 'TOKEN_HIDDEN'));
+    Logger.log('[Meta CAPI] Event ID: ' + eventId + ' | TestCode: ' + (payload.test_event_code || 'none'));
+    Logger.log('[Meta CAPI] HTTP Response: ' + res.getResponseCode() + ' | Body: ' + res.getContentText());
   } catch (err) {
-    Logger.log('[Meta CAPI] Error: ' + err.toString());
+    Logger.log('[Meta CAPI] Exception caught: ' + err.toString());
   }
 }
 

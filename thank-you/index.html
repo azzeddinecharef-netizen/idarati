@@ -299,51 +299,6 @@
       h1 { font-size: 1.5rem; }
     }
   </style>
-
-  <!-- Meta Pixel Code with Live Dashboard Sync -->
-  <script>
-    (function(){
-      var defaultPixelId = "1093685876189351";
-      var pixelId = defaultPixelId;
-      var pixelEnabled = true;
-      var token = null;
-
-      try {
-        var rawCfg = localStorage.getItem("idarati_pixel_config");
-        if (rawCfg) {
-          var cfg = JSON.parse(rawCfg);
-          if (cfg.pixelId && /^[0-9]{6,20}$/.test(cfg.pixelId)) pixelId = cfg.pixelId;
-          if (typeof cfg.enabled === "boolean") pixelEnabled = cfg.enabled;
-          if (cfg.token) token = cfg.token;
-          if (cfg.domainCode) {
-            var meta = document.createElement("meta");
-            meta.name = "facebook-domain-verification";
-            meta.content = cfg.domainCode;
-            document.head.appendChild(meta);
-          }
-        }
-      } catch(e) {}
-
-      if (!pixelEnabled) {
-        console.log("Meta Pixel is disabled in dashboard.");
-        return;
-      }
-
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-
-      fbq('init', pixelId);
-      var pvEventId = "pv_" + Date.now() + "_" + Math.random().toString(36).slice(2, 9);
-      window.pageViewEventId = pvEventId;
-      fbq('track', 'PageView', {}, { eventID: pvEventId });
-    })();
-  </script>
 </head>
 <body>
 
@@ -413,14 +368,24 @@
       var params = new URLSearchParams(window.location.search);
       var leadId = params.get('id');
       var name = params.get('name');
+      var clientPhone = params.get('phone') || '';
+      var clientEmail = params.get('email') || '';
+      var clientWilaya = params.get('w') || '';
 
-      if (!name || !leadId) {
-        try {
-          var lastLead = JSON.parse(localStorage.getItem('idarati_last_lead') || '{}');
-          if (!leadId && lastLead.id) leadId = lastLead.id;
-          if (!name && lastLead.full_name) name = lastLead.full_name;
-        } catch(e){}
+      // Capture and persist test_event_code in sessionStorage
+      var testCode = params.get('test_event_code') || params.get('testCode');
+      if (testCode) {
+        try { sessionStorage.setItem('idarati_test_event_code', testCode.trim()); } catch(e){}
       }
+
+      try {
+        var lastLead = JSON.parse(localStorage.getItem('idarati_last_lead') || '{}');
+        if (!leadId && lastLead.id) leadId = lastLead.id;
+        if (!name && lastLead.full_name) name = lastLead.full_name;
+        if (!clientPhone && lastLead.phone) clientPhone = lastLead.phone;
+        if (!clientEmail && lastLead.email) clientEmail = lastLead.email;
+        if (!clientWilaya && lastLead.wilaya) clientWilaya = lastLead.wilaya;
+      } catch(e){}
 
       if (!leadId) {
         leadId = 'IDR-' + Math.floor(100000 + Math.random() * 900000);
@@ -517,16 +482,35 @@
         if (!sessionStorage.getItem(guardKey)) {
           sessionStorage.setItem(guardKey, '1');
           if (window.fbq) {
+            // Task 3: Advanced Matching on browser pixel before firing conversion events
+            var normPhone = String(clientPhone || '').replace(/\D/g, '');
+            if (normPhone.indexOf('00213') === 0) normPhone = normPhone.substring(5);
+            else if (normPhone.indexOf('213') === 0) normPhone = normPhone.substring(3);
+            normPhone = normPhone.replace(/^0+/, '');
+            if (normPhone) normPhone = '213' + normPhone;
+
+            var matchData = { country: 'dz' };
+            if (normPhone) matchData.ph = normPhone;
+            if (clientEmail && clientEmail.trim()) matchData.em = clientEmail.trim().toLowerCase();
+            if (name && name.trim()) matchData.fn = name.trim().split(/\s+/)[0].toLowerCase();
+            var wilayaVal = (params.get('w') || clientWilaya || 'Alger').toLowerCase();
+            if (wilayaVal) matchData.ct = wilayaVal;
+
+            // Pass hashed identifiers via Advanced Matching without re-firing PageView
+            window.fbq('init', '1446779740729835', matchData);
+
+            // Task 2: Fire Lead EXACTLY ONCE per successful submission
             window.fbq('track', 'Lead', {
               content_name: 'Creation Entreprise',
-              content_category: params.get('w') || 'Alger',
+              content_category: params.get('w') || clientWilaya || 'Alger',
               currency: 'DZD',
               value: 1
             }, { eventID: conversionEventId });
 
+            // CompleteRegistration EXACTLY ONCE per successful submission
             window.fbq('track', 'CompleteRegistration', {
               content_name: 'Creation Entreprise',
-              content_category: params.get('w') || 'Alger',
+              content_category: params.get('w') || clientWilaya || 'Alger',
               currency: 'DZD',
               status: true,
               value: 1
