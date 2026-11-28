@@ -11,11 +11,14 @@
  */
 
 const SHEET_NAME     = 'Demandes';   // اسم الورقة
+const EVENTS_SHEET_NAME = 'Events';   // جدول الأحداث والسجل
 const SPREADSHEET_ID = '1EKgjfkVypCbLUoMcMsxvyIZSWGK6YqdVPIQg2ASMPu4'; // معرّف جدولك المباشر
 const NOTIFY_EMAIL   = '';           // اختياري: بريد يصلك عليه تنبيه بكل طلب جديد (مثال: 'contact@idaraticompany.dz')
 
 const HEADERS = ['Date', 'Nom complet', 'Société (nom souhaité)', 'Activité', 'Téléphone', 'E-mail',
                  'Wilaya', 'Langue', 'Source (UTM)', 'Page', 'Statut', 'Notes'];
+
+const EVENTS_HEADERS = ['id', 'lead_id', 'type', 'ancien_statut', 'nouveau_statut', 'note', 'date_rappel', 'auteur', 'created_at'];
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
@@ -29,6 +32,24 @@ function doPost(e) {
     if (p.action === 'clean_duplicates') {
       const res = cleanDuplicatesInSheet();
       return json_({ ok: true, cleaned: true, ...res });
+    }
+
+    // 1.5) تسجيل حدث جديد في جدول الأحداث (Events)
+    if (p.action === 'add_event') {
+      const evSh = getEventsSheet_();
+      const row = [
+        clean_(p.id) || ('ev_' + Date.now()),
+        clean_(p.lead_id) || '',
+        clean_(p.type) || '',
+        clean_(p.ancien_statut) || '',
+        clean_(p.nouveau_statut) || '',
+        clean_(p.note) || '',
+        clean_(p.date_rappel) || '',
+        clean_(p.auteur) || 'Admin',
+        clean_(p.created_at) || new Date().toISOString()
+      ];
+      evSh.appendRow(row);
+      return json_({ ok: true, added_event: true });
     }
 
     // 2) تحديث حالة وملاحظات الطلب من لوحة التحكم
@@ -119,6 +140,30 @@ function doPost(e) {
 
 function doGet(e) {
   const p = (e && e.parameter) || {};
+
+  // 0) جلب سجل الأحداث (Events)
+  if (p.action === 'get_events') {
+    const evSh = getEventsSheet_();
+    const data = evSh.getDataRange().getValues();
+    if (data.length <= 1) return json_({ ok: true, events: [] });
+    const events = [];
+    for (let i = data.length - 1; i >= 1; i--) {
+      const r = data[i];
+      if (!r[0]) continue;
+      events.push({
+        id: String(r[0]),
+        lead_id: String(r[1] || ''),
+        type: String(r[2] || ''),
+        ancien_statut: String(r[3] || ''),
+        nouveau_statut: String(r[4] || ''),
+        note: String(r[5] || ''),
+        date_rappel: String(r[6] || ''),
+        auteur: String(r[7] || ''),
+        created_at: String(r[8] || '')
+      });
+    }
+    return json_({ ok: true, events: events });
+  }
 
   // 1) تنظيف التكرارات عبر رابط مباشر (GET)
   if (p.action === 'clean_duplicates') {
@@ -289,6 +334,31 @@ function getSheet_() {
     sh.getRange('E:E').setNumberFormat('@');
     const rule = SpreadsheetApp.newDataValidation().requireValueInList(['Nouveau', 'Appelé', 'Rappeler', 'RDV', 'Client', 'Non intéressé']).build();
     sh.getRange(2, 11, 1000).setDataValidation(rule);
+  }
+  return sh;
+}
+
+function getEventsSheet_() {
+  let ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss && typeof SPREADSHEET_ID !== 'undefined' && SPREADSHEET_ID) {
+    try {
+      ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    } catch (e) {
+      Logger.log('Could not open spreadsheet by ID: ' + e);
+    }
+  }
+  if (!ss) {
+    throw new Error('Spreadsheet not found! SPREADSHEET_ID is missing or inaccessible.');
+  }
+  let sh = ss.getSheetByName(EVENTS_SHEET_NAME);
+  if (!sh) {
+    sh = ss.insertSheet(EVENTS_SHEET_NAME);
+  }
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(EVENTS_HEADERS);
+    sh.getRange(1, 1, 1, EVENTS_HEADERS.length).setFontWeight('bold').setBackground('#2563EB').setFontColor('#FFFFFF');
+    sh.setFrozenRows(1);
+    sh.getRange('I:I').setNumberFormat('dd/mm/yyyy hh:mm');
   }
   return sh;
 }

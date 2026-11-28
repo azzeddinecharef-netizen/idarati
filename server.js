@@ -25,6 +25,7 @@ let pool = null;
 let dbType = 'none';
 const dataDir = path.join(__dirname, 'data');
 const fallbackDbFile = path.join(dataDir, 'leads.json');
+const fallbackEventsFile = path.join(dataDir, 'events.json');
 
 const databaseUrl = process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL || process.env.PGURL;
 
@@ -65,12 +66,30 @@ async function initDb() {
           service VARCHAR(255),
           amount VARCHAR(64),
           fbp VARCHAR(255),
-          fbc VARCHAR(255)
+          fbc VARCHAR(255),
+          date_rappel VARCHAR(64),
+          type_rappel VARCHAR(32),
+          rappel_statut VARCHAR(32),
+          tentatives INTEGER DEFAULT 0
         );
         CREATE INDEX IF NOT EXISTS idx_leads_phone ON leads(phone);
         CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at DESC);
+
+        CREATE TABLE IF NOT EXISTS events (
+          id VARCHAR(128) PRIMARY KEY,
+          lead_id VARCHAR(128) NOT NULL,
+          type VARCHAR(64) NOT NULL,
+          ancien_statut VARCHAR(64),
+          nouveau_statut VARCHAR(64),
+          note TEXT,
+          date_rappel VARCHAR(64),
+          auteur VARCHAR(128),
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE INDEX IF NOT EXISTS idx_events_lead_id ON events(lead_id);
+        CREATE INDEX IF NOT EXISTS idx_events_created_at ON events(created_at DESC);
       `);
-      console.log('[DB] PostgreSQL table "leads" verified/created successfully.');
+      console.log('[DB] PostgreSQL tables "leads" and "events" verified/created successfully.');
 
       // Auto-inject leads from Google Sheets if database is currently empty
       const countRes = await pool.query('SELECT COUNT(*) FROM leads');
@@ -84,14 +103,17 @@ async function initDb() {
       console.error('[DB] PostgreSQL init error:', err.message);
     }
   } else {
-    // Ensure fallback file exists
+    // Ensure fallback files exist
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
     }
     if (!fs.existsSync(fallbackDbFile)) {
       fs.writeFileSync(fallbackDbFile, JSON.stringify([], null, 2), 'utf-8');
     }
-    console.log('[DB] Local fallback JSON database initialized at data/leads.json');
+    if (!fs.existsSync(fallbackEventsFile)) {
+      fs.writeFileSync(fallbackEventsFile, JSON.stringify([], null, 2), 'utf-8');
+    }
+    console.log('[DB] Local fallback JSON database initialized at data/leads.json and data/events.json');
   }
 }
 initDb();
@@ -215,6 +237,27 @@ function writeFallbackLeads(leads) {
     fs.writeFileSync(fallbackDbFile, JSON.stringify(leads, null, 2), 'utf-8');
   } catch (e) {
     console.error('[Fallback DB] Write error:', e.message);
+  }
+}
+
+// Helper: Read events from fallback JSON
+function readFallbackEvents() {
+  try {
+    if (!fs.existsSync(fallbackEventsFile)) return [];
+    const raw = fs.readFileSync(fallbackEventsFile, 'utf-8');
+    return JSON.parse(raw || '[]');
+  } catch (e) {
+    console.error('[Fallback Events] Read error:', e.message);
+    return [];
+  }
+}
+
+// Helper: Write events to fallback JSON
+function writeFallbackEvents(events) {
+  try {
+    fs.writeFileSync(fallbackEventsFile, JSON.stringify(events, null, 2), 'utf-8');
+  } catch (e) {
+    console.error('[Fallback Events] Write error:', e.message);
   }
 }
 
@@ -493,11 +536,11 @@ app.get('/api/leads', async (req, res) => {
   }
 });
 
-// UPDATE LEAD STATUS/NOTES (PATCH /api/leads/:id)
+// UPDATE LEAD STATUS/NOTES/REMINDERS (PATCH /api/leads/:id)
 app.patch('/api/leads/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, notes } = req.body || {};
+    const { status, notes, date_rappel, type_rappel, rappel_statut, tentatives } = req.body || {};
 
     if (pool) {
       const updates = [];
@@ -512,6 +555,22 @@ app.patch('/api/leads/:id', async (req, res) => {
         updates.push(`notes = $${idx++}`);
         values.push(notes);
       }
+      if (date_rappel !== undefined) {
+        updates.push(`date_rappel = $${idx++}`);
+        values.push(date_rappel);
+      }
+      if (type_rappel !== undefined) {
+        updates.push(`type_rappel = $${idx++}`);
+        values.push(type_rappel);
+      }
+      if (rappel_statut !== undefined) {
+        updates.push(`rappel_statut = $${idx++}`);
+        values.push(rappel_statut);
+      }
+      if (tentatives !== undefined) {
+        updates.push(`tentatives = $${idx++}`);
+        values.push(parseInt(tentatives, 10) || 0);
+      }
 
       if (updates.length > 0) {
         values.push(id);
@@ -524,12 +583,79 @@ app.patch('/api/leads/:id', async (req, res) => {
       if (item) {
         if (status !== undefined) item.status = status;
         if (notes !== undefined) item.notes = notes;
+        if (date_rappel !== undefined) item.date_rappel = date_rappel;
+        if (type_rappel !== undefined) item.type_rappel = type_rappel;
+        if (rappel_statut !== undefined) item.rappel_statut = rappel_statut;
+        if (tentatives !== undefined) item.tentatives = parseInt(tentatives, 10) || 0;
         writeFallbackLeads(leads);
       }
       return res.json({ ok: true, updated: Boolean(item) });
     }
   } catch (err) {
     console.error('[API Leads] Update error:', err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// GET EVENTS (GET /api/events)
+app.get('/api/events', async (req, res) => {
+  try {
+    const { lead_id } = req.query || {};
+    if (pool) {
+      let query = 'SELECT * FROM events';
+      const params = [];
+      if (lead_id) {
+        query += ' WHERE lead_id = $1';
+        params.push(lead_id);
+      }
+      query += ' ORDER BY created_at DESC LIMIT 1000';
+      const result = await pool.query(query, params);
+      return res.json({ ok: true, data: result.rows });
+    } else {
+      let events = readFallbackEvents();
+      if (lead_id) {
+        events = events.filter(e => e.lead_id === lead_id);
+      }
+      events.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      return res.json({ ok: true, data: events });
+    }
+  } catch (err) {
+    console.error('[API Events] Fetch error:', err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// CREATE EVENT (POST /api/events)
+app.post('/api/events', async (req, res) => {
+  try {
+    const b = req.body || {};
+    const ev = {
+      id: b.id || ('ev_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8)),
+      lead_id: b.lead_id || '',
+      type: b.type || 'note',
+      ancien_statut: b.ancien_statut || '',
+      nouveau_statut: b.nouveau_statut || '',
+      note: b.note || '',
+      date_rappel: b.date_rappel || '',
+      auteur: b.auteur || 'Admin',
+      created_at: b.created_at || new Date().toISOString()
+    };
+
+    if (pool) {
+      await pool.query(
+        `INSERT INTO events (id, lead_id, type, ancien_statut, nouveau_statut, note, date_rappel, auteur, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [ev.id, ev.lead_id, ev.type, ev.ancien_statut, ev.nouveau_statut, ev.note, ev.date_rappel, ev.auteur, ev.created_at]
+      );
+      return res.json({ ok: true, data: ev });
+    } else {
+      const events = readFallbackEvents();
+      events.unshift(ev);
+      writeFallbackEvents(events);
+      return res.json({ ok: true, data: ev });
+    }
+  } catch (err) {
+    console.error('[API Events] Create error:', err);
     res.status(500).json({ ok: false, error: err.message });
   }
 });
